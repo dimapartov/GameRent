@@ -4,8 +4,12 @@ import org.example.gamerent.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    // можно добавить кастомные методы поиска по username, email и т.п.
+
+    Optional<User> findUserByUsername(String username);
+
 }

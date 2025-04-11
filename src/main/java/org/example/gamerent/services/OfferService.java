@@ -14,8 +14,7 @@ public interface OfferService {
     List<OfferViewModel> filterOffers(String gameName,
                                       String brandName,
                                       BigDecimal minPrice,
-                                      BigDecimal maxPrice,
-                                      Integer maxRentalDaysOption);
+                                      BigDecimal maxPrice);
     OfferViewModel bookOffer(Long offerId, Long renterId);
     OfferViewModel initiateRental(Long offerId, Long renterId);
     OfferViewModel confirmRental(Long offerId);

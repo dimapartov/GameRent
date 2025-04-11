@@ -15,6 +15,5 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<Offer> findByGame_Brand_NameContainingIgnoreCase(String brandName);
     // Фильтрация офферов по цене (например, между minPrice и maxPrice)
     List<Offer> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
-    // Фильтрация по срокам аренды (например, используя дополнительное поле minRentalDays, если оно добавлено в Offer)
-    List<Offer> findByMinRentalDaysLessThanEqual(Integer days);
+
 }

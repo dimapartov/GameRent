@@ -72,8 +72,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public List<OfferViewModel> filterOffers(String gameName, String brandName,
-                                             BigDecimal minPrice, BigDecimal maxPrice,
-                                             Integer maxRentalDaysOption) {
+                                             BigDecimal minPrice, BigDecimal maxPrice) {
         List<Offer> offers = new ArrayList<>();
         if (gameName != null && !gameName.isEmpty()) {
             offers.addAll(offerRepository.findByGame_NameContainingIgnoreCase(gameName));
@@ -84,9 +83,7 @@ public class OfferServiceImpl implements OfferService {
         if (minPrice != null && maxPrice != null) {
             offers.addAll(offerRepository.findByPriceBetween(minPrice, maxPrice));
         }
-        if (maxRentalDaysOption != null) {
-            offers.addAll(offerRepository.findByMinRentalDaysLessThanEqual(maxRentalDaysOption));
-        }
+        // Removed rental days filtering because Offer doesn't have a 'minRentalDays' property.
         Set<Offer> uniqueOffers = new HashSet<>(offers);
         List<OfferViewModel> result = new ArrayList<>();
         for (Offer offer : uniqueOffers) {
