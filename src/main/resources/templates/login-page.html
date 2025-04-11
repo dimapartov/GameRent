@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>Login</title>
+    <meta charset="UTF-8"/>
+    <title>Login</title>
 </head>
 <body>
 <h1>Login</h1>
 <div th:if="${badCredentials}">
-  <p style="color:red;">Неверное имя пользователя или пароль!</p>
+    <p style="color:red;">Неверное имя пользователя или пароль!</p>
 </div>
 <form th:action="@{/user/login}" method="post">
-  <div>
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" th:value="${username}" required/>
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required/>
-  </div>
-  <button type="submit">Login</button>
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" th:value="${username}" required/>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required/>
+    </div>
+    <button type="submit">Login</button>
 </form>
 <p>Нет аккаунта? <a th:href="@{/user/register}">Зарегистрироваться</a></p>
 </body>
