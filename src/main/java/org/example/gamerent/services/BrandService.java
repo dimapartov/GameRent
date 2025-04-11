@@ -10,6 +10,5 @@ public interface BrandService {
     BrandViewModel getBrandById(Long id);
     List<BrandViewModel> getAllBrands();
     void deleteBrand(Long id);
-
     List<OfferViewModel> getOffersByBrand(Long brandId);
 }

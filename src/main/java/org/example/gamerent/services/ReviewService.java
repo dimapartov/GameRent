@@ -9,6 +9,5 @@ public interface ReviewService {
     ReviewViewModel getReviewById(Long id);
     List<ReviewViewModel> getAllReviews();
     void deleteReview(Long id);
-
     ReviewViewModel leaveReview(Long reviewerId, Long revieweeId, String text, Integer rating);
 }

@@ -11,13 +11,11 @@ public interface OfferService {
     OfferViewModel getOfferById(Long id);
     List<OfferViewModel> getAllOffers();
     void deleteOffer(Long id);
-
     List<OfferViewModel> filterOffers(String gameName,
                                       String brandName,
                                       BigDecimal minPrice,
                                       BigDecimal maxPrice,
                                       Integer maxRentalDaysOption);
-
     OfferViewModel bookOffer(Long offerId, Long renterId);
     OfferViewModel initiateRental(Long offerId, Long renterId);
     OfferViewModel confirmRental(Long offerId);

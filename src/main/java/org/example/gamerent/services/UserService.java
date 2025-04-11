@@ -13,7 +13,6 @@ public interface UserService {
     UserViewModel getUserById(Long id);
     List<UserViewModel> getAllUsers();
     void deleteUser(Long id);
-
     // Бизнес-методы (все операции с viewmodel)
     List<OfferViewModel> getOffersByUser(Long userId);
     List<RentalViewModel> getRentalsByUser(Long userId);

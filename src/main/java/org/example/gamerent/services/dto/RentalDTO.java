@@ -8,9 +8,9 @@ public class RentalDTO {
     private Long offerId;
     private Long renterId;
     private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private RentalStatus status;
 
-    // Геттеры и сеттеры
     public Long getOfferId() {
         return offerId;
     }
@@ -35,6 +35,14 @@ public class RentalDTO {
         this.startDate = startDate;
     }
 
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
     public RentalStatus getStatus() {
         return status;
     }
@@ -42,4 +50,5 @@ public class RentalDTO {
     public void setStatus(RentalStatus status) {
         this.status = status;
     }
+
 }

@@ -9,6 +9,5 @@ public interface GameService {
     GameViewModel getGameById(Long id);
     List<GameViewModel> getAllGames();
     void deleteGame(Long id);
-
     List<GameViewModel> getGamesByName(String name);
 }
