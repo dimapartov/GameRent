@@ -1,9 +1,6 @@
 package org.example.gamerent.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
 
 import java.util.Set;
@@ -14,39 +11,43 @@ import java.util.Set;
 public class Game extends IdCreatedModified {
 
     private String name;
-    private int releaseYear;
+    private String description;
+    private Brand brand;
     private Set<Offer> offers;
 
+    protected Game() { }
 
-    protected Game() {}
-
-
-    @Column(name = "name", unique = true)
+    @Column(name = "name", nullable = false)
     public String getName() {
         return name;
     }
 
-    @Column(name = "release_year")
-    public int getReleaseYear() {
-        return releaseYear;
+    @Column(name = "description")
+    public String getDescription() {
+        return description;
     }
 
-    @OneToMany(mappedBy = "game")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
+    public Brand getBrand() {
+        return brand;
+    }
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     public Set<Offer> getOffers() {
         return offers;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
-
-    public void setReleaseYear(int releaseYear) {
-        this.releaseYear = releaseYear;
+    public void setDescription(String description) {
+        this.description = description;
     }
-
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
     public void setOffers(Set<Offer> offers) {
         this.offers = offers;
     }
-
 }
