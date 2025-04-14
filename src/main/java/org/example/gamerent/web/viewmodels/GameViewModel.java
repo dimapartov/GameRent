@@ -1,6 +1,7 @@
 package org.example.gamerent.web.viewmodels;
 
 public class GameViewModel {
+
     private Long id;
     private String name;
     private String description;
@@ -57,4 +58,5 @@ public class GameViewModel {
                 ", brand=" + brand +
                 '}';
     }
+
 }

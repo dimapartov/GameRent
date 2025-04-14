@@ -1,10 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Домашняя страница</title>
 </head>
 <body>
+
+<!-- Навбар, отображаемый только для аутентифицированных пользователей -->
+<div sec:authorize="isAuthenticated()">
+    <nav>
+        <span>Добро пожаловать, <span sec:authentication="name"></span>!</span>
+        <!-- Форма выхода реализована с использованием POST запроса -->
+        <form th:action="@{/user/logout}" method="post" style="display:inline;">
+            <!-- Обязательно передаём токен для защиты CSRF -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Выйти</button>
+        </form>
+    </nav>
+</div>
+
+<!-- Основное содержимое страницы -->
+<h1>Домашняя страница</h1>
+<p>Основное содержимое домашней страницы здесь...</p>
 
 </body>
 </html>

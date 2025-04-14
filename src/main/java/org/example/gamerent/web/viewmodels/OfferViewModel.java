@@ -2,7 +2,9 @@ package org.example.gamerent.web.viewmodels;
 
 import java.math.BigDecimal;
 
+
 public class OfferViewModel {
+
     private Long id;
     private String status;
     private BigDecimal price;
@@ -21,6 +23,7 @@ public class OfferViewModel {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -28,6 +31,7 @@ public class OfferViewModel {
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -35,6 +39,7 @@ public class OfferViewModel {
     public BigDecimal getPrice() {
         return price;
     }
+
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
@@ -42,6 +47,7 @@ public class OfferViewModel {
     public Long getGameId() {
         return gameId;
     }
+
     public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
@@ -55,4 +61,5 @@ public class OfferViewModel {
                 ", gameId=" + gameId +
                 '}';
     }
+
 }

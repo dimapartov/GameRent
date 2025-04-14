@@ -2,7 +2,9 @@ package org.example.gamerent.web.viewmodels;
 
 import java.time.LocalDateTime;
 
+
 public class RentalViewModel {
+
     private Long id;
     private Long offerId;
     private String status;
@@ -23,6 +25,7 @@ public class RentalViewModel {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -30,6 +33,7 @@ public class RentalViewModel {
     public Long getOfferId() {
         return offerId;
     }
+
     public void setOfferId(Long offerId) {
         this.offerId = offerId;
     }
@@ -37,6 +41,7 @@ public class RentalViewModel {
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -44,6 +49,7 @@ public class RentalViewModel {
     public LocalDateTime getStartDate() {
         return startDate;
     }
+
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
@@ -51,6 +57,7 @@ public class RentalViewModel {
     public LocalDateTime getEndDate() {
         return endDate;
     }
+
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
@@ -65,4 +72,5 @@ public class RentalViewModel {
                 ", endDate=" + endDate +
                 '}';
     }
+
 }

@@ -1,6 +1,7 @@
 package org.example.gamerent.web.viewmodels;
 
 public class ReviewViewModel {
+
     private Long id;
     private Long reviewerId;
     private Long revieweeId;
@@ -21,6 +22,7 @@ public class ReviewViewModel {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -28,6 +30,7 @@ public class ReviewViewModel {
     public Long getReviewerId() {
         return reviewerId;
     }
+
     public void setReviewerId(Long reviewerId) {
         this.reviewerId = reviewerId;
     }
@@ -35,6 +38,7 @@ public class ReviewViewModel {
     public Long getRevieweeId() {
         return revieweeId;
     }
+
     public void setRevieweeId(Long revieweeId) {
         this.revieweeId = revieweeId;
     }
@@ -42,6 +46,7 @@ public class ReviewViewModel {
     public String getText() {
         return text;
     }
+
     public void setText(String text) {
         this.text = text;
     }
@@ -49,6 +54,7 @@ public class ReviewViewModel {
     public int getRating() {
         return rating;
     }
+
     public void setRating(int rating) {
         this.rating = rating;
     }
@@ -63,4 +69,5 @@ public class ReviewViewModel {
                 ", rating=" + rating +
                 '}';
     }
+
 }

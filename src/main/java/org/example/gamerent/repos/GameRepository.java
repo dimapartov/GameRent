@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
-    // Поиск игр по названию
+
     List<Game> findByNameContainingIgnoreCase(String name);
+
 }

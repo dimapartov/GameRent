@@ -4,10 +4,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.example.gamerent.util.validation.email.UniqueEmail;
+import org.example.gamerent.util.validation.username.UniqueUsername;
 
 
 public class RegistrationInputModel {
 
+    @UniqueUsername
     @NotNull(message = "Введите имя пользователя")
     @NotEmpty(message = "Введите имя пользователя")
     @NotBlank(message = "Введите имя пользователя")
@@ -18,6 +21,7 @@ public class RegistrationInputModel {
     @NotBlank(message = "Введите пароль")
     private String password;
 
+    @UniqueEmail
     @NotNull(message = "Введите почту")
     @NotEmpty(message = "Введите почту")
     @NotBlank(message = "Введите почту")
@@ -35,7 +39,8 @@ public class RegistrationInputModel {
     private String lastName;
 
 
-    public RegistrationInputModel() {}
+    public RegistrationInputModel() {
+    }
 
 
     public String getUsername() {

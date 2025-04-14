@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-    // Метод для поиска брендов по названию (если потребуется)
+
     List<Brand> findByNameContainingIgnoreCase(String name);
+
 }

@@ -7,10 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
+
     // Получить активные аренды пользователя
     List<Rental> findByRenter_IdAndStatus(Long renterId, RentalStatus status);
+
     // Получить аренды по офферу
     List<Rental> findByOffer_Id(Long offerId);
+
 }

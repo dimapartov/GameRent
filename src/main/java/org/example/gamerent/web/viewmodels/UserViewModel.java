@@ -1,6 +1,7 @@
 package org.example.gamerent.web.viewmodels;
 
 public class UserViewModel {
+
     private Long id;
     private String username;
     private String email;
@@ -17,6 +18,7 @@ public class UserViewModel {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -24,6 +26,7 @@ public class UserViewModel {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -31,6 +34,7 @@ public class UserViewModel {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -43,4 +47,5 @@ public class UserViewModel {
                 ", email='" + email + '\'' +
                 '}';
     }
+
 }
