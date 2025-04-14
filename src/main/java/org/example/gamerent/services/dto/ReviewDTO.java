@@ -1,6 +1,7 @@
 package org.example.gamerent.services.dto;
 
 public class ReviewDTO {
+
     private Long reviewerId;
     private Long revieweeId;
     private String text;
@@ -37,4 +38,5 @@ public class ReviewDTO {
     public void setRating(Integer rating) {
         this.rating = rating;
     }
+
 }

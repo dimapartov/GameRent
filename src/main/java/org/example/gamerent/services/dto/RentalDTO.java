@@ -4,7 +4,9 @@ import org.example.gamerent.models.consts.RentalStatus;
 
 import java.time.LocalDateTime;
 
+
 public class RentalDTO {
+
     private Long offerId;
     private Long renterId;
     private LocalDateTime startDate;
