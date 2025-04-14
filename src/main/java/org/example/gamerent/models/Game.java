@@ -15,7 +15,8 @@ public class Game extends IdCreatedModified {
     private Brand brand;
     private Set<Offer> offers;
 
-    protected Game() { }
+    protected Game() {
+    }
 
     @Column(name = "name", nullable = false)
     public String getName() {
@@ -41,13 +42,17 @@ public class Game extends IdCreatedModified {
     public void setName(String name) {
         this.name = name;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setBrand(Brand brand) {
         this.brand = brand;
     }
+
     public void setOffers(Set<Offer> offers) {
         this.offers = offers;
     }
+
 }

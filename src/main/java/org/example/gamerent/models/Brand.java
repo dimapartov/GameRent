@@ -12,10 +12,11 @@ public class Brand extends IdCreatedModified {
 
     private String name;
     private String description;
-    private String photo;   // URL или путь к изображению бренда
+    private String photo;
     private Set<Game> games;
 
-    protected Brand() { }
+    protected Brand() {
+    }
 
     @Column(name = "name", nullable = false)
     public String getName() {
@@ -40,13 +41,17 @@ public class Brand extends IdCreatedModified {
     public void setName(String name) {
         this.name = name;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
     public void setGames(Set<Game> games) {
         this.games = games;
     }
+
 }

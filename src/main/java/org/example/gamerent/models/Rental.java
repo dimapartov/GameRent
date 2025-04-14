@@ -17,7 +17,8 @@ public class Rental extends IdCreatedModified {
     private LocalDateTime endDate;
     private RentalStatus status;
 
-    protected Rental() { }
+    protected Rental() {
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "offer_id", nullable = false)
@@ -36,7 +37,7 @@ public class Rental extends IdCreatedModified {
         return startDate;
     }
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     public LocalDateTime getEndDate() {
         return endDate;
     }
@@ -50,16 +51,21 @@ public class Rental extends IdCreatedModified {
     public void setOffer(Offer offer) {
         this.offer = offer;
     }
+
     public void setRenter(User renter) {
         this.renter = renter;
     }
+
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
+
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
+
     public void setStatus(RentalStatus status) {
         this.status = status;
     }
+
 }

@@ -20,20 +20,21 @@ public class Offer extends IdCreatedModified {
     private User owner;
     private Set<Rental> rentals;
 
-    protected Offer() { }
+    protected Offer() {
+    }
 
     @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "price", precision = 10, scale = 2, nullable = false)
     public BigDecimal getPrice() {
         return price;
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     public OfferStatus getStatus() {
         return status;
     }
@@ -63,22 +64,29 @@ public class Offer extends IdCreatedModified {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
+
     public void setStatus(OfferStatus status) {
         this.status = status;
     }
+
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
     public void setGame(Game game) {
         this.game = game;
     }
+
     public void setOwner(User owner) {
         this.owner = owner;
     }
+
     public void setRentals(Set<Rental> rentals) {
         this.rentals = rentals;
     }
+
 }
