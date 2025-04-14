@@ -13,40 +13,46 @@ public class RentalDTO {
     private LocalDateTime endDate;
     private RentalStatus status;
 
-    public Long getOfferId() {
-        return offerId;
+
+    public RentalDTO() {
     }
 
-    public void setOfferId(Long offerId) {
-        this.offerId = offerId;
+
+    public Long getOfferId() {
+        return offerId;
     }
 
     public Long getRenterId() {
         return renterId;
     }
 
-    public void setRenterId(Long renterId) {
-        this.renterId = renterId;
-    }
-
     public LocalDateTime getStartDate() {
         return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
     }
 
     public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
     public RentalStatus getStatus() {
         return status;
+    }
+
+
+    public void setOfferId(Long offerId) {
+        this.offerId = offerId;
+    }
+
+    public void setRenterId(Long renterId) {
+        this.renterId = renterId;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public void setStatus(RentalStatus status) {

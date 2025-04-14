@@ -7,6 +7,7 @@ import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.web.viewmodels.BrandViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
+import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,10 +32,10 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public BrandViewModel createBrand(BrandViewModel brandVM) {
-        Brand brand = modelMapper.map(brandVM, Brand.class);
+    public BrandCreationInputModel createBrand(BrandCreationInputModel newBrand) {
+        Brand brand = modelMapper.map(newBrand, Brand.class);
         brand = brandRepository.save(brand);
-        return modelMapper.map(brand, BrandViewModel.class);
+        return modelMapper.map(brand, BrandCreationInputModel.class);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.example.gamerent.models.Game;
 import org.example.gamerent.repos.GameRepository;
 import org.example.gamerent.services.GameService;
 import org.example.gamerent.web.viewmodels.GameViewModel;
+import org.example.gamerent.web.viewmodels.user_input.GameCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,17 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameViewModel createGame(GameViewModel gameVM) {
-        Game game = modelMapper.map(gameVM, Game.class);
+    public GameCreationInputModel createGame(GameCreationInputModel newGame) {
+        // Преобразуем входную модель в сущность Game
+        Game game = modelMapper.map(newGame, Game.class);
+        // Гарантируем, что идентификатор равен null, чтобы Hibernate создал новую запись
+        game.setId(null);
+        // Сохраняем новую игру в базе
         game = gameRepository.save(game);
-        return modelMapper.map(game, GameViewModel.class);
+        // Возвращаем модель создания на основе сохранённой сущности
+        return modelMapper.map(game, GameCreationInputModel.class);
     }
+
 
     @Override
     public GameViewModel getGameById(Long id) {
