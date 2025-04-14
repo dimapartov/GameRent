@@ -2,23 +2,35 @@ package org.example.gamerent.web.viewmodels.user_input;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 
 public class RegistrationInputModel {
 
+    @NotNull(message = "Введите имя пользователя")
+    @NotEmpty(message = "Введите имя пользователя")
     @NotBlank(message = "Введите имя пользователя")
     private String username;
 
+    @NotNull(message = "Введите пароль")
+    @NotEmpty(message = "Введите пароль")
     @NotBlank(message = "Введите пароль")
     private String password;
 
+    @NotNull(message = "Введите почту")
+    @NotEmpty(message = "Введите почту")
     @NotBlank(message = "Введите почту")
     @Email(message = "Введите верную почту")
     private String email;
 
+    @NotNull(message = "Введите имя")
+    @NotEmpty(message = "Введите имя")
     @NotBlank(message = "Введите имя")
     private String firstName;
 
+    @NotNull(message = "Введите фамилию")
+    @NotEmpty(message = "Введите фамилию")
     @NotBlank(message = "Введите фамилию")
     private String lastName;
 
