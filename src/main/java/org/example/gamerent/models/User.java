@@ -21,8 +21,10 @@ public class User extends IdCreatedModified {
     private Set<Review> reviewsGiven;      // Отзывы, оставленные пользователем
     private Set<Review> reviewsReceived;   // Отзывы, полученные пользователем
 
+
     protected User() {
     }
+
 
     @Column(name = "username", unique = true, nullable = false)
     public String getUsername() {
@@ -73,6 +75,7 @@ public class User extends IdCreatedModified {
     public Set<Review> getReviewsReceived() {
         return reviewsReceived;
     }
+
 
     public void setUsername(String username) {
         this.username = username;

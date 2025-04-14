@@ -13,10 +13,12 @@ public class Brand extends IdCreatedModified {
     private String name;
     private String description;
     private String photo;
-    private Set<Game> games;
+    private Set<Offer> offers;
+
 
     protected Brand() {
     }
+
 
     @Column(name = "name", nullable = false)
     public String getName() {
@@ -34,9 +36,10 @@ public class Brand extends IdCreatedModified {
     }
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-    public Set<Game> getGames() {
-        return games;
+    public Set<Offer> getOffers() {
+        return offers;
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -50,8 +53,8 @@ public class Brand extends IdCreatedModified {
         this.photo = photo;
     }
 
-    public void setGames(Set<Game> games) {
-        this.games = games;
+    public void setOffers(Set<Offer> offers) {
+        this.offers = offers;
     }
 
 }

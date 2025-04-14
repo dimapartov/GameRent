@@ -1,17 +1,15 @@
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
-import org.example.gamerent.services.*;
+import org.example.gamerent.services.BrandService;
+import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.impl.security.RegistrationService;
-import org.example.gamerent.web.viewmodels.BrandViewModel;
 import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.GameCreationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RegistrationInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Random;
 
 
@@ -19,32 +17,29 @@ import java.util.Random;
 public class DataInit implements CommandLineRunner {
 
     private final BrandService brandService;
-    private final GameService gameService;
-    private final UserService userService;
     private final OfferService offerService;
-    private final RentalService rentalService;
     private final RegistrationService registrationService;
 
+
     @Autowired
-    public DataInit(BrandService brandService, GameService gameService, UserService userService, OfferService offerService, RentalService rentalService, RegistrationService registrationService) {
+    public DataInit(BrandService brandService, OfferService offerService, RegistrationService registrationService) {
         this.brandService = brandService;
-        this.gameService = gameService;
-        this.userService = userService;
         this.offerService = offerService;
-        this.rentalService = rentalService;
         this.registrationService = registrationService;
     }
 
+
     @Override
     public void run(String... args) throws Exception {
-        seedData();
+        seedUsers();
+        seedBrands();
     }
 
-    private void seedData() {
-        Faker faker = new Faker();
-        Random random = new Random();
 
+    Faker faker = new Faker();
+    Random random = new Random();
 
+    private void seedUsers() {
         RegistrationInputModel testUserModel = new RegistrationInputModel();
         testUserModel.setUsername("dima");
         testUserModel.setEmail("dima@dima.ru");
@@ -52,7 +47,7 @@ public class DataInit implements CommandLineRunner {
         testUserModel.setFirstName("Dima");
         testUserModel.setLastName("Partov");
         registrationService.registerUser(testUserModel);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             RegistrationInputModel registrationInputModel = new RegistrationInputModel();
             registrationInputModel.setUsername(faker.name().username());
             registrationInputModel.setEmail(faker.internet().emailAddress());
@@ -61,6 +56,9 @@ public class DataInit implements CommandLineRunner {
             registrationInputModel.setLastName(faker.name().lastName());
             registrationService.registerUser(registrationInputModel);
         }
+    }
+
+    private void seedBrands() {
         for (int i = 0; i < 5; i++) {
             BrandCreationInputModel brandCreationInputModel = new BrandCreationInputModel();
             brandCreationInputModel.setName(faker.company().name());
@@ -68,17 +66,7 @@ public class DataInit implements CommandLineRunner {
             brandCreationInputModel.setPhoto(faker.internet().image());
             brandService.createBrand(brandCreationInputModel);
         }
-        List<BrandViewModel> allBrands = brandService.getAllBrands();
-        int randomIndex = random.nextInt(allBrands.size());
-        BrandViewModel randomBrand = allBrands.get(randomIndex);
-        Long brandIdForGamesCreation = randomBrand.getId();
-        for (int i = 0; i < 5; i++) {
-            GameCreationInputModel gameCreationInputModel = new GameCreationInputModel();
-            gameCreationInputModel.setName(faker.gameOfThrones().city());
-            gameCreationInputModel.setDescription(faker.lorem().sentence());
-            gameCreationInputModel.setBrandId(brandIdForGamesCreation);
-            gameService.createGame(gameCreationInputModel);
-        }
-
     }
+
+
 }

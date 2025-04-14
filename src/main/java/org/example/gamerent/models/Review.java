@@ -13,8 +13,10 @@ public class Review extends IdCreatedModified {
     private User reviewer;
     private User reviewee;
 
+
     protected Review() {
     }
+
 
     @Column(name = "text", nullable = false)
     public String getText() {
@@ -37,6 +39,7 @@ public class Review extends IdCreatedModified {
     public User getReviewee() {
         return reviewee;
     }
+
 
     public void setText(String text) {
         this.text = text;

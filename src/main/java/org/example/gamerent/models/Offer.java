@@ -12,16 +12,19 @@ import java.util.Set;
 @Table(name = "offers")
 public class Offer extends IdCreatedModified {
 
+    private User owner;
+    private Brand brand;
+    private String gameName;
     private String description;
     private BigDecimal price;
     private OfferStatus status;
-    private String photo;   // URL или путь к изображению оффера
-    private Game game;
-    private User owner;
+    private String photo;
     private Set<Rental> rentals;
+
 
     protected Offer() {
     }
+
 
     @Column(name = "description")
     public String getDescription() {
@@ -44,10 +47,15 @@ public class Offer extends IdCreatedModified {
         return photo;
     }
 
+    @Column(name = "game_name")
+    public String getGameName() {
+        return gameName;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false)
-    public Game getGame() {
-        return game;
+    @JoinColumn(name = "brand_id", nullable = false)
+    public Brand getBrand() {
+        return brand;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -77,9 +85,6 @@ public class Offer extends IdCreatedModified {
         this.photo = photo;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
 
     public void setOwner(User owner) {
         this.owner = owner;
@@ -87,6 +92,14 @@ public class Offer extends IdCreatedModified {
 
     public void setRentals(Set<Rental> rentals) {
         this.rentals = rentals;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
     }
 
 }

@@ -17,8 +17,10 @@ public class Rental extends IdCreatedModified {
     private LocalDateTime endDate;
     private RentalStatus status;
 
+
     protected Rental() {
     }
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "offer_id", nullable = false)
@@ -47,6 +49,7 @@ public class Rental extends IdCreatedModified {
     public RentalStatus getStatus() {
         return status;
     }
+
 
     public void setOffer(Offer offer) {
         this.offer = offer;
