@@ -1,7 +1,6 @@
 package org.example.gamerent.web.controllers;
 
 
-import org.example.gamerent.models.Offer;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
@@ -41,19 +40,12 @@ public class OfferController {
     @PostMapping("/create")
     public String createOffer(OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
-        return "redirect:/offer/success";
+        return "redirect:/offer/all";
     }
 
-    @GetMapping("/success")
-    public String getOfferCreatedPage() {
-        return "offer-created-page";
+    @GetMapping("/all")
+    public String getAllOffersPage(Model model) {
+        model.addAttribute("allOffers", offerService.getAllOffersDemoViewModels());
+        return "offer-all-page";
     }
-
-    @GetMapping("/{id}")
-    public String viewOffer(@PathVariable Long id, Model model) {
-        Offer offer = offerService.getOfferViewModelByOfferId(id);
-        model.addAttribute("offer", offer);
-        return "offer-details-page";
-    }
-
 }

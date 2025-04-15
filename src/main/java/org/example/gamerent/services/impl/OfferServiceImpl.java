@@ -9,7 +9,7 @@ import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.OfferService;
-import org.example.gamerent.web.viewmodels.OfferViewModel;
+import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -51,18 +53,18 @@ public class OfferServiceImpl implements OfferService {
     private String uploadPath;
 
     @Override
-    public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile image) {
+    public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
 
         Offer offer = modelMapper.map(newOffer, Offer.class);
         offer.setId(null);
         Brand brand = brandRepository.findByName(newOffer.getBrand());
         offer.setBrand(brand);
-        if (!image.isEmpty()) {
+        if (!photo.isEmpty()) {
             try {
-                String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                String filename = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
                 Path filePath = Paths.get(uploadPath, filename);
                 Files.createDirectories(filePath.getParent());
-                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(photo.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 offer.setPhoto(filename);
             } catch (IOException e) {
                 throw new RuntimeException("Ошибка загрузки файла", e);
@@ -78,8 +80,16 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferViewModel getOfferViewModelByOfferId(Long id) {
-        return null;
+    public List<OfferDemoViewModel> getAllOffersDemoViewModels() {
+        return offerRepository.findAll()
+                .stream()
+                .map(offer -> {
+                    OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+                    offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+                    return offerDemoViewModel;
+                })
+                .collect(Collectors.toList());
     }
+
 
 }
