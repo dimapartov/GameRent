@@ -1,12 +1,15 @@
 package org.example.gamerent.services.impl;
 
+import org.example.gamerent.models.Brand;
 import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.User;
 import org.example.gamerent.models.consts.OfferStatus;
+import org.example.gamerent.repos.BrandRepository;
 import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.OfferService;
+import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+
 @Service
 public class OfferServiceImpl implements OfferService {
 
@@ -29,16 +33,18 @@ public class OfferServiceImpl implements OfferService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final BrandRepository brandRepository;
 
     @Autowired
     public OfferServiceImpl(OfferRepository offerRepository,
                             RentalRepository rentalRepository,
                             UserRepository userRepository,
-                            ModelMapper modelMapper) {
+                            ModelMapper modelMapper, BrandRepository brandRepository) {
         this.offerRepository = offerRepository;
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.brandRepository = brandRepository;
     }
 
     @Value("${upload.path}")
@@ -46,12 +52,11 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile image) {
-        // Преобразование DTO в сущность Offer
-        Offer offer = modelMapper.map(newOffer, Offer.class);
-        // Гарантируем, что id = null (новая запись), чтобы избежать ошибки обновления
-        offer.setId(null);
 
-        // Обработка загрузки файла
+        Offer offer = modelMapper.map(newOffer, Offer.class);
+        offer.setId(null);
+        Brand brand = brandRepository.findByName(newOffer.getBrand());
+        offer.setBrand(brand);
         if (!image.isEmpty()) {
             try {
                 String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();
@@ -63,17 +68,18 @@ public class OfferServiceImpl implements OfferService {
                 throw new RuntimeException("Ошибка загрузки файла", e);
             }
         }
-        // Если статус не задан, устанавливаем значение по умолчанию
-        if (offer.getStatus() == null) {
-            offer.setStatus(OfferStatus.AVAILABLE); // Предполагается, что такой константой есть в OfferStatus
-        }
-        // Установка владельца оффера по имени, полученному из Security (автентифицированного пользователя)
+        offer.setStatus(OfferStatus.AVAILABLE);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
-        User owner = userRepository.findUserByUsername(currentPrincipalName)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        User owner = userRepository.findUserByUsername(currentPrincipalName).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
         return modelMapper.map(offer, OfferCreationInputModel.class);
     }
+
+    @Override
+    public OfferViewModel getOfferViewModelByOfferId(Long id) {
+        return null;
+    }
+
 }

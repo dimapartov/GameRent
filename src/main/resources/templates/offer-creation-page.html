@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create Offer</title>
+</head>
+<body>
+<h1>Create Offer</h1>
+<form th:action="@{/offer/create}" th:object="${newOfferInputModel}" method="post" enctype="multipart/form-data">
+    <div>
+        <label>Description:</label>
+        <textarea th:field="*{description}" required></textarea>
+    </div>
+    <div>
+        <label>Price:</label>
+        <input type="number" step="0.01" th:field="*{price}" required/>
+    </div>
+    <div>
+        <label>Brand:</label>
+        <select th:field="*{brand}">
+            <option th:each="brand : ${brandList}" th:value="${brand.name}" th:text="${brand.name}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Game Name:</label>
+        <input type="text" th:field="*{gameName}" required/>
+    </div>
+    <div>
+        <label>Photo (upload file):</label>
+        <input type="file" name="file" required/>
+    </div>
+    <button type="submit">Create Offer</button>
+</form>
+</body>
+</html>
