@@ -47,6 +47,15 @@ public class DataInit implements CommandLineRunner {
         testUserModel.setFirstName("Dima");
         testUserModel.setLastName("Partov");
         registrationService.registerUser(testUserModel);
+
+        RegistrationInputModel testUserModel2 = new RegistrationInputModel();
+        testUserModel2.setUsername("dima2");
+        testUserModel2.setEmail("dima2@dima.ru");
+        testUserModel2.setPassword("dima2");
+        testUserModel2.setFirstName("Dima");
+        testUserModel2.setLastName("Kubarev");
+        registrationService.registerUser(testUserModel2);
+
         for (int i = 0; i < 4; i++) {
             RegistrationInputModel registrationInputModel = new RegistrationInputModel();
             registrationInputModel.setUsername(faker.name().username());

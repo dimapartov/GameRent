@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Объявления</title>
+<meta charset="UTF-8">
+<title>Объявления</title>
 </head>
 <body>
+<!-- Встраиваем навбар -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main>
     <h2>Объявления</h2>
-    <!-- Форма фильтрации -->
-    <form th:action="@{/offer/universal}" method="get">
+    <!-- Форма фильтрации с привязкой к объекту filter -->
+    <form th:action="@{/offer/universal}" method="get" th:object="${filter}" style="margin-bottom:20px;">
         <div>
             <label>Цена от:</label>
-            <input type="number" step="0.01" name="priceFrom" th:value="${param.priceFrom}"/>
+            <input type="number" step="0.01" th:field="*{priceFrom}"/>
             <label>до:</label>
-            <input type="number" step="0.01" name="priceTo" th:value="${param.priceTo}"/>
+            <input type="number" step="0.01" th:field="*{priceTo}"/>
         </div>
         <div>
             <label>Бренд:</label>
-            <select name="brand">
+            <select th:field="*{brand}">
                 <option value="">-- Все бренды --</option>
-                <option th:each="b : ${allBrands}"
-                        th:value="${b.name}"
-                        th:text="${b.name}"
-                        th:selected="${b.name == param.brand}">
-                </option>
+                <option th:each="b : ${allBrands}" th:value="${b.name}" th:text="${b.name}"></option>
             </select>
         </div>
         <div>
+            <!-- Вместо th:field для чекбокса используем обычный input с th:checked -->
             <label>
                 <input type="checkbox" name="myOffers" value="true"
-                       th:checked="${param.myOffers == 'true'}"/> Мои объявления
+                       th:checked="${filter.myOffers != null and filter.myOffers}"/> Мои объявления
             </label>
         </div>
-        <button type="submit">Применить фильтры</button>
+        <div style="margin-top:10px;">
+            <button type="submit">Применить фильтры</button>
+            <a th:href="@{/offer/universal}"
+               style="margin-left: 10px; text-decoration: none; border: 1px solid #ccc; padding: 5px 10px;">Сбросить
+                фильтры</a>
+        </div>
     </form>
 
-    <!-- Вывод списка офферов -->
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+
+    <!-- Вывод списка офферов в виде сетки -->
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
         <div th:each="o : ${offers}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
             <img th:src="@{'/images/' + ${o.photo}}" alt="Offer Image" style="max-width: 100%; height: auto;">
             <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
@@ -48,6 +51,7 @@
                 <strong>Описание:</strong> <span th:text="${o.description}">Description</span><br/>
                 <strong>Владелец:</strong> <span th:text="${o.owner}">Owner</span>
             </p>
+            <!--            <a th:href="@{'/offers/details/' + ${o.id}}">Детали</a>-->
         </div>
     </div>
 </main>
