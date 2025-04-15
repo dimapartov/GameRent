@@ -20,12 +20,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -92,4 +94,39 @@ public class OfferServiceImpl implements OfferService {
     }
 
 
+    @Override
+    public List<OfferDemoViewModel> getOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
+        // Получаем все офферы
+        List<Offer> offers = offerRepository.findAll();
+        Stream<Offer> stream = offers.stream();
+
+        // Фильтрация по цене от
+        if (priceFrom != null) {
+            stream = stream.filter(o -> o.getPrice().compareTo(priceFrom) >= 0);
+        }
+
+        // Фильтрация по цене до
+        if (priceTo != null) {
+            stream = stream.filter(o -> o.getPrice().compareTo(priceTo) <= 0);
+        }
+
+        // Фильтрация по бренду (если передана строка, сравнение без учета регистра)
+        if (brand != null && !brand.trim().isEmpty()) {
+            stream = stream.filter(o -> o.getBrand().getName().equalsIgnoreCase(brand.trim()));
+        }
+
+        // Если включен режим "Мои объявления", то получить имя залогиненного пользователя
+        if (myOffers != null && myOffers) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentPrincipalName = authentication.getName();
+            stream = stream.filter(o -> o.getOwner().getUsername().equals(currentPrincipalName));
+        }
+
+        // Маппинг Offer в OfferDemoViewModel
+        return stream.map(offer -> {
+            OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+            offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+            return offerDemoViewModel;
+        }).collect(Collectors.toList());
+    }
 }

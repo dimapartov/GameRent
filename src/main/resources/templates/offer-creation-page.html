@@ -19,7 +19,7 @@
     <div>
         <label>Brand:</label>
         <select th:field="*{brand}">
-            <option th:each="brand : ${brandList}" th:value="${brand.name}" th:text="${brand.name}"></option>
+            <option th:each="brand : ${allBrands}" th:value="${brand.name}" th:text="${brand.name}"></option>
         </select>
     </div>
     <div>

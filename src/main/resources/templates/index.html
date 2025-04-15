@@ -11,14 +11,9 @@
 <div sec:authorize="isAuthenticated()">
     <nav>
         <span>Добро пожаловать, <span sec:authentication="name"></span>!</span>
-        <form th:action="@{/user/logout}" method="post" style="display:inline;">
-            <button type="submit">Выйти</button>
-        </form>
     </nav>
 </div>
-
 <h1>Домашняя страница</h1>
 <p>Основное содержимое домашней страницы здесь...</p>
-
 </body>
 </html>
