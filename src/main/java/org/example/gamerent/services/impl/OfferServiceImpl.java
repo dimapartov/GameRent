@@ -39,11 +39,9 @@ public class OfferServiceImpl implements OfferService {
     private final ModelMapper modelMapper;
     private final BrandRepository brandRepository;
 
+
     @Autowired
-    public OfferServiceImpl(OfferRepository offerRepository,
-                            RentalRepository rentalRepository,
-                            UserRepository userRepository,
-                            ModelMapper modelMapper, BrandRepository brandRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, RentalRepository rentalRepository, UserRepository userRepository, ModelMapper modelMapper, BrandRepository brandRepository) {
         this.offerRepository = offerRepository;
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
@@ -51,12 +49,13 @@ public class OfferServiceImpl implements OfferService {
         this.brandRepository = brandRepository;
     }
 
+
     @Value("${upload.path}")
     private String uploadPath;
 
+
     @Override
     public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
-
         Offer offer = modelMapper.map(newOffer, Offer.class);
         offer.setId(null);
         Brand brand = brandRepository.findByName(newOffer.getBrand());
@@ -80,19 +79,6 @@ public class OfferServiceImpl implements OfferService {
         offer = offerRepository.save(offer);
         return modelMapper.map(offer, OfferCreationInputModel.class);
     }
-
-//    @Override
-//    public List<OfferDemoViewModel> getAllOffersDemoViewModels() {
-//        return offerRepository.findAll()
-//                .stream()
-//                .map(offer -> {
-//                    OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-//                    offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-//                    return offerDemoViewModel;
-//                })
-//                .collect(Collectors.toList());
-//    }
-
 
     @Override
     public List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
@@ -129,4 +115,5 @@ public class OfferServiceImpl implements OfferService {
             return offerDemoViewModel;
         }).collect(Collectors.toList());
     }
+
 }

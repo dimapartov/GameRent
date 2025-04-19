@@ -46,13 +46,6 @@ public class OfferController {
         return "redirect:/offer/all";
     }
 
-//    @GetMapping("/all")
-//    public String getAllOffersPage(Model model) {
-//        model.addAttribute("allOffers", offerService.getAllOffersDemoViewModels());
-//        return "offer-all-page";
-//    }
-
-
     @ModelAttribute("filters")
     public OfferFiltersDTO initOfferFilters() {
         return new OfferFiltersDTO();
