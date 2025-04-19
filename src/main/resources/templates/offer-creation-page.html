@@ -7,7 +7,8 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <h1>Create Offer</h1>
-<form th:action="@{/offer/create}" th:object="${newOfferInputModel}" method="post" enctype="multipart/form-data">
+<form th:action="@{/offer/create}" th:object="${newOfferInputModel}"
+      method="post" enctype="multipart/form-data">
     <div>
         <label>Description:</label>
         <textarea th:field="*{description}" required></textarea>
@@ -19,12 +20,22 @@
     <div>
         <label>Brand:</label>
         <select th:field="*{brand}">
-            <option th:each="brand : ${allBrands}" th:value="${brand.name}" th:text="${brand.name}"></option>
+            <option th:each="brand : ${allBrands}"
+                    th:value="${brand.name}"
+                    th:text="${brand.name}"></option>
         </select>
     </div>
     <div>
         <label>Game Name:</label>
         <input type="text" th:field="*{gameName}" required/>
+    </div>
+    <div>
+        <label>Мин. дней аренды:</label>
+        <input type="number" th:field="*{minRentalDays}" min="1" required/>
+    </div>
+    <div>
+        <label>Макс. дней аренды:</label>
+        <input type="number" th:field="*{maxRentalDays}" min="1" required/>
     </div>
     <div>
         <label>Photo (upload file):</label>

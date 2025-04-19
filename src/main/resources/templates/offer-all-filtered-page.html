@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<meta charset="UTF-8">
-<title>Объявления</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Объявления</title>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main>
     <h2>Объявления</h2>
-    <!-- Форма фильтрации с привязкой к объекту filters -->
     <form th:action="@{/offer/all}" method="get" th:object="${filters}" style="margin-bottom:20px;">
         <div>
             <label>Цена от:</label>
@@ -20,30 +20,35 @@
             <label>Бренд:</label>
             <select th:field="*{brand}">
                 <option value="">Все бренды</option>
-                <option th:each="b : ${allBrands}" th:value="${b.name}" th:text="${b.name}"></option>
+                <option th:each="b : ${allBrands}"
+                        th:value="${b.name}"
+                        th:text="${b.name}"></option>
             </select>
         </div>
         <div>
             <label>
                 <input type="checkbox" name="myOffers" value="true"
-                       th:checked="${filters.myOffers != null and filters.myOffers}"/> Мои объявления
+                       th:checked="${filters.myOffers}"/> Мои объявления
             </label>
         </div>
         <div style="margin-top:10px;">
             <button type="submit">Применить фильтры</button>
             <a th:href="@{/offer/all}"
-               style="margin-left: 10px; text-decoration: none; border: 1px solid #ccc; padding: 5px 10px;">Сбросить
-                фильтры</a>
+               style="margin-left: 10px; text-decoration: none; border: 1px solid #ccc; padding: 5px 10px;">
+                Сбросить фильтры
+            </a>
         </div>
     </form>
 
-    <!-- Вывод списка офферов в виде сетки -->
     <div style="display: flex; flex-wrap: wrap; gap: 20px;">
         <div th:each="o : ${allOffersFiltered}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
             <img th:src="@{'/images/' + ${o.photo}}" alt="Offer Image" style="max-width: 100%; height: auto;">
             <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
             <p>
                 <strong>Цена:</strong> <span th:text="${o.price}">Price</span><br/>
+                <strong>Срок аренды:</strong>
+                от <span th:text="${o.minRentalDays}">min</span> до <span th:text="${o.maxRentalDays}">max</span>
+                дней<br/>
                 <strong>Статус:</strong> <span th:text="${o.status}">Status</span><br/>
                 <strong>Описание:</strong> <span th:text="${o.description}">Description</span><br/>
                 <strong>Владелец:</strong> <span th:text="${o.owner}">Owner</span>

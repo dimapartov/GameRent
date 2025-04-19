@@ -19,8 +19,8 @@ import java.util.List;
 @RequestMapping("/offer")
 public class OfferController {
 
-    private OfferService offerService;
-    private BrandService brandService;
+    private final OfferService offerService;
+    private final BrandService brandService;
 
 
     @Autowired
@@ -41,15 +41,16 @@ public class OfferController {
         return new OfferCreationInputModel();
     }
     @PostMapping("/create")
-    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
+    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
+                              @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
         return "redirect:/offer/all";
     }
 
-
     @GetMapping("/all")
     public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, Model model) {
-        List<OfferDemoViewModel> allOffersFiltered = offerService.getAllOffersFiltered(filters.getPriceFrom(), filters.getPriceTo(), filters.getBrand(), filters.getMyOffers());
+        List<OfferDemoViewModel> allOffersFiltered = offerService
+                .getAllOffersFiltered(filters.getPriceFrom(), filters.getPriceTo(), filters.getBrand(), filters.getMyOffers());
         model.addAttribute("allOffersFiltered", allOffersFiltered);
         model.addAttribute("allBrands", brandService.getAllBrands());
         return "offer-all-filtered-page";

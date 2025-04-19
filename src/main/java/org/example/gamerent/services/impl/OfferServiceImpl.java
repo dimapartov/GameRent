@@ -14,7 +14,6 @@ import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,8 +39,16 @@ public class OfferServiceImpl implements OfferService {
     private final BrandRepository brandRepository;
 
 
+    @Value("${upload.path}")
+    private String uploadPath;
+
+
     @Autowired
-    public OfferServiceImpl(OfferRepository offerRepository, RentalRepository rentalRepository, UserRepository userRepository, ModelMapper modelMapper, BrandRepository brandRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository,
+                            RentalRepository rentalRepository,
+                            UserRepository userRepository,
+                            ModelMapper modelMapper,
+                            BrandRepository brandRepository) {
         this.offerRepository = offerRepository;
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
@@ -50,14 +57,12 @@ public class OfferServiceImpl implements OfferService {
     }
 
 
-    @Value("${upload.path}")
-    private String uploadPath;
-
-
     @Override
     public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
         Offer offer = modelMapper.map(newOffer, Offer.class);
         offer.setId(null);
+        offer.setMinRentalDays(newOffer.getMinRentalDays());
+        offer.setMaxRentalDays(newOffer.getMaxRentalDays());
         Brand brand = brandRepository.findByName(newOffer.getBrand());
         offer.setBrand(brand);
         if (!photo.isEmpty()) {
@@ -72,47 +77,38 @@ public class OfferServiceImpl implements OfferService {
             }
         }
         offer.setStatus(OfferStatus.AVAILABLE);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User owner = userRepository.findUserByUsername(currentPrincipalName).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        String currentPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User owner = userRepository.findUserByUsername(currentPrincipalName)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
         return modelMapper.map(offer, OfferCreationInputModel.class);
     }
 
     @Override
-    public List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
-        // Получаем все офферы
+    public List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom,
+                                                         BigDecimal priceTo,
+                                                         String brand,
+                                                         Boolean myOffers) {
         List<Offer> offers = offerRepository.findAll();
         Stream<Offer> stream = offers.stream();
-
-        // Фильтрация по цене от
         if (priceFrom != null) {
             stream = stream.filter(o -> o.getPrice().compareTo(priceFrom) >= 0);
         }
-
-        // Фильтрация по цене до
         if (priceTo != null) {
             stream = stream.filter(o -> o.getPrice().compareTo(priceTo) <= 0);
         }
-
-        // Фильтрация по бренду (если передана строка, сравнение без учета регистра)
         if (brand != null && !brand.trim().isEmpty()) {
             stream = stream.filter(o -> o.getBrand().getName().equalsIgnoreCase(brand.trim()));
         }
-
-        // Если включен режим "Мои объявления", то получить имя залогиненного пользователя
-        if (myOffers != null && myOffers) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String currentPrincipalName = authentication.getName();
+        if (Boolean.TRUE.equals(myOffers)) {
+            String currentPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
             stream = stream.filter(o -> o.getOwner().getUsername().equals(currentPrincipalName));
         }
-
-        // Маппинг Offer в OfferDemoViewModel
-        return stream.map(offer -> {
-            OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-            offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-            return offerDemoViewModel;
+        return stream.map(o -> {
+            OfferDemoViewModel vm = modelMapper.map(o, OfferDemoViewModel.class);
+            vm.setOwner(o.getOwner().getUsername());
+            return vm;
         }).collect(Collectors.toList());
     }
 
