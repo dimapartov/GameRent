@@ -10,6 +10,6 @@ public interface BrandService {
 
     BrandCreationInputModel createBrand(BrandCreationInputModel newBrand);
 
-    List<BrandDTO> getAllBrandsForOfferCreation();
+    List<BrandDTO> getAllBrands();
 
 }

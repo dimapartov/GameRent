@@ -2,26 +2,26 @@ package org.example.gamerent.services.dto;
 
 public class BrandDTO {
 
-    private Long id;
+//    private Long id;
     private String name;
 
 
     public BrandDTO() {
     }
 
-    public BrandDTO(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+//    public BrandDTO(Long id, String name) {
+//        this.id = id;
+//        this.name = name;
+//    }
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getName() {
         return name;
@@ -32,12 +32,17 @@ public class BrandDTO {
     }
 
 
-    @Override
-    public String toString() {
-        return "BrandDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+//    @Override
+//    public String toString() {
+//        return "BrandDTO{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                '}';
+//    }
+
+    public BrandDTO(String name) {
+        this.name = name;
     }
+
 
 }

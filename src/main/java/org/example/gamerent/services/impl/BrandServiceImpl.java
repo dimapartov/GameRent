@@ -40,7 +40,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandDTO> getAllBrandsForOfferCreation() {
+    public List<BrandDTO> getAllBrands() {
         return brandRepository.findAll()
                 .stream()
                 .map(brand -> modelMapper.map(brand, BrandDTO.class))

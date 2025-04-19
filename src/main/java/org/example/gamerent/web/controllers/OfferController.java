@@ -3,7 +3,7 @@ package org.example.gamerent.web.controllers;
 
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
-import org.example.gamerent.services.dto.OfferFilterDTO;
+import org.example.gamerent.services.dto.OfferFiltersDTO;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class OfferController {
 
     @GetMapping("/create")
     public String getOfferCreationPage(Model model) {
-        model.addAttribute("allBrands", brandService.getAllBrandsForOfferCreation());
+        model.addAttribute("allBrands", brandService.getAllBrands());
         return "offer-creation-page";
     }
 
@@ -43,26 +43,26 @@ public class OfferController {
     @PostMapping("/create")
     public String createOffer(OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
-        return "redirect:/offer/universal";
+        return "redirect:/offer/all";
     }
 
+//    @GetMapping("/all")
+//    public String getAllOffersPage(Model model) {
+//        model.addAttribute("allOffers", offerService.getAllOffersDemoViewModels());
+//        return "offer-all-page";
+//    }
+
+
+    @ModelAttribute("filters")
+    public OfferFiltersDTO initOfferFilters() {
+        return new OfferFiltersDTO();
+    }
     @GetMapping("/all")
-    public String getAllOffersPage(Model model) {
-        model.addAttribute("allOffers", offerService.getAllOffersDemoViewModels());
-        return "offer-all-page";
-    }
-
-
-    @ModelAttribute("filter")
-    public OfferFilterDTO initOfferFilterDTO() {
-        return new OfferFilterDTO();
-    }
-    @GetMapping("/universal")
-    public String getOffersUniversal(@ModelAttribute("filter") OfferFilterDTO filter, Model model) {
-        List<OfferDemoViewModel> offers = offerService.getOffersFiltered(filter.getPriceFrom(), filter.getPriceTo(), filter.getBrand(), filter.getMyOffers());
-        model.addAttribute("offers", offers);
-        model.addAttribute("allBrands", brandService.getAllBrandsForOfferCreation());
-        return "offer-universal-page";
+    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, Model model) {
+        List<OfferDemoViewModel> allOffersFiltered = offerService.getAllOffersFiltered(filters.getPriceFrom(), filters.getPriceTo(), filters.getBrand(), filters.getMyOffers());
+        model.addAttribute("allOffersFiltered", allOffersFiltered);
+        model.addAttribute("allBrands", brandService.getAllBrands());
+        return "offer-all-filtered-page";
     }
 
 }

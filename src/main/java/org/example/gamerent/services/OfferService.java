@@ -12,9 +12,9 @@ public interface OfferService {
 
     OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
 
-    List<OfferDemoViewModel> getAllOffersDemoViewModels();
+//    List<OfferDemoViewModel> getAllOffersDemoViewModels();
 
     // Новый метод для универсальной фильтрации офферов
-    List<OfferDemoViewModel> getOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers);
+    List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers);
 
 }

@@ -81,21 +81,21 @@ public class OfferServiceImpl implements OfferService {
         return modelMapper.map(offer, OfferCreationInputModel.class);
     }
 
-    @Override
-    public List<OfferDemoViewModel> getAllOffersDemoViewModels() {
-        return offerRepository.findAll()
-                .stream()
-                .map(offer -> {
-                    OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-                    offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-                    return offerDemoViewModel;
-                })
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<OfferDemoViewModel> getAllOffersDemoViewModels() {
+//        return offerRepository.findAll()
+//                .stream()
+//                .map(offer -> {
+//                    OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+//                    offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+//                    return offerDemoViewModel;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
 
     @Override
-    public List<OfferDemoViewModel> getOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
+    public List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
         // Получаем все офферы
         List<Offer> offers = offerRepository.findAll();
         Stream<Offer> stream = offers.stream();

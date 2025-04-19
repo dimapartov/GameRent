@@ -1,10 +1,9 @@
 package org.example.gamerent.services.dto;
 
-
 import java.math.BigDecimal;
 
 
-public class OfferFilterDTO {
+public class OfferFiltersDTO {
 
     private BigDecimal priceFrom;
     private BigDecimal priceTo;
@@ -12,10 +11,10 @@ public class OfferFilterDTO {
     private Boolean myOffers;
 
 
-    public OfferFilterDTO() {
+    public OfferFiltersDTO() {
     }
 
-    public OfferFilterDTO(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
+    public OfferFiltersDTO(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers) {
         this.priceFrom = priceFrom;
         this.priceTo = priceTo;
         this.brand = brand;
