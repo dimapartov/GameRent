@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Объявления</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <div th:each="brand : ${allBrands}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
+            <img th:src="@{'/images/' + ${brand.photo}}" alt="Brand Image" style="max-width: 100%; height: auto;">
+            <h3 th:text="${brand.name}">Brand Name</h3>
+            <p>
+
+                <strong>Описание:</strong> <span th:text="${brand.description}">Description</span><br/>
+
+            </p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

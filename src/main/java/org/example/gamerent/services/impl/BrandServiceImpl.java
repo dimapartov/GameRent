@@ -5,6 +5,7 @@ import org.example.gamerent.repos.BrandRepository;
 import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.dto.BrandDTO;
+import org.example.gamerent.web.viewmodels.BrandViewModel;
 import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,14 @@ public class BrandServiceImpl implements BrandService {
         return brandRepository.findAll()
                 .stream()
                 .map(brand -> modelMapper.map(brand, BrandDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BrandViewModel> getAllBrandsForPage() {
+        return brandRepository.findAll()
+                .stream()
+                .map(brand -> modelMapper.map(brand, BrandViewModel.class))
                 .collect(Collectors.toList());
     }
 

@@ -72,7 +72,7 @@ public class DataInit implements CommandLineRunner {
             BrandCreationInputModel brandCreationInputModel = new BrandCreationInputModel();
             brandCreationInputModel.setName(faker.company().name());
             brandCreationInputModel.setDescription(faker.lorem().sentence());
-            brandCreationInputModel.setPhoto(faker.internet().image());
+            brandCreationInputModel.setPhoto("brand_logo.png");
             brandService.createBrand(brandCreationInputModel);
         }
     }
