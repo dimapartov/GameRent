@@ -28,7 +28,7 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public String getLoginPage() {
-        return "login-page";
+        return "user-login-page";
     }
 
 
@@ -44,7 +44,7 @@ public class AuthenticationController {
         if (!model.containsAttribute("newUser")) {
             model.addAttribute("newUser", new RegistrationInputModel());
         }
-        return "registration-page";
+        return "user-registration-page";
     }
 
     @PostMapping("/register")

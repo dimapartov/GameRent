@@ -5,7 +5,6 @@
 <title>Объявления</title>
 </head>
 <body>
-<!-- Встраиваем навбар -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main>
     <h2>Объявления</h2>
@@ -25,7 +24,6 @@
             </select>
         </div>
         <div>
-            <!-- Вместо th:field для чекбокса используем обычный input с th:checked -->
             <label>
                 <input type="checkbox" name="myOffers" value="true"
                        th:checked="${filters.myOffers != null and filters.myOffers}"/> Мои объявления
@@ -39,7 +37,6 @@
         </div>
     </form>
 
-
     <!-- Вывод списка офферов в виде сетки -->
     <div style="display: flex; flex-wrap: wrap; gap: 20px;">
         <div th:each="o : ${allOffersFiltered}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
@@ -51,7 +48,6 @@
                 <strong>Описание:</strong> <span th:text="${o.description}">Description</span><br/>
                 <strong>Владелец:</strong> <span th:text="${o.owner}">Owner</span>
             </p>
-            <!--            <a th:href="@{'/allOffersFiltered/details/' + ${o.id}}">Детали</a>-->
         </div>
     </div>
 </main>

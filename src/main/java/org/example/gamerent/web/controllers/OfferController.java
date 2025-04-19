@@ -41,15 +41,12 @@ public class OfferController {
         return new OfferCreationInputModel();
     }
     @PostMapping("/create")
-    public String createOffer(OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
+    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
         return "redirect:/offer/all";
     }
 
-    @ModelAttribute("filters")
-    public OfferFiltersDTO initOfferFilters() {
-        return new OfferFiltersDTO();
-    }
+
     @GetMapping("/all")
     public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, Model model) {
         List<OfferDemoViewModel> allOffersFiltered = offerService.getAllOffersFiltered(filters.getPriceFrom(), filters.getPriceTo(), filters.getBrand(), filters.getMyOffers());
