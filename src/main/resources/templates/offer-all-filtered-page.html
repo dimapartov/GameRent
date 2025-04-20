@@ -10,6 +10,7 @@
 <main>
     <h2>Объявления</h2>
     <form th:action="@{/offer/all}" method="get" th:object="${filters}" style="margin-bottom:20px;">
+        <input type="hidden" name="page" th:value="${offersPage.number}"/>
         <div>
             <label>Цена от:</label>
             <input type="number" step="0.01" th:field="*{priceFrom}"/>
@@ -27,9 +28,10 @@
         </div>
         <div>
             <label>
-                <input type="checkbox" name="myOffers" value="true"
-                       th:checked="${filters.myOffers}"/> Мои объявления
+                <input type="checkbox" name="myOffers" value="true" th:checked="${filters.myOffers}"/>
+                Мои объявления
             </label>
+
         </div>
         <div style="margin-top:10px;">
             <button type="submit">Применить фильтры</button>
@@ -41,7 +43,7 @@
     </form>
 
     <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-        <div th:each="o : ${allOffersFiltered}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
+        <div th:each="o : ${offersPage.content}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
             <img th:src="@{'/images/' + ${o.photo}}" alt="Offer Image" style="max-width: 100%; height: auto;">
             <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
             <p>
@@ -55,6 +57,34 @@
             </p>
         </div>
     </div>
+
+    <div style="margin-top:20px;">
+        <ul style="list-style: none; display: flex; gap: 10px;">
+            <li th:if="${offersPage.hasPrevious()}">
+                <a th:href="@{/offer/all(page=${offersPage.number - 1},
+                                         priceFrom=${filters.priceFrom},
+                                         priceTo=${filters.priceTo},
+                                         brand=${filters.brand},
+                                         myOffers=${filters.myOffers})}">
+                    &#8592; Назад
+                </a>
+            </li>
+            <li>
+                Страница <span th:text="${offersPage.number + 1}">1</span> из <span
+                    th:text="${offersPage.totalPages}">1</span>
+            </li>
+            <li th:if="${offersPage.hasNext()}">
+                <a th:href="@{/offer/all(page=${offersPage.number + 1},
+                                         priceFrom=${filters.priceFrom},
+                                         priceTo=${filters.priceTo},
+                                         brand=${filters.brand},
+                                         myOffers=${filters.myOffers})}">
+                    Вперед &#8594;
+                </a>
+            </li>
+        </ul>
+    </div>
+
 </main>
 </body>
 </html>

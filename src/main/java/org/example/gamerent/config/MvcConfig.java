@@ -10,7 +10,7 @@ import java.io.File;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-    @Value("${upload.path}")
+    @Value("${offer.image.path}")
     private String uploadPath;
 
 

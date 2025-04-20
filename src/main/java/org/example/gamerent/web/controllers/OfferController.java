@@ -1,23 +1,25 @@
 package org.example.gamerent.web.controllers;
 
-
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.dto.OfferFiltersDTO;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 
 @Controller
 @RequestMapping("/offer")
 public class OfferController {
+
+    @Value("${offer.page.size}")
+    private int pageSize;
 
     private final OfferService offerService;
     private final BrandService brandService;
@@ -48,10 +50,17 @@ public class OfferController {
     }
 
     @GetMapping("/all")
-    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, Model model) {
-        List<OfferDemoViewModel> allOffersFiltered = offerService
-                .getAllOffersFiltered(filters.getPriceFrom(), filters.getPriceTo(), filters.getBrand(), filters.getMyOffers());
-        model.addAttribute("allOffersFiltered", allOffersFiltered);
+    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, @RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+        Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
+                filters.getPriceFrom(),
+                filters.getPriceTo(),
+                filters.getBrand(),
+                filters.getMyOffers(),
+                page,
+                pageSize
+        );
+
+        model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrands());
         return "offer-all-filtered-page";
     }

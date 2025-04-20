@@ -14,6 +14,9 @@ import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -39,7 +39,7 @@ public class OfferServiceImpl implements OfferService {
     private final BrandRepository brandRepository;
 
 
-    @Value("${upload.path}")
+    @Value("${offer.image.path}")
     private String uploadPath;
 
 
@@ -54,6 +54,21 @@ public class OfferServiceImpl implements OfferService {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.brandRepository = brandRepository;
+    }
+
+//    Для инициализации данных
+    @Override
+    public void seedOffer(OfferCreationInputModel newOffer, String username) {
+        Offer offer = modelMapper.map(newOffer, Offer.class);
+        offer.setId(null);
+        offer.setBrand(brandRepository.findByName(newOffer.getBrand()));
+        offer.setPhoto(newOffer.getPhoto());
+        offer.setMinRentalDays(newOffer.getMinRentalDays());
+        offer.setMaxRentalDays(newOffer.getMaxRentalDays());
+        offer.setStatus(OfferStatus.AVAILABLE);
+        User owner = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Пользователь не найден: " + username));
+        offer.setOwner(owner);
+        offerRepository.save(offer);
     }
 
 
@@ -77,39 +92,37 @@ public class OfferServiceImpl implements OfferService {
             }
         }
         offer.setStatus(OfferStatus.AVAILABLE);
-        String currentPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
-        User owner = userRepository.findUserByUsername(currentPrincipalName)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        User owner = userRepository.findUserByUsername(currentUser).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
         return modelMapper.map(offer, OfferCreationInputModel.class);
     }
 
     @Override
-    public List<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom,
-                                                         BigDecimal priceTo,
-                                                         String brand,
-                                                         Boolean myOffers) {
-        List<Offer> offers = offerRepository.findAll();
-        Stream<Offer> stream = offers.stream();
-        if (priceFrom != null) {
-            stream = stream.filter(o -> o.getPrice().compareTo(priceFrom) >= 0);
-        }
-        if (priceTo != null) {
-            stream = stream.filter(o -> o.getPrice().compareTo(priceTo) <= 0);
-        }
-        if (brand != null && !brand.trim().isEmpty()) {
-            stream = stream.filter(o -> o.getBrand().getName().equalsIgnoreCase(brand.trim()));
-        }
-        if (Boolean.TRUE.equals(myOffers)) {
-            String currentPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
-            stream = stream.filter(o -> o.getOwner().getUsername().equals(currentPrincipalName));
-        }
-        return stream.map(o -> {
-            OfferDemoViewModel vm = modelMapper.map(o, OfferDemoViewModel.class);
-            vm.setOwner(o.getOwner().getUsername());
-            return vm;
-        }).collect(Collectors.toList());
+    public Page<OfferDemoViewModel> getAllOffersFiltered(
+            BigDecimal priceFrom,
+            BigDecimal priceTo,
+            String brand,
+            Boolean myOffers,
+            int page,
+            int size
+    ) {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Offer> pageOfOffers = offerRepository.findFilteredOffers(
+                priceFrom,
+                priceTo,
+                brand,
+                Boolean.TRUE.equals(myOffers),
+                currentUsername,
+                pageable
+        );
+        return pageOfOffers.map(offer -> {
+            OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+            offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+            return offerDemoViewModel;
+        });
     }
 
 }
