@@ -12,7 +12,6 @@ import java.util.Set;
 @Table(name = "offers")
 public class Offer extends IdCreatedModified {
 
-    // Поля
     private User owner;
     private Brand brand;
     private String gameName;
@@ -24,11 +23,9 @@ public class Offer extends IdCreatedModified {
     private String photo;
     private Set<Rental> rentals;
 
-    // Конструкторы
     protected Offer() {
     }
 
-    // Геттеры с аннотациями
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     public User getOwner() {
@@ -82,7 +79,6 @@ public class Offer extends IdCreatedModified {
         return rentals;
     }
 
-    // Сеттеры
     public void setOwner(User owner) {
         this.owner = owner;
     }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${offer.brandName + ' ' + offer.gameName}">Детали оффера</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+    <h1 th:text="${offer.brandName + ' ' + offer.gameName}">Название игры</h1>
+
+    <img th:src="@{'/images/' + ${offer.photo}}"
+         alt="Фото оффера"
+         style="max-width:200px; display:block; margin-bottom:20px;"/>
+
+    <p><strong>Описание:</strong> <span th:text="${offer.description}"></span></p>
+    <p><strong>Цена в день:</strong> <span th:text="${offer.price}"></span></p>
+    <p>
+        <strong>Срок аренды:</strong>
+        от <span th:text="${offer.minRentalDays}"></span>
+        до <span th:text="${offer.maxRentalDays}"></span> дней
+    </p>
+    <p><strong>Статус:</strong> <span th:text="${offer.status}"></span></p>
+
+    <div th:if="${offer.status == 'Доступно'}">
+        <form th:action="@{/rentals}"
+              th:object="${rentalInput}"
+              method="post">
+
+            <input type="hidden" th:field="*{offerId}"/>
+
+            <div>
+                <label>Дней аренды:</label>
+                <input type="number"
+                       th:field="*{days}"
+                       min="${offer.minRentalDays}"
+                       max="${offer.maxRentalDays}"/>
+            </div>
+
+            <div th:errors="*{days}" style="color:red;"></div>
+
+            <button type="submit">Арендовать</button>
+        </form>
+    </div>
+
+    <p>
+        <strong>Владелец:</strong>
+        <span th:text="${offer.ownerFirstName + ' ' + offer.ownerLastName}">Имя Фамилия</span>
+        —
+        <a th:href="'mailto:' + ${offer.ownerEmail}"
+           th:text="${offer.ownerEmail}">email</a>
+    </p>
+
+    <div th:if="${success}" style="color:green;" th:text="${success}"></div>
+    <div th:if="${error}" style="color:red;" th:text="${error}"></div>
+</main>
+</body>
+</html>

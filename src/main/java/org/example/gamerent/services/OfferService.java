@@ -1,17 +1,17 @@
 package org.example.gamerent.services;
 
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
+import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 
 public interface OfferService {
 
-//    Для инициализации данных
+    //    Для инициализации данных
     void seedOffer(OfferCreationInputModel newOffer, String username);
 
 
@@ -25,5 +25,7 @@ public interface OfferService {
             int page,
             int size
     );
+
+    OfferViewModel getById(Long id);
 
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Запросы на аренду моих офферов</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+    <h1>Запросы на аренду моих офферов</h1>
+
+    <div th:if="${requests.empty}">
+        <p>Нет новых запросов.</p>
+    </div>
+
+    <table th:if="${!requests.empty}" border="1" cellpadding="5">
+        <tr>
+            <th>Игра</th>
+            <th>Арендатор</th>
+            <th>Дней</th>
+            <th>Контакты</th>
+            <th>Действия</th>
+        </tr>
+        <tr th:each="r : ${requests}">
+            <td th:text="${r.offerName}"></td>
+            <td th:text="${r.renterUsername}"></td>
+            <td th:text="${r.days}"></td>
+            <td>
+                <a th:href="'mailto:' + ${r.ownerContact}"
+                   th:text="${r.ownerContact}"></a>
+            </td>
+            <td>
+                <form th:action="@{/owner/rentals/{id}/confirm(id=${r.rentalId})}"
+                      method="post">
+                    <button>Подтвердить</button>
+                </form>
+                <form th:action="@{/owner/rentals/{id}/reject(id=${r.rentalId})}"
+                      method="post">
+                    <button>Отклонить</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div th:if="${success}" style="color:green;" th:text="${success}"></div>
+</main>
+</body>
+</html>

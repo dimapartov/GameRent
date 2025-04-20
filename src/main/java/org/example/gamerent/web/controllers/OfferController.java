@@ -4,7 +4,9 @@ import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.dto.OfferFiltersDTO;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
+import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
+import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,7 @@ public class OfferController {
     public OfferCreationInputModel initOffer() {
         return new OfferCreationInputModel();
     }
+
     @PostMapping("/create")
     public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
                               @RequestParam("file") MultipartFile file) {
@@ -63,6 +66,20 @@ public class OfferController {
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrands());
         return "offer-all-filtered-page";
+    }
+
+    @GetMapping("/{id}")
+    public String details(@PathVariable Long id,
+                          Model model) {
+        OfferViewModel offer = offerService.getById(id);
+        model.addAttribute("offer", offer);
+        if (!model.containsAttribute("rentalInput")) {
+            RentalRequestInputModel input = new RentalRequestInputModel();
+            input.setOfferId(id);
+            model.addAttribute("rentalInput", input);
+        }
+
+        return "offer-details-page";
     }
 
 }

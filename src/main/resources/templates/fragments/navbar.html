@@ -19,6 +19,9 @@
         <li><a href="/offer/all">Все объявления</a></li>
         <li><a href="/offer/create">Создать объявление</a></li>
         <li><a href="/brand/all">Бренды</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/rentals/my}">Мои аренды</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/owner/rentals}">Запросы</a></li>
+
     </ul>
 </nav>
 </body>

@@ -34,7 +34,7 @@ public class Rental extends IdCreatedModified {
         return renter;
     }
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = true)
     public LocalDateTime getStartDate() {
         return startDate;
     }

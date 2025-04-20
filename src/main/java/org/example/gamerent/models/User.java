@@ -17,7 +17,7 @@ public class User extends IdCreatedModified {
     private String lastName;
     private boolean isActive;
     private Set<Offer> offers;
-    private Set<Rental> rentals;           // Арендованные офферы
+    private Set<Rental> rentals;
     private Set<Review> reviewsGiven;      // Отзывы, оставленные пользователем
     private Set<Review> reviewsReceived;   // Отзывы, полученные пользователем
 

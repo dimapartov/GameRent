@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 public class OfferDemoViewModel {
 
+    private Long id;
     private String photo;
     private String gameName;
     private Brand brand;
@@ -18,12 +19,11 @@ public class OfferDemoViewModel {
     private Integer maxRentalDays;
     private OfferStatus status;
 
-
     public OfferDemoViewModel() {
     }
 
-    public OfferDemoViewModel(String photo, String gameName, Brand brand, String description, String owner,
-                              BigDecimal price, Integer minRentalDays, Integer maxRentalDays, OfferStatus status) {
+    public OfferDemoViewModel(Long id, String photo, String gameName, Brand brand, String description, String owner, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, OfferStatus status) {
+        this.id = id;
         this.photo = photo;
         this.gameName = gameName;
         this.brand = brand;
@@ -35,6 +35,13 @@ public class OfferDemoViewModel {
         this.status = status;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getPhoto() {
         return photo;
@@ -111,7 +118,8 @@ public class OfferDemoViewModel {
     @Override
     public String toString() {
         return "OfferDemoViewModel{" +
-                "photo='" + photo + '\'' +
+                "id=" + id +
+                ", photo='" + photo + '\'' +
                 ", gameName='" + gameName + '\'' +
                 ", brand=" + brand +
                 ", description='" + description + '\'' +

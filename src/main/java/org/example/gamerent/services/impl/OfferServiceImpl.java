@@ -10,6 +10,7 @@ import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
+import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,4 +126,12 @@ public class OfferServiceImpl implements OfferService {
         });
     }
 
+
+
+    @Override
+    public OfferViewModel getById(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offer not found"));
+        return modelMapper.map(offer, OfferViewModel.class);
+    }
 }

@@ -31,7 +31,6 @@
                 <input type="checkbox" name="myOffers" value="true" th:checked="${filters.myOffers}"/>
                 Мои объявления
             </label>
-
         </div>
         <div style="margin-top:10px;">
             <button type="submit">Применить фильтры</button>
@@ -41,10 +40,13 @@
             </a>
         </div>
     </form>
-
     <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-        <div th:each="o : ${offersPage.content}" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
-            <img th:src="@{'/images/' + ${o.photo}}" alt="Offer Image" style="max-width: 100%; height: auto;">
+        <div th:each="o : ${offersPage.content}"
+             style="border: 1px solid #ccc; padding: 10px; width: 250px;">
+            <img th:src="@{'/images/' + ${o.photo}}"
+                 alt="Offer Image"
+                 style="max-width: 100%; height: auto;"/>
+            <!-- Вместо o.brandName: -->
             <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
             <p>
                 <strong>Цена:</strong> <span th:text="${o.price}">Price</span><br/>
@@ -55,9 +57,23 @@
                 <strong>Описание:</strong> <span th:text="${o.description}">Description</span><br/>
                 <strong>Владелец:</strong> <span th:text="${o.owner}">Owner</span>
             </p>
+            <div style="margin-top:10px; display:flex; gap:5px;">
+                <a th:href="@{/offer/{id}(id=${o.id})}">
+                    <button type="button">Подробнее</button>
+                </a>
+                <form th:if="${o.status} == 'AVAILABLE'"
+                      th:action="@{/rentals}"
+                      th:object="${rentalInput}"
+                      method="post" style="display:inline;">
+                    <input type="hidden" th:field="*{offerId}" th:value="${o.id}"/>
+                    <input type="hidden" th:field="*{days}" th:value="${o.minRentalDays}"/>
+                    <button type="submit">Арендовать</button>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Пагинация -->
     <div style="margin-top:20px;">
         <ul style="list-style: none; display: flex; gap: 10px;">
             <li th:if="${offersPage.hasPrevious()}">
@@ -84,7 +100,6 @@
             </li>
         </ul>
     </div>
-
 </main>
 </body>
 </html>
