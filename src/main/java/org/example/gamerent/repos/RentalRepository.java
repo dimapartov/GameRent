@@ -16,6 +16,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     List<Rental> findByRenterUsername(String renterUsername);
 
-    List<Rental> findAllByStatusAndCreatedBefore(RentalStatus status, LocalDateTime dateTime);
+    List<Rental> findAllByStatusAndCreatedBefore(RentalStatus status, LocalDateTime cutoff);
 
 }

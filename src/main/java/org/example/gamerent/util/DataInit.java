@@ -80,7 +80,7 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedOffers() {
-        List<String> brandNames = brandService.getAllBrands().stream()
+        List<String> brandNames = brandService.getAllBrandsDTOs().stream()
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 

@@ -41,7 +41,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandDTO> getAllBrands() {
+    public List<BrandDTO> getAllBrandsDTOs() {
         return brandRepository.findAll()
                 .stream()
                 .map(brand -> modelMapper.map(brand, BrandDTO.class))
@@ -49,7 +49,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandViewModel> getAllBrandsForPage() {
+    public List<BrandViewModel> getAllBrandsForView() {
         return brandRepository.findAll()
                 .stream()
                 .map(brand -> modelMapper.map(brand, BrandViewModel.class))

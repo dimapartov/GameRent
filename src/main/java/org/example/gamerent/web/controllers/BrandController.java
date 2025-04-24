@@ -1,7 +1,6 @@
 package org.example.gamerent.web.controllers;
 
 import org.example.gamerent.services.BrandService;
-import org.example.gamerent.services.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +23,7 @@ public class BrandController {
 
     @GetMapping("/all")
     public String getBrandsPage(Model model) {
-        model.addAttribute("allBrands", brandService.getAllBrandsForPage());
+        model.addAttribute("allBrands", brandService.getAllBrandsForView());
         return "brand-all-page";
     }
 

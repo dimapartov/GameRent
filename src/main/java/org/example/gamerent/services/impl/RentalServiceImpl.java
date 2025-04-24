@@ -45,7 +45,7 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public RentalViewModel createRequest(RentalRequestInputModel input) {
+    public void createRentalRequest(RentalRequestInputModel input) {
         Offer offer = offerRepo.findById(input.getOfferId())
                 .orElseThrow(() -> new RuntimeException("Offer not found"));
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
@@ -71,12 +71,12 @@ public class RentalServiceImpl implements RentalService {
         offer.setStatus(OfferStatus.BOOKED);
         offerRepo.save(offer);
 
-        return modelMapper.map(rental, RentalViewModel.class);
+        modelMapper.map(rental, RentalViewModel.class);
     }
 
     @Override
     @Transactional
-    public void cancelRequest(Long rentalId) {
+    public void cancelRentalRequest(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
@@ -92,7 +92,7 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public RentalViewModel confirmRental(Long rentalId) {
+    public void confirmRentalRequest(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
@@ -106,7 +106,7 @@ public class RentalServiceImpl implements RentalService {
         offer.setStatus(OfferStatus.RENTED);
         offerRepo.save(offer);
 
-        return modelMapper.map(rental, RentalViewModel.class);
+        modelMapper.map(rental, RentalViewModel.class);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public List<RentalViewModel> getOwnerRequests() {
+    public List<RentalViewModel> getOwnerPendingRequests() {
         String owner = SecurityContextHolder.getContext().getAuthentication().getName();
         return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM)
                 .stream()
@@ -162,18 +162,49 @@ public class RentalServiceImpl implements RentalService {
                 .collect(Collectors.toList());
     }
 
-/*    @Override
+    @Override
     @Transactional
-    public void autoDeclinePending() {
+    public List<RentalViewModel> getOwnerActiveRentals() {
+        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.ACTIVE)
+                .stream()
+                .map(rental -> {
+                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
+                    viewModel.setRenterUsername(rental.getRenter().getUsername());
+                    viewModel.setOwnerContact(rental.getRenter().getEmail());
+                    return viewModel;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<RentalViewModel> getOwnerPendingReturns() {
+        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_RETURN)
+                .stream()
+                .map(rental -> {
+                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
+                    viewModel.setRenterUsername(rental.getRenter().getUsername());
+                    viewModel.setOwnerContact(rental.getRenter().getEmail());
+                    return viewModel;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional
+    public void autoDecline() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
         rentalRepo.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
                 .forEach(rental -> {
-                    rental.setStatus(RentalStatus.RETURNED);
+                    rental.setStatus(RentalStatus.CANCELED_BY_SCHEDULER);
                     rentalRepo.save(rental);
                     Offer offer = rental.getOffer();
                     offer.setStatus(OfferStatus.AVAILABLE);
                     offerRepo.save(offer);
                 });
-    }*/
+    }
 
 }

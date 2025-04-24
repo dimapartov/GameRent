@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление моими офферами</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h1>Кабинет владельца</h1>
+
+    <!-- 1. Новые запросы -->
+    <section>
+        <h2>Ожидают подтверждения</h2>
+        <div th:if="${pendingRequests.empty}"><p>Нет новых заявок.</p></div>
+        <table th:if="${!pendingRequests.empty}" border="1" cellpadding="5">
+            <tr>
+                <th>Игра</th>
+                <th>Арендатор</th>
+                <th>Дней</th>
+                <th>Контакт</th>
+                <th>Действия</th>
+            </tr>
+            <tr th:each="r : ${pendingRequests}">
+                <td th:text="${r.offerName}"></td>
+                <td th:text="${r.renterUsername}"></td>
+                <td th:text="${r.days}"></td>
+                <td><a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a></td>
+                <td>
+                    <form th:action="@{/owner/rentals/{id}/confirm(id=${r.rentalId})}" method="post">
+                        <button>Подтвердить</button>
+                    </form>
+                    <form th:action="@{/owner/rentals/{id}/reject(id=${r.rentalId})}" method="post">
+                        <button>Отклонить</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- 2. Активные аренды -->
+    <section>
+        <h2>Активные</h2>
+        <div th:if="${activeRentals.empty}"><p>Нет активных аренд.</p></div>
+        <table th:if="${!activeRentals.empty}" border="1" cellpadding="5">
+            <tr>
+                <th>Игра</th>
+                <th>Арендатор</th>
+                <th>Период</th>
+                <th>Контакт</th>
+            </tr>
+            <tr th:each="r : ${activeRentals}">
+                <td th:text="${r.offerName}"></td>
+                <td th:text="${r.renterUsername}"></td>
+                <td th:text="|${#temporals.format(r.startDate,'dd-MM-yyyy')} — ${#temporals.format(r.endDate,'dd-MM-yyyy')}|"></td>
+                <td><a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- 3. Запросы на возврат -->
+    <section>
+        <h2>Запросы на возврат</h2>
+        <div th:if="${pendingReturns.empty}"><p>Нет запросов на возврат.</p></div>
+        <table th:if="${!pendingReturns.empty}" border="1" cellpadding="5">
+            <tr>
+                <th>Игра</th>
+                <th>Арендатор</th>
+                <th>Период</th>
+                <th>Контакт</th>
+                <th>Действие</th>
+            </tr>
+            <tr th:each="r : ${pendingReturns}">
+                <td th:text="${r.offerName}"></td>
+                <td th:text="${r.renterUsername}"></td>
+                <td th:text="|${#temporals.format(r.startDate,'dd-MM-yyyy')} — ${#temporals.format(r.endDate,'dd-MM-yyyy')}|"></td>
+                <td><a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a></td>
+                <td>
+                    <form th:action="@{/owner/rentals/{id}/confirm-return(id=${r.rentalId})}"
+                          method="post">
+                        <button>Подтвердить возврат</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <div th:if="${success}" style="color:green;" th:text="${success}"></div>
+</main>
+</body>
+</html>

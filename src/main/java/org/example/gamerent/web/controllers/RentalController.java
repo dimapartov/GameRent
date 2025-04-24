@@ -31,7 +31,7 @@ public class RentalController {
             return "redirect:/offer/" + input.getOfferId();
         }
         try {
-            rentalService.createRequest(input);
+            rentalService.createRentalRequest(input);
             ra.addFlashAttribute("success", "Заявка отправлена");
         } catch (RuntimeException ex) {
             ra.addFlashAttribute("error", ex.getMessage());
@@ -41,7 +41,7 @@ public class RentalController {
 
     @PostMapping("/{id}/cancel")
     public String cancel(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.cancelRequest(id);
+        rentalService.cancelRentalRequest(id);
         ra.addFlashAttribute("success", "Заявка отменена");
         return "redirect:/rentals/my";
     }

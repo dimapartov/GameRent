@@ -36,7 +36,7 @@ public class OfferController {
 
     @GetMapping("/create")
     public String getOfferCreationPage(Model model) {
-        model.addAttribute("allBrands", brandService.getAllBrands());
+        model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
         return "offer-creation-page";
     }
 
@@ -62,7 +62,7 @@ public class OfferController {
                 pageSize
         );
         model.addAttribute("offersPage", offersPage);
-        model.addAttribute("allBrands", brandService.getAllBrands());
+        model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
         return "offer-all-filtered-page";
     }
 

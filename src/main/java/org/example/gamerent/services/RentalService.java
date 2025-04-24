@@ -8,20 +8,24 @@ import java.util.List;
 
 public interface RentalService {
 
-    RentalViewModel createRequest(RentalRequestInputModel input);
+    void createRentalRequest(RentalRequestInputModel input);
 
-    void cancelRequest(Long rentalId);
+    void cancelRentalRequest(Long rentalId);
 
-    RentalViewModel confirmRental(Long rentalId);
+    void confirmRentalRequest(Long rentalId);
 
     void initiateReturn(Long rentalId);
 
     void confirmReturn(Long rentalId);
 
-    List<RentalViewModel> getOwnerRequests();
+    void autoDecline();
+
+    List<RentalViewModel> getOwnerPendingRequests();
 
     List<RentalViewModel> getMyRentals();
 
-//    void autoDeclinePending();
+    List<RentalViewModel> getOwnerActiveRentals();
+
+    List<RentalViewModel> getOwnerPendingReturns();
 
 }

@@ -1,4 +1,3 @@
-/*
 package org.example.gamerent.config;
 
 import org.example.gamerent.services.RentalService;
@@ -12,11 +11,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class SchedulerConfig {
 
-    @Autowired
     private RentalService rentalService;
 
-    @Scheduled(fixedDelay = 3600000)
-    public void declineOld() {
-        rentalService.autoDeclinePending();
+    @Autowired
+    public SchedulerConfig(RentalService rentalService) {
+        this.rentalService = rentalService;
     }
-}*/
+
+    @Scheduled(fixedDelay = 3600000) // Каждый час
+    public void declineOld() {
+        rentalService.autoDecline();
+
+    }
+
+}

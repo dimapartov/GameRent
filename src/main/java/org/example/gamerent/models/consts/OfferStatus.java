@@ -6,6 +6,7 @@ public enum OfferStatus {
     UNAVAILABLE("Недоступно"),
     BOOKED("Забронировано");
 
+
     private final String displayName;
 
 

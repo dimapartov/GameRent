@@ -23,22 +23,31 @@ public class OwnerRentalController {
     }
 
     @GetMapping
-    public String requests(Model model) {
-        model.addAttribute("requests", rentalService.getOwnerRequests());
-        return "rental-owner-requests-page";
+    public String dashboard(Model model) {
+        model.addAttribute("pendingRequests", rentalService.getOwnerPendingRequests());
+        model.addAttribute("activeRentals", rentalService.getOwnerActiveRentals());
+        model.addAttribute("pendingReturns", rentalService.getOwnerPendingReturns());
+        return "rental-owner-portal";
     }
 
     @PostMapping("/{id}/confirm")
     public String confirm(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.confirmRental(id);
+        rentalService.confirmRentalRequest(id);
         ra.addFlashAttribute("success", "Аренда подтверждена");
         return "redirect:/owner/rentals";
     }
 
     @PostMapping("/{id}/reject")
     public String reject(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.cancelRequest(id);
+        rentalService.cancelRentalRequest(id);
         ra.addFlashAttribute("success", "Заявка отклонена");
+        return "redirect:/owner/rentals";
+    }
+
+    @PostMapping("/{id}/confirm-return")
+    public String confirmReturn(@PathVariable Long id, RedirectAttributes ra) {
+        rentalService.confirmReturn(id);
+        ra.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/owner/rentals";
     }
 

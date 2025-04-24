@@ -11,8 +11,8 @@ public interface BrandService {
 
     BrandCreationInputModel createBrand(BrandCreationInputModel newBrand);
 
-    List<BrandDTO> getAllBrands();
+    List<BrandDTO> getAllBrandsDTOs();
 
-    List<BrandViewModel> getAllBrandsForPage();
+    List<BrandViewModel> getAllBrandsForView();
 
 }
