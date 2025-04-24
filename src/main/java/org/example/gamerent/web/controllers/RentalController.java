@@ -23,10 +23,7 @@ public class RentalController {
     }
 
     @PostMapping
-    public String requestRental(
-            @ModelAttribute("rentalInput") @Valid RentalRequestInputModel input,
-            BindingResult errors,
-            RedirectAttributes ra
+    public String requestRental(@ModelAttribute("rentalInput") @Valid RentalRequestInputModel input, BindingResult errors, RedirectAttributes ra
     ) {
         if (errors.hasErrors()) {
             ra.addFlashAttribute("org.springframework.validation.BindingResult.rentalInput", errors);

@@ -13,6 +13,14 @@ public class RentalRequestInputModel {
     @Min(1)
     private Integer days;
 
+    public RentalRequestInputModel() {
+    }
+
+    public RentalRequestInputModel(Long offerId, Integer days) {
+        this.offerId = offerId;
+        this.days = days;
+    }
+
     public Long getOfferId() {
         return offerId;
     }

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,14 +58,14 @@ public class RentalServiceImpl implements RentalService {
         User renter = userRepo.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        RentalDTO dto = new RentalDTO();
-        dto.setOffer(offer);
-        dto.setRenter(renter);
-        dto.setStatus(RentalStatus.PENDING);
-        dto.setStartDate(null);
-        dto.setEndDate(LocalDateTime.now().plusDays(input.getDays()));
+        RentalDTO rentalDTO = new RentalDTO();
+        rentalDTO.setOffer(offer);
+        rentalDTO.setRenter(renter);
+        rentalDTO.setStatus(RentalStatus.PENDING_FOR_CONFIRM);
+        rentalDTO.setStartDate(null);
+        rentalDTO.setEndDate(LocalDateTime.now().plusDays(input.getDays()));
 
-        Rental rental = modelMapper.map(dto, Rental.class);
+        Rental rental = modelMapper.map(rentalDTO, Rental.class);
         rental = rentalRepo.save(rental);
 
         offer.setStatus(OfferStatus.BOOKED);
@@ -78,10 +79,10 @@ public class RentalServiceImpl implements RentalService {
     public void cancelRequest(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING) {
+        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
             throw new RuntimeException("Cannot cancel");
         }
-        rental.setStatus(RentalStatus.RETURNED);
+        rental.setStatus(RentalStatus.CANCELED_BY_RENTER);
         rentalRepo.save(rental);
 
         Offer offer = rental.getOffer();
@@ -94,7 +95,7 @@ public class RentalServiceImpl implements RentalService {
     public RentalViewModel confirmRental(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING) {
+        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
             throw new RuntimeException("Cannot confirm");
         }
         rental.setStatus(RentalStatus.ACTIVE);
@@ -116,7 +117,7 @@ public class RentalServiceImpl implements RentalService {
         if (rental.getStatus() != RentalStatus.ACTIVE) {
             throw new RuntimeException("Cannot return");
         }
-        rental.setStatus(RentalStatus.RETURNED);
+        rental.setStatus(RentalStatus.PENDING_FOR_RETURN);
         rentalRepo.save(rental);
     }
 
@@ -125,9 +126,11 @@ public class RentalServiceImpl implements RentalService {
     public void confirmReturn(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.RETURNED) {
+        if (rental.getStatus() != RentalStatus.PENDING_FOR_RETURN) {
             throw new RuntimeException("Cannot confirm return");
         }
+        rental.setStatus(RentalStatus.RETURNED);
+        rentalRepo.save(rental);
         Offer offer = rental.getOffer();
         offer.setStatus(OfferStatus.AVAILABLE);
         offerRepo.save(offer);
@@ -137,9 +140,15 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public List<RentalViewModel> getOwnerRequests() {
         String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING)
+        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM)
                 .stream()
-                .map(rental -> modelMapper.map(rental, RentalViewModel.class))
+                .map(rental -> {
+                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
+                    viewModel.setOwnerContact(rental.getRenter().getEmail());
+                    Duration dur = Duration.between(rental.getCreated(), rental.getEndDate());
+                    viewModel.setDays((int) dur.toDays());
+                    return viewModel;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -153,11 +162,11 @@ public class RentalServiceImpl implements RentalService {
                 .collect(Collectors.toList());
     }
 
-    @Override
+/*    @Override
     @Transactional
     public void autoDeclinePending() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
-        rentalRepo.findAllByStatusAndCreatedBefore(RentalStatus.PENDING, cutoff)
+        rentalRepo.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
                 .forEach(rental -> {
                     rental.setStatus(RentalStatus.RETURNED);
                     rentalRepo.save(rental);
@@ -165,6 +174,6 @@ public class RentalServiceImpl implements RentalService {
                     offer.setStatus(OfferStatus.AVAILABLE);
                     offerRepo.save(offer);
                 });
-    }
+    }*/
 
 }

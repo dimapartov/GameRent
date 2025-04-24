@@ -84,13 +84,13 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 3; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerCreationInputModel.setPhoto("brand_logo.png");
             offerService.seedOffer(offerCreationInputModel, "dima");
         }
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 3; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             model.setPhoto("brand_logo.png");
             offerService.seedOffer(model, "dima2");

@@ -41,13 +41,12 @@ public class OfferController {
     }
 
     @ModelAttribute("newOfferInputModel")
-    public OfferCreationInputModel initOffer() {
+    public OfferCreationInputModel initOfferCreationInputModel() {
         return new OfferCreationInputModel();
     }
 
     @PostMapping("/create")
-    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
-                              @RequestParam("file") MultipartFile file) {
+    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
         return "redirect:/offer/all";
     }
@@ -62,15 +61,13 @@ public class OfferController {
                 page,
                 pageSize
         );
-
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrands());
         return "offer-all-filtered-page";
     }
 
     @GetMapping("/{id}")
-    public String details(@PathVariable Long id,
-                          Model model) {
+    public String getOfferDetailsPage(@PathVariable Long id, Model model) {
         OfferViewModel offer = offerService.getById(id);
         model.addAttribute("offer", offer);
         if (!model.containsAttribute("rentalInput")) {
@@ -78,7 +75,6 @@ public class OfferController {
             input.setOfferId(id);
             model.addAttribute("rentalInput", input);
         }
-
         return "offer-details-page";
     }
 

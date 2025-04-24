@@ -21,15 +21,15 @@
         </tr>
         <tr th:each="r : ${rentals}">
             <td th:text="${r.offerName}"></td>
-            <td th:text="${r.startDate} + 'Дата' + ${r.endDate}"></td>
+            <td th:text="|${r.startDate != null ? #temporals.format(r.startDate, 'dd-MM-yyyy') : 'С момента подтверждения'} по ${r.endDate   != null ? #temporals.format(r.endDate,   'dd-MM-yyyy') : 'не указано'}|"></td>
             <td th:text="${r.status}"></td>
             <td>
-                <form th:if="${r.status} == 'PENDING'"
+                <form th:if="${r.status} == 'Ожидает подтверждения'"
                       th:action="@{/rentals/{id}/cancel(id=${r.rentalId})}"
                       method="post">
                     <button>Отменить</button>
                 </form>
-                <form th:if="${r.status} == 'ACTIVE'"
+                <form th:if="${r.status} == 'Активна'"
                       th:action="@{/rentals/{id}/return(id=${r.rentalId})}"
                       method="post">
                     <button>Вернуть</button>

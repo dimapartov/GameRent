@@ -22,6 +22,6 @@ public interface RentalService {
 
     List<RentalViewModel> getMyRentals();
 
-    void autoDeclinePending();
+//    void autoDeclinePending();
 
 }

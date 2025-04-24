@@ -1,3 +1,4 @@
+/*
 package org.example.gamerent.config;
 
 import org.example.gamerent.services.RentalService;
@@ -18,4 +19,4 @@ public class SchedulerConfig {
     public void declineOld() {
         rentalService.autoDeclinePending();
     }
-}
+}*/
