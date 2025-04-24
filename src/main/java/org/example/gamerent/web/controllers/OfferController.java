@@ -34,16 +34,28 @@ public class OfferController {
     }
 
 
-    @GetMapping("/create")
-    public String getOfferCreationPage(Model model) {
-        model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
-        return "offer-creation-page";
+    @ModelAttribute("filters")
+    public OfferFiltersDTO initFiltersDTO() {
+        return new OfferFiltersDTO();
+    }
+
+    @ModelAttribute("rentalInput")
+    public RentalRequestInputModel initRentalRequestInputModel() {
+        return new RentalRequestInputModel();
     }
 
     @ModelAttribute("newOfferInputModel")
     public OfferCreationInputModel initOfferCreationInputModel() {
         return new OfferCreationInputModel();
     }
+
+
+    @GetMapping("/create")
+    public String getOfferCreationPage(Model model) {
+        model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
+        return "offer-creation-page";
+    }
+
     @PostMapping("/create")
     public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);
@@ -52,28 +64,27 @@ public class OfferController {
 
     @GetMapping("/all")
     public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters, @RequestParam(value = "page", defaultValue = "0") int page, Model model) {
+
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
                 filters.getPriceTo(),
                 filters.getBrand(),
                 filters.getMyOffers(),
                 page,
-                pageSize
+                pageSize,
+                filters.getSortBy()
         );
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
+
         return "offer-all-filtered-page";
     }
 
     @GetMapping("/{id}")
-    public String getOfferDetailsPage(@PathVariable Long id, Model model) {
+    public String getOfferDetailsPage(@PathVariable Long id, @ModelAttribute("rentalInput") RentalRequestInputModel input, Model model) {
         OfferViewModel offer = offerService.getById(id);
         model.addAttribute("offer", offer);
-        if (!model.containsAttribute("rentalInput")) {
-            RentalRequestInputModel input = new RentalRequestInputModel();
-            input.setOfferId(id);
-            model.addAttribute("rentalInput", input);
-        }
+        input.setOfferId(id);
         return "offer-details-page";
     }
 

@@ -208,7 +208,6 @@ public class RentalServiceImpl implements RentalService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public void autoDecline() {

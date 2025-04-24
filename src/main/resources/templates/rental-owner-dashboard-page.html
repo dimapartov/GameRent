@@ -12,8 +12,8 @@
     <!-- 1. Новые запросы -->
     <section>
         <h2>Ожидают подтверждения</h2>
-        <div th:if="${pendingRequests.empty}"><p>Нет новых заявок.</p></div>
-        <table th:if="${!pendingRequests.empty}" border="1" cellpadding="5">
+        <div th:if="${pendingRequests.isEmpty()}"><p>Нет новых заявок.</p></div>
+        <table th:if="${!pendingRequests.isEmpty()}" border="1" cellpadding="5">
             <tr>
                 <th>Игра</th>
                 <th>Арендатор</th>
@@ -41,8 +41,8 @@
     <!-- 2. Активные аренды -->
     <section>
         <h2>Активные</h2>
-        <div th:if="${activeRentals.empty}"><p>Нет активных аренд.</p></div>
-        <table th:if="${!activeRentals.empty}" border="1" cellpadding="5">
+        <div th:if="${activeRentals.isEmpty()}"><p>Нет активных аренд.</p></div>
+        <table th:if="${!activeRentals.isEmpty()}" border="1" cellpadding="5">
             <tr>
                 <th>Игра</th>
                 <th>Арендатор</th>
@@ -61,8 +61,8 @@
     <!-- 3. Запросы на возврат -->
     <section>
         <h2>Запросы на возврат</h2>
-        <div th:if="${pendingReturns.empty}"><p>Нет запросов на возврат.</p></div>
-        <table th:if="${!pendingReturns.empty}" border="1" cellpadding="5">
+        <div th:if="${pendingReturns.isEmpty()}"><p>Нет запросов на возврат.</p></div>
+        <table th:if="${!pendingReturns.isEmpty()}" border="1" cellpadding="5">
             <tr>
                 <th>Игра</th>
                 <th>Арендатор</th>

@@ -23,7 +23,8 @@ public interface OfferService {
             String brand,
             Boolean myOffers,
             int page,
-            int size
+            int size,
+            String sortBy
     );
 
     OfferViewModel getById(Long id);

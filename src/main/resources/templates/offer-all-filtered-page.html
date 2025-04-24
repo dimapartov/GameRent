@@ -32,6 +32,16 @@
                 Мои объявления
             </label>
         </div>
+        <div>
+            <label>Сортировать:</label>
+            <select th:field="*{sortBy}">
+                <option value="">Без сортировки</option>
+                <option value="priceAsc">Цена ↑</option>
+                <option value="priceDesc">Цена ↓</option>
+                <option value="daysAsc">Срок аренды ↑</option>
+                <option value="daysDesc">Срок аренды ↓</option>
+            </select>
+        </div>
         <div style="margin-top:10px;">
             <button type="submit">Применить фильтры</button>
             <a th:href="@{/offer/all}"
@@ -46,9 +56,9 @@
             <img th:src="@{'/images/' + ${o.photo}}"
                  alt="Offer Image"
                  style="max-width: 100%; height: auto;"/>
-            <!-- Вместо o.brandName: -->
             <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
             <p>
+
                 <strong>Цена:</strong> <span th:text="${o.price}">Price</span><br/>
                 <strong>Срок аренды:</strong>
                 от <span th:text="${o.minRentalDays}">min</span> до <span th:text="${o.maxRentalDays}">max</span>
@@ -61,7 +71,7 @@
                 <a th:href="@{/offer/{id}(id=${o.id})}">
                     <button type="button">Подробнее</button>
                 </a>
-                <form th:if="${o.status} == 'AVAILABLE'"
+                <form th:if="${o.status} == 'Доступно'"
                       th:action="@{/rentals}"
                       th:object="${rentalInput}"
                       method="post" style="display:inline;">
@@ -76,26 +86,28 @@
     <div style="margin-top:20px;">
         <ul style="list-style: none; display: flex; gap: 10px;">
             <li th:if="${offersPage.hasPrevious()}">
-                <a th:href="@{/offer/all(page=${offersPage.number - 1},
-                                         priceFrom=${filters.priceFrom},
-                                         priceTo=${filters.priceTo},
-                                         brand=${filters.brand},
-                                         myOffers=${filters.myOffers})}">
-                    &#8592; Назад
-                </a>
+                <a th:href="@{/offer/all(
+                                     page=${offersPage.number - 1},
+                                     priceFrom=${filters.priceFrom},
+                                     priceTo=${filters.priceTo},
+                                     brand=${filters.brand},
+                                     myOffers=${filters.myOffers},
+                                     sortBy=${filters.sortBy}
+                )}">&#8592; Назад</a>
             </li>
             <li>
                 Страница <span th:text="${offersPage.number + 1}">1</span> из <span
                     th:text="${offersPage.totalPages}">1</span>
             </li>
             <li th:if="${offersPage.hasNext()}">
-                <a th:href="@{/offer/all(page=${offersPage.number + 1},
-                                         priceFrom=${filters.priceFrom},
-                                         priceTo=${filters.priceTo},
-                                         brand=${filters.brand},
-                                         myOffers=${filters.myOffers})}">
-                    Вперед &#8594;
-                </a>
+                <a th:href="@{/offer/all(
+                                     page=${offersPage.number + 1},
+                                     priceFrom=${filters.priceFrom},
+                                     priceTo=${filters.priceTo},
+                                     brand=${filters.brand},
+                                     myOffers=${filters.myOffers},
+                                     sortBy=${filters.sortBy}
+                )}">Вперед &#8594;</a>
             </li>
         </ul>
     </div>

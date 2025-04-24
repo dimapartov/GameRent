@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:inline="text">
 <head>
     <meta charset="UTF-8">
     <title>Мои аренды</title>
@@ -9,10 +10,10 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main>
     <h1>Мои аренды</h1>
-    <div th:if="${rentals.empty}">
+    <div th:if="${rentals.isEmpty()}">
         <p>У вас пока нет ни одной аренды.</p>
     </div>
-    <table th:if="${!rentals.empty}" border="1" cellpadding="5">
+    <table th:if="${!rentals.isEmpty()}" border="1" cellpadding="5">
         <tr>
             <th>Игра</th>
             <th>Период</th>

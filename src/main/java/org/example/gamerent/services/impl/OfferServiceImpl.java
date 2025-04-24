@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,10 +108,21 @@ public class OfferServiceImpl implements OfferService {
             String brand,
             Boolean myOffers,
             int page,
-            int size
+            int size,
+            String sortBy
     ) {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = Sort.unsorted();
+        if ("priceAsc".equals(sortBy)) {
+            sort = Sort.by("price").ascending();
+        } else if ("priceDesc".equals(sortBy)) {
+            sort = Sort.by("price").descending();
+        } else if ("daysAsc".equals(sortBy)) {
+            sort = Sort.by("maxRentalDays").ascending();
+        } else if ("daysDesc".equals(sortBy)) {
+            sort = Sort.by("maxRentalDays").descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Offer> pageOfOffers = offerRepository.findFilteredOffers(
                 priceFrom,
                 priceTo,
@@ -119,14 +131,13 @@ public class OfferServiceImpl implements OfferService {
                 currentUsername,
                 pageable
         );
+
         return pageOfOffers.map(offer -> {
             OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
             offerDemoViewModel.setOwner(offer.getOwner().getUsername());
             return offerDemoViewModel;
         });
     }
-
-
 
     @Override
     public OfferViewModel getById(Long id) {
