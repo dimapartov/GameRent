@@ -17,11 +17,13 @@ public class OfferViewModel {
     private String ownerFirstName;
     private String ownerLastName;
     private String ownerEmail;
+    private String ownerUsername;
+
 
     public OfferViewModel() {
     }
 
-    public OfferViewModel(Long id, String brandName, String gameName, String description, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, String status, String photo, String ownerFirstName, String ownerLastName, String ownerEmail) {
+    public OfferViewModel(Long id, String brandName, String gameName, String description, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, String status, String photo, String ownerFirstName, String ownerLastName, String ownerEmail, String ownerUsername) {
         this.id = id;
         this.brandName = brandName;
         this.gameName = gameName;
@@ -34,7 +36,9 @@ public class OfferViewModel {
         this.ownerFirstName = ownerFirstName;
         this.ownerLastName = ownerLastName;
         this.ownerEmail = ownerEmail;
+        this.ownerUsername = ownerUsername;
     }
+
 
     public Long getId() {
         return id;
@@ -130,6 +134,14 @@ public class OfferViewModel {
 
     public void setOwnerEmail(String ownerEmail) {
         this.ownerEmail = ownerEmail;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
 }

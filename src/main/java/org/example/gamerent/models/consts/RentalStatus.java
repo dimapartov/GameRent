@@ -1,12 +1,13 @@
 package org.example.gamerent.models.consts;
 
 public enum RentalStatus {
-    PENDING_FOR_CONFIRM("Ожидает подтверждения"),
+    PENDING_FOR_CONFIRM("Ожидает подтверждения владельцем"),
     ACTIVE("Активна"),
     RETURNED("Возвращена"),
-    PENDING_FOR_RETURN("Ожидает подтверждения возврата"),
-    CANCELED_BY_SCHEDULER("Отменена автоматически"),
-    CANCELED_BY_RENTER("Отменена арендатором");
+    PENDING_FOR_RETURN("Ожидает подтверждения возврата владельцем"),
+    CANCELED_BY_SCHEDULER("Отменена автоматически по истечении 24 часов"),
+    CANCELED_BY_RENTER("Отменена арендатором"),
+    CANCELED_BY_OWNER("Отклонена владельцем");
 
 
     private final String displayName;

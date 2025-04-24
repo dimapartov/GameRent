@@ -132,6 +132,8 @@ public class OfferServiceImpl implements OfferService {
     public OfferViewModel getById(Long id) {
         Offer offer = offerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offer not found"));
-        return modelMapper.map(offer, OfferViewModel.class);
+        OfferViewModel viewModel = modelMapper.map(offer, OfferViewModel.class);
+        viewModel.setOwnerUsername(offer.getOwner().getUsername());
+        return viewModel;
     }
 }

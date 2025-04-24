@@ -11,7 +11,7 @@ public interface RentalService {
     void createRentalRequest(RentalRequestInputModel input);
 
     void cancelRentalRequest(Long rentalId);
-
+    void rejectRentalRequest(Long rentalId);
     void confirmRentalRequest(Long rentalId);
 
     void initiateReturn(Long rentalId);

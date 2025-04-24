@@ -22,33 +22,34 @@ public class OwnerRentalController {
         this.rentalService = rentalService;
     }
 
-    @GetMapping
-    public String dashboard(Model model) {
+    @GetMapping("/dashboard")
+    public String getRentalOwnerDashboardPage(Model model) {
         model.addAttribute("pendingRequests", rentalService.getOwnerPendingRequests());
         model.addAttribute("activeRentals", rentalService.getOwnerActiveRentals());
         model.addAttribute("pendingReturns", rentalService.getOwnerPendingReturns());
-        return "rental-owner-portal";
+        return "rental-owner-dashboard-page";
     }
 
     @PostMapping("/{id}/confirm")
-    public String confirm(@PathVariable Long id, RedirectAttributes ra) {
+    public String confirmRental(@PathVariable Long id, RedirectAttributes ra) {
         rentalService.confirmRentalRequest(id);
         ra.addFlashAttribute("success", "Аренда подтверждена");
-        return "redirect:/owner/rentals";
+        return "redirect:/owner/rentals/dashboard";
     }
 
+
     @PostMapping("/{id}/reject")
-    public String reject(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.cancelRentalRequest(id);
-        ra.addFlashAttribute("success", "Заявка отклонена");
-        return "redirect:/owner/rentals";
+    public String rejectRental(@PathVariable Long id, RedirectAttributes ra) {
+        rentalService.rejectRentalRequest(id);
+        ra.addFlashAttribute("success", "Заявка отклонена владельцем");
+        return "redirect:/owner/rentals/dashboard";
     }
 
     @PostMapping("/{id}/confirm-return")
     public String confirmReturn(@PathVariable Long id, RedirectAttributes ra) {
         rentalService.confirmReturn(id);
         ra.addFlashAttribute("success", "Возврат подтверждён");
-        return "redirect:/owner/rentals";
+        return "redirect:/owner/rentals/dashboard";
     }
 
 }

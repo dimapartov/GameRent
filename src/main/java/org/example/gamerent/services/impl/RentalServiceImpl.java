@@ -92,6 +92,22 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
+    public void rejectRentalRequest(Long rentalId) {
+        Rental rental = rentalRepo.findById(rentalId)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
+        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
+            throw new RuntimeException("Cannot reject");
+        }
+        rental.setStatus(RentalStatus.CANCELED_BY_OWNER);
+        rentalRepo.save(rental);
+
+        Offer offer = rental.getOffer();
+        offer.setStatus(OfferStatus.AVAILABLE);
+        offerRepo.save(offer);
+    }
+
+    @Override
+    @Transactional
     public void confirmRentalRequest(Long rentalId) {
         Rental rental = rentalRepo.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));

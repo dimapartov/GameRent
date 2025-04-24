@@ -20,22 +20,42 @@
         до <span th:text="${offer.maxRentalDays}"></span> дней
     </p>
     <p><strong>Статус:</strong> <span th:text="${offer.status}"></span></p>
+
+    <!-- Только если оффер доступен -->
     <div th:if="${offer.status == 'Доступно'}">
-        <form th:action="@{/rentals}"
-              th:object="${rentalInput}"
-              method="post">
-            <input type="hidden" th:field="*{offerId}"/>
-            <div>
-                <label>Дней аренды:</label>
-                <input type="number"
-                       th:field="*{days}"
-                       min="${offer.minRentalDays}"
-                       max="${offer.maxRentalDays}"/>
-            </div>
-            <div th:errors="*{days}" style="color:red;"></div>
-            <button type="submit">Арендовать</button>
-        </form>
+        <!-- 1) аутентифицированный НЕ-владелец -->
+        <div sec:authorize="isAuthenticated()"
+             th:if="${offer.ownerUsername != #authentication.name}">
+            <form th:action="@{/rentals}"
+                  th:object="${rentalInput}"
+                  method="post">
+                <input type="hidden" th:field="*{offerId}"/>
+                <div>
+                    <label>Дней аренды:</label>
+                    <input type="number"
+                           th:field="*{days}"
+                           min="${offer.minRentalDays}"
+                           max="${offer.maxRentalDays}"/>
+                </div>
+                <div th:errors="*{days}" style="color:red;"></div>
+                <button type="submit">Арендовать</button>
+            </form>
+        </div>
+
+        <!-- 2) аутентифицированный Владелец -->
+        <div sec:authorize="isAuthenticated()"
+             th:if="${offer.ownerUsername == #authentication.name}"
+             style="color:gray; margin-top:1em;">
+            Вы не можете арендовать свой собственный оффер.
+        </div>
+
+        <!-- 3) неаутентифицированный -->
+        <div sec:authorize="!isAuthenticated()"
+             style="margin-top:1em;">
+            <a th:href="@{/login}">Войдите в систему</a>, чтобы арендовать этот оффер.
+        </div>
     </div>
+
     <p>
         <strong>Владелец:</strong>
         <span th:text="${offer.ownerFirstName + ' ' + offer.ownerLastName}">Имя Фамилия</span>
@@ -43,6 +63,7 @@
         <a th:href="'mailto:' + ${offer.ownerEmail}"
            th:text="${offer.ownerEmail}">email</a>
     </p>
+
     <div th:if="${success}" style="color:green;" th:text="${success}"></div>
     <div th:if="${error}" style="color:red;" th:text="${error}"></div>
 </main>

@@ -44,7 +44,6 @@ public class OfferController {
     public OfferCreationInputModel initOfferCreationInputModel() {
         return new OfferCreationInputModel();
     }
-
     @PostMapping("/create")
     public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
         offerService.createOffer(newOfferInputModel, file);

@@ -33,7 +33,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/login-error")
-    public String onFailedLogin(@ModelAttribute("username") String username, RedirectAttributes redirectAttributes) {
+    public String redirectOnFailedLogin(@ModelAttribute("username") String username, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("username", username);
         redirectAttributes.addFlashAttribute("badCredentials", true);
         return "redirect:/user/login";
