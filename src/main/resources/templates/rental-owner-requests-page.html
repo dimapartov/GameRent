@@ -7,14 +7,11 @@
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-
 <main>
     <h1>Запросы на аренду моих офферов</h1>
-
     <div th:if="${requests.empty}">
         <p>Нет новых запросов.</p>
     </div>
-
     <table th:if="${!requests.empty}" border="1" cellpadding="5">
         <tr>
             <th>Игра</th>
