@@ -38,10 +38,15 @@ public class DataInit implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
-        seedUsers();
-        seedBrands();
-        seedOffers();
+    public void run(String... args){
+        try{
+            seedUsers();
+            seedBrands();
+            seedOffers();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
 
@@ -71,6 +76,7 @@ public class DataInit implements CommandLineRunner {
             randomUser.setLastName(faker.name().lastName());
             registrationService.registerUser(randomUser);
         }
+        System.out.println("Пользователи добавлены");
     }
 
     private void seedBrands() {
@@ -81,6 +87,7 @@ public class DataInit implements CommandLineRunner {
             brandModel.setPhoto("brand_logo.png");
             brandService.createBrand(brandModel);
         }
+        System.out.println("Бренды добавлены");
     }
 
     private void seedOffers() {
@@ -88,17 +95,18 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerCreationInputModel.setPhoto("brand_logo.png");
             offerService.seedOffer(offerCreationInputModel, "d");
         }
-
-        for (int i = 0; i < 2; i++) {
+        System.out.println("Офферы юзера 1 добавлены");
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             model.setPhoto("brand_logo.png");
             offerService.seedOffer(model, "dd");
         }
+        System.out.println("Офферы юзера 2 добавлены");
     }
 
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {

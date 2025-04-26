@@ -3,7 +3,9 @@ package org.example.gamerent.models;
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
 import org.example.gamerent.models.consts.OfferStatus;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
@@ -56,16 +58,19 @@ public class Offer extends IdCreatedModified {
     }
 
     @Column(name = "price", precision = 10, scale = 2, nullable = false)
+    @GenericField(sortable = Sortable.YES)
     public BigDecimal getPrice() {
         return price;
     }
 
     @Column(name = "min_rental_days", nullable = false)
+    @GenericField(sortable = Sortable.YES)
     public Integer getMinRentalDays() {
         return minRentalDays;
     }
 
     @Column(name = "max_rental_days", nullable = false)
+    @GenericField(sortable = Sortable.YES)
     public Integer getMaxRentalDays() {
         return maxRentalDays;
     }
