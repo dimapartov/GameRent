@@ -94,32 +94,39 @@
     <!-- Пагинация -->
     <div style="margin-top:20px;">
         <ul style="list-style: none; display: flex; gap: 10px;">
+
             <li th:if="${offersPage.hasPrevious()}">
                 <a th:href="@{/offer/all(
-                                     page=${offersPage.number - 1},
-                                     priceFrom=${filters.priceFrom},
-                                     priceTo=${filters.priceTo},
-                                     brand=${filters.brand},
-                                     myOffers=${filters.myOffers},
-                                     sortBy=${filters.sortBy}
-                )}">&#8592; Назад</a>
+                             page=${offersPage.number - 1},
+                             priceFrom=${filters.priceFrom},
+                             priceTo=${filters.priceTo},
+                             brand=${filters.brand},
+                             myOffers=${filters.myOffers},
+                             sortBy=${filters.sortBy},
+                             searchTerm=${filters.searchTerm}
+            )}">&#8592; Назад</a>
             </li>
+
             <li>
-                Страница <span th:text="${offersPage.number + 1}">1</span> из <span
-                    th:text="${offersPage.totalPages}">1</span>
+                Страница <span th:text="${offersPage.number + 1}"></span>
+                из <span th:text="${offersPage.totalPages}"></span>
             </li>
+
             <li th:if="${offersPage.hasNext()}">
                 <a th:href="@{/offer/all(
-                                     page=${offersPage.number + 1},
-                                     priceFrom=${filters.priceFrom},
-                                     priceTo=${filters.priceTo},
-                                     brand=${filters.brand},
-                                     myOffers=${filters.myOffers},
-                                     sortBy=${filters.sortBy}
-                )}">Вперед &#8594;</a>
+                             page=${offersPage.number + 1},
+                             priceFrom=${filters.priceFrom},
+                             priceTo=${filters.priceTo},
+                             brand=${filters.brand},
+                             myOffers=${filters.myOffers},
+                             sortBy=${filters.sortBy},
+                             searchTerm=${filters.searchTerm}
+            )}">Вперед &#8594;</a>
             </li>
+
         </ul>
     </div>
+
 </main>
 </body>
 </html>

@@ -123,6 +123,7 @@ public class OfferServiceImpl implements OfferService {
             String sortBy,
             String searchTerm
     ) {
+        System.out.println("Вход в метод сервиса");
         Sort springSort = buildSpringSort(sortBy);
         Pageable pageable = PageRequest.of(page, size, springSort);
 
@@ -157,7 +158,7 @@ public class OfferServiceImpl implements OfferService {
                         return vm;
                     })
                     .toList();
-
+            System.out.println("вызван метод сервиса. условие с текстовым поиском");
             return new PageImpl<>(vms, pageable, result.total().hitCount());
         } else {
             // Обычная фильтрация через репозиторий JPA
@@ -169,6 +170,7 @@ public class OfferServiceImpl implements OfferService {
                     SecurityContextHolder.getContext().getAuthentication().getName(),
                     pageable
             );
+            System.out.println("вызван метод сервиса. условие без текстового поиска");
             // Inline-маппинг через Page.map
             return pageOfOffers.map(offer -> {
                 OfferDemoViewModel vm = modelMapper.map(offer, OfferDemoViewModel.class);

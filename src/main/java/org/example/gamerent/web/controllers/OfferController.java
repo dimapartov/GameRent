@@ -68,7 +68,7 @@ public class OfferController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
             Model model) {
-
+        System.out.println("Вызван метод контроллера /all");
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
                 filters.getPriceTo(),
@@ -81,6 +81,7 @@ public class OfferController {
         );
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
+        System.out.println("Контроллер отработал, возврат страницы");
         return "offer-all-filtered-page";
     }
 
