@@ -11,6 +11,15 @@
     <h2>Объявления</h2>
     <form th:action="@{/offer/all}" method="get" th:object="${filters}" style="margin-bottom:20px;">
         <input type="hidden" name="page" th:value="${offersPage.number}"/>
+        <!-- ▶ Здесь вставляем поле поиска -->
+        <div style="margin-bottom:10px;">
+            <label for="searchTerm">Поиск:</label>
+            <input id="searchTerm"
+                   type="text"
+                   th:field="*{searchTerm}"
+                   placeholder="Название игры или бренд"
+                   style="width:300px; padding:4px;"/>
+        </div>
         <div>
             <label>Цена от:</label>
             <input type="number" step="0.01" th:field="*{priceFrom}"/>

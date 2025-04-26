@@ -9,17 +9,19 @@ public class OfferFiltersDTO {
     private String brand;
     private Boolean myOffers;
     private String sortBy;
+    private String searchTerm;
 
 
     public OfferFiltersDTO() {
     }
 
-    public OfferFiltersDTO(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers, String sortBy) {
+    public OfferFiltersDTO(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers, String sortBy, String searchTerm) {
         this.priceFrom = priceFrom;
         this.priceTo   = priceTo;
         this.brand     = brand;
         this.myOffers  = myOffers;
         this.sortBy    = sortBy;
+        this.searchTerm = searchTerm;
     }
 
 
@@ -37,4 +39,7 @@ public class OfferFiltersDTO {
 
     public String getSortBy() { return sortBy; }
     public void setSortBy(String sortBy) { this.sortBy = sortBy; }
+
+    public String getSearchTerm() { return searchTerm; }
+    public void setSearchTerm(String searchTerm) { this.searchTerm = searchTerm; }
 }

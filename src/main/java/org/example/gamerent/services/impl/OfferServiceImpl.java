@@ -1,5 +1,7 @@
 package org.example.gamerent.services.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.gamerent.models.Brand;
 import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.User;
@@ -12,13 +14,17 @@ import org.example.gamerent.services.OfferService;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.sort.SearchSort;
+import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
+import org.hibernate.search.engine.search.sort.dsl.SortFinalStep;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +35,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 
 @Service
 public class OfferServiceImpl implements OfferService {
+
+    @Value("${offer.image.path}")
+    private String uploadPath;
+
 
     private final OfferRepository offerRepository;
     private final RentalRepository rentalRepository;
@@ -41,8 +52,8 @@ public class OfferServiceImpl implements OfferService {
     private final BrandRepository brandRepository;
 
 
-    @Value("${offer.image.path}")
-    private String uploadPath;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Autowired
@@ -58,7 +69,7 @@ public class OfferServiceImpl implements OfferService {
         this.brandRepository = brandRepository;
     }
 
-//    Для инициализации данных
+    //    Для инициализации данных
     @Override
     public void seedOffer(OfferCreationInputModel newOffer, String username) {
         Offer offer = modelMapper.map(newOffer, Offer.class);
@@ -109,34 +120,92 @@ public class OfferServiceImpl implements OfferService {
             Boolean myOffers,
             int page,
             int size,
-            String sortBy
+            String sortBy,
+            String searchTerm
     ) {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        Sort sort = Sort.unsorted();
-        if ("priceAsc".equals(sortBy)) {
-            sort = Sort.by("price").ascending();
-        } else if ("priceDesc".equals(sortBy)) {
-            sort = Sort.by("price").descending();
-        } else if ("daysAsc".equals(sortBy)) {
-            sort = Sort.by("maxRentalDays").ascending();
-        } else if ("daysDesc".equals(sortBy)) {
-            sort = Sort.by("maxRentalDays").descending();
-        }
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Offer> pageOfOffers = offerRepository.findFilteredOffers(
-                priceFrom,
-                priceTo,
-                brand,
-                Boolean.TRUE.equals(myOffers),
-                currentUsername,
-                pageable
-        );
+        Sort springSort = buildSpringSort(sortBy);
+        Pageable pageable = PageRequest.of(page, size, springSort);
 
-        return pageOfOffers.map(offer -> {
-            OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-            offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-            return offerDemoViewModel;
-        });
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            // Полнотекстовый поиск через Hibernate Search
+            SearchSession search = Search.session(entityManager);
+            SearchResult<Offer> result = search.search(Offer.class)
+                    .where(f -> {
+                        var b = f.bool();
+                        b.must(f.match()
+                                .fields("gameName", "brand.name")
+                                .matching(searchTerm));
+                        if (priceFrom != null) b.must(f.range().field("price").atLeast(priceFrom));
+                        if (priceTo != null) b.must(f.range().field("price").atMost(priceTo));
+                        if (brand != null && !brand.isBlank()) {
+                            b.must(f.match().field("brand.name").matching(brand));
+                        }
+                        if (Boolean.TRUE.equals(myOffers)) {
+                            String user = SecurityContextHolder.getContext().getAuthentication().getName();
+                            b.must(f.match().field("owner.username").matching(user));
+                        }
+                        return b;
+                    })
+                    .sort(f -> applySearchSort(f, sortBy))
+                    .fetch((int) pageable.getOffset(), pageable.getPageSize());
+
+            // Inline-маппинг сущностей в ViewModel
+            List<OfferDemoViewModel> vms = result.hits().stream()
+                    .map(offer -> {
+                        OfferDemoViewModel vm = modelMapper.map(offer, OfferDemoViewModel.class);
+                        vm.setOwner(offer.getOwner().getUsername());
+                        return vm;
+                    })
+                    .toList();
+
+            return new PageImpl<>(vms, pageable, result.total().hitCount());
+        } else {
+            // Обычная фильтрация через репозиторий JPA
+            Page<Offer> pageOfOffers = offerRepository.findFilteredOffers(
+                    priceFrom,
+                    priceTo,
+                    brand,
+                    Boolean.TRUE.equals(myOffers),
+                    SecurityContextHolder.getContext().getAuthentication().getName(),
+                    pageable
+            );
+            // Inline-маппинг через Page.map
+            return pageOfOffers.map(offer -> {
+                OfferDemoViewModel vm = modelMapper.map(offer, OfferDemoViewModel.class);
+                vm.setOwner(offer.getOwner().getUsername());
+                return vm;
+            });
+        }
+    }
+
+    /**
+     * 1) Spring Data Sort для Pageable
+     */
+    private Sort buildSpringSort(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) {
+            return Sort.unsorted();
+        }
+        return switch (sortBy) {
+            case "priceAsc" -> Sort.by("price").ascending();
+            case "priceDesc" -> Sort.by("price").descending();
+            case "daysAsc" -> Sort.by("maxRentalDays").ascending();
+            case "daysDesc" -> Sort.by("maxRentalDays").descending();
+            default -> Sort.unsorted();
+        };
+    }
+
+
+    /**
+     * 2) Hibernate Search Sort для полнотекста
+     */
+    private SortFinalStep applySearchSort(SearchSortFactory f, String sortBy) {
+        return switch (sortBy) {
+            case "priceAsc"  -> f.field("price").asc();
+            case "priceDesc" -> f.field("price").desc();
+            case "daysAsc"   -> f.field("maxRentalDays").asc();
+            case "daysDesc"  -> f.field("maxRentalDays").desc();
+            default          -> f.score();
+        };
     }
 
     @Override
@@ -147,4 +216,5 @@ public class OfferServiceImpl implements OfferService {
         viewModel.setOwnerUsername(offer.getOwner().getUsername());
         return viewModel;
     }
+
 }

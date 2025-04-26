@@ -2,6 +2,7 @@ package org.example.gamerent.models;
 
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class User extends IdCreatedModified {
 
 
     @Column(name = "username", unique = true, nullable = false)
+    @GenericField
     public String getUsername() {
         return username;
     }

@@ -24,7 +24,8 @@ public interface OfferService {
             Boolean myOffers,
             int page,
             int size,
-            String sortBy
+            String sortBy,
+            String searchTerm   // + новый параметр
     );
 
     OfferViewModel getById(Long id);

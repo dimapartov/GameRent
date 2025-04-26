@@ -2,6 +2,7 @@ package org.example.gamerent.models;
 
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import java.util.Set;
 
@@ -21,6 +22,7 @@ public class Brand extends IdCreatedModified {
 
 
     @Column(name = "name", nullable = false)
+    @GenericField
     public String getName() {
         return name;
     }

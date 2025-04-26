@@ -3,6 +3,9 @@ package org.example.gamerent.models;
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
 import org.example.gamerent.models.consts.OfferStatus;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -10,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "offers")
+@Indexed
 public class Offer extends IdCreatedModified {
 
     private User owner;
@@ -28,17 +32,20 @@ public class Offer extends IdCreatedModified {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
+    @IndexedEmbedded(includePaths = {"username"})
     public User getOwner() {
         return owner;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
+    @IndexedEmbedded
     public Brand getBrand() {
         return brand;
     }
 
     @Column(name = "game_name", nullable = false)
+    @FullTextField(analyzer = "english")
     public String getGameName() {
         return gameName;
     }
