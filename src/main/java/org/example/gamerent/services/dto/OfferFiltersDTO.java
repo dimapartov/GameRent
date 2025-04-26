@@ -11,7 +11,8 @@ public class OfferFiltersDTO {
     private String sortBy;
 
 
-    public OfferFiltersDTO() { }
+    public OfferFiltersDTO() {
+    }
 
     public OfferFiltersDTO(BigDecimal priceFrom, BigDecimal priceTo, String brand, Boolean myOffers, String sortBy) {
         this.priceFrom = priceFrom;

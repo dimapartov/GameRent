@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+
 @Component
 public class DataInit implements CommandLineRunner {
 
@@ -24,6 +25,7 @@ public class DataInit implements CommandLineRunner {
     private final RegistrationService registrationService;
     private final Faker faker = new Faker();
     private final Random random = new Random();
+
 
     @Autowired
     public DataInit(BrandService brandService,
@@ -34,6 +36,7 @@ public class DataInit implements CommandLineRunner {
         this.registrationService = registrationService;
     }
 
+
     @Override
     public void run(String... args) throws Exception {
         seedUsers();
@@ -41,19 +44,20 @@ public class DataInit implements CommandLineRunner {
         seedOffers();
     }
 
+
     private void seedUsers() {
         RegistrationInputModel user1 = new RegistrationInputModel();
-        user1.setUsername("dima");
+        user1.setUsername("d");
         user1.setEmail("dima@dima.ru");
-        user1.setPassword("dima");
+        user1.setPassword("d");
         user1.setFirstName("Dima");
         user1.setLastName("Partov");
         registrationService.registerUser(user1);
 
         RegistrationInputModel user2 = new RegistrationInputModel();
-        user2.setUsername("dima2");
+        user2.setUsername("dd");
         user2.setEmail("dima2@dima.ru");
-        user2.setPassword("dima2");
+        user2.setPassword("dd");
         user2.setFirstName("Dima");
         user2.setLastName("Kubarev");
         registrationService.registerUser(user2);
@@ -84,16 +88,16 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1000; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerCreationInputModel.setPhoto("brand_logo.png");
-            offerService.seedOffer(offerCreationInputModel, "dima");
+            offerService.seedOffer(offerCreationInputModel, "d");
         }
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1000; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             model.setPhoto("brand_logo.png");
-            offerService.seedOffer(model, "dima2");
+            offerService.seedOffer(model, "dd");
         }
     }
 
@@ -108,4 +112,5 @@ public class DataInit implements CommandLineRunner {
         model.setMaxRentalDays(minDays + random.nextInt(5) + 1);
         return model;
     }
+
 }
