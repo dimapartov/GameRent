@@ -200,11 +200,11 @@ public class OfferServiceImpl implements OfferService {
      */
     private SortFinalStep applySearchSort(SearchSortFactory f, String sortBy) {
         return switch (sortBy) {
-            case "priceAsc"  -> f.field("price").asc();
+            case "priceAsc" -> f.field("price").asc();
             case "priceDesc" -> f.field("price").desc();
-            case "daysAsc"   -> f.field("maxRentalDays").asc();
-            case "daysDesc"  -> f.field("maxRentalDays").desc();
-            default          -> f.score();
+            case "daysAsc" -> f.field("maxRentalDays").asc();
+            case "daysDesc" -> f.field("maxRentalDays").desc();
+            default -> f.score();
         };
     }
 
