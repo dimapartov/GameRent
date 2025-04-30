@@ -16,7 +16,7 @@ public interface OfferService {
     void seedOffer(OfferCreationInputModel newOffer, String username);
 
 
-    void createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
+    Long createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
 
     Page<OfferDemoViewModel> getAllOffersFiltered(
             BigDecimal priceFrom,

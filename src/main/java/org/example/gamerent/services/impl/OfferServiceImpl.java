@@ -85,7 +85,7 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Override
-    public void createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
+    public Long createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
         Offer offer = modelMapper.map(newOffer, Offer.class);
         offer.setId(null);
         offer.setMinRentalDays(newOffer.getMinRentalDays());
@@ -105,10 +105,11 @@ public class OfferServiceImpl implements OfferService {
         }
         offer.setStatus(OfferStatus.AVAILABLE);
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        User owner = userRepository.findUserByUsername(currentUser).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        User owner = userRepository.findUserByUsername(currentUser)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
-        modelMapper.map(offer, OfferCreationInputModel.class);
+        return offer.getId();
     }
 
     @Override

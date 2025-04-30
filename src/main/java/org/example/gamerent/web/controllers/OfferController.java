@@ -61,9 +61,11 @@ public class OfferController {
     }
 
     @PostMapping("/create")
-    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel, @RequestParam("file") MultipartFile file) {
-        offerService.createOffer(newOfferInputModel, file);
-        return "redirect:/offer/all";
+    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
+                              @RequestParam("file") MultipartFile file,
+                              RedirectAttributes redirectAttributes) {
+        Long newId = offerService.createOffer(newOfferInputModel, file);
+        return "redirect:/offer/" + newId;
     }
 
     @GetMapping("/all")
