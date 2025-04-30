@@ -40,9 +40,10 @@ public class DataInit implements CommandLineRunner {
     @Override
     public void run(String... args){
         try{
-            seedUsers();
-            seedBrands();
-            seedOffers();
+//            seedUsers();
+//            seedBrands();
+//            seedOffers();
+            System.out.println("Приложение готово к работе");
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -76,6 +77,7 @@ public class DataInit implements CommandLineRunner {
             randomUser.setLastName(faker.name().lastName());
             registrationService.registerUser(randomUser);
         }
+
         System.out.println("Пользователи добавлены");
     }
 
@@ -95,13 +97,13 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerCreationInputModel.setPhoto("brand_logo.png");
             offerService.seedOffer(offerCreationInputModel, "d");
         }
         System.out.println("Офферы юзера 1 добавлены");
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             model.setPhoto("brand_logo.png");
             offerService.seedOffer(model, "dd");

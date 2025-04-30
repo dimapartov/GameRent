@@ -1,19 +1,23 @@
 package org.example.gamerent.web.controllers;
 
+import jakarta.validation.Valid;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.dto.OfferFiltersDTO;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
+import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -77,7 +81,7 @@ public class OfferController {
                 page,
                 pageSize,
                 filters.getSortBy(),
-                filters.getSearchTerm()    // передаём сюда
+                filters.getSearchTerm()
         );
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
@@ -85,13 +89,52 @@ public class OfferController {
         return "offer-all-filtered-page";
     }
 
-
     @GetMapping("/{id}")
-    public String getOfferDetailsPage(@PathVariable Long id, @ModelAttribute("rentalInput") RentalRequestInputModel input, Model model) {
+    public String getOfferDetailsPage(@PathVariable Long id,
+                                      @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
+                                      Model model) {
         OfferViewModel offer = offerService.getById(id);
         model.addAttribute("offer", offer);
-        input.setOfferId(id);
+        rentalInput.setOfferId(id);
+
+        try {
+            OfferUpdateInputModel updateModel = offerService.getOfferUpdateModel(id);
+            model.addAttribute("offerUpdateInputModel", updateModel);
+        } catch (RuntimeException ignored) {
+        }
+
         return "offer-details-page";
     }
+
+    @PostMapping("/{id}/edit")
+    public String editOffer(@PathVariable Long id,
+                            @Valid @ModelAttribute("offerUpdateInputModel") OfferUpdateInputModel input,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            return "redirect:/offer/" + id;
+        }
+        try {
+            offerService.updateOffer(id, input);
+            redirectAttributes.addFlashAttribute("success", "Оффер успешно обновлён");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/offer/" + id;
+    }
+
+    @PostMapping("/{id}/delete")
+    public String deleteOffer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            offerService.deleteOffer(id);
+            redirectAttributes.addFlashAttribute("success", "Оффер удалён");
+            return "redirect:/offer/all";
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/offer/" + id;
+        }
+    }
+
 
 }

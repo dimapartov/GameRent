@@ -14,9 +14,8 @@ import org.example.gamerent.services.OfferService;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
-import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
+import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.engine.search.sort.SearchSort;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.engine.search.sort.dsl.SortFinalStep;
 import org.hibernate.search.mapper.orm.Search;
@@ -86,7 +85,7 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Override
-    public OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
+    public void createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
         Offer offer = modelMapper.map(newOffer, Offer.class);
         offer.setId(null);
         offer.setMinRentalDays(newOffer.getMinRentalDays());
@@ -109,7 +108,7 @@ public class OfferServiceImpl implements OfferService {
         User owner = userRepository.findUserByUsername(currentUser).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
-        return modelMapper.map(offer, OfferCreationInputModel.class);
+        modelMapper.map(offer, OfferCreationInputModel.class);
     }
 
     @Override
@@ -180,9 +179,64 @@ public class OfferServiceImpl implements OfferService {
         }
     }
 
-    /**
-     * 1) Spring Data Sort для Pageable
-     */
+    @Override
+    public OfferUpdateInputModel getOfferUpdateModel(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offer not found"));
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!offer.getOwner().getUsername().equals(currentUser)) {
+            throw new RuntimeException("Access denied");
+        }
+        if (offer.getStatus() != OfferStatus.AVAILABLE) {
+            throw new RuntimeException("Offer is not editable");
+        }
+        return modelMapper.map(offer, OfferUpdateInputModel.class);
+    }
+
+    @Override
+    public void updateOffer(Long id, OfferUpdateInputModel input) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offer not found"));
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!offer.getOwner().getUsername().equals(currentUser)) {
+            throw new RuntimeException("Access denied");
+        }
+        if (offer.getStatus() != OfferStatus.AVAILABLE) {
+            throw new RuntimeException("Offer is not editable");
+        }
+        offer.setDescription(input.getDescription());
+        offer.setPrice(input.getPrice());
+        offer.setMinRentalDays(input.getMinRentalDays());
+        offer.setMaxRentalDays(input.getMaxRentalDays());
+        offerRepository.save(offer);
+        Search.session(entityManager).indexingPlan().addOrUpdate(offer);
+    }
+
+    @Override
+    public void deleteOffer(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offer not found"));
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!offer.getOwner().getUsername().equals(currentUser)) {
+            throw new RuntimeException("Access denied");
+        }
+        if (offer.getStatus() != OfferStatus.AVAILABLE) {
+            throw new RuntimeException("Offer is not deletable");
+        }
+        offerRepository.delete(offer);
+        Search.session(entityManager).indexingPlan().delete(offer);
+    }
+
+    @Override
+    public OfferViewModel getById(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offer not found"));
+        OfferViewModel viewModel = modelMapper.map(offer, OfferViewModel.class);
+        viewModel.setOwnerUsername(offer.getOwner().getUsername());
+        return viewModel;
+    }
+
+
     private Sort buildSpringSort(String sortBy) {
         if (sortBy == null || sortBy.isBlank()) {
             return Sort.unsorted();
@@ -195,11 +249,6 @@ public class OfferServiceImpl implements OfferService {
             default -> Sort.unsorted();
         };
     }
-
-
-    /**
-     * 2) Hibernate Search Sort для полнотекста
-     */
     private SortFinalStep applySearchSort(SearchSortFactory f, String sortBy) {
         return switch (sortBy) {
             case "priceAsc" -> f.field("price").asc();
@@ -208,15 +257,6 @@ public class OfferServiceImpl implements OfferService {
             case "daysDesc" -> f.field("maxRentalDays").desc();
             default -> f.score();
         };
-    }
-
-    @Override
-    public OfferViewModel getById(Long id) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-        OfferViewModel viewModel = modelMapper.map(offer, OfferViewModel.class);
-        viewModel.setOwnerUsername(offer.getOwner().getUsername());
-        return viewModel;
     }
 
 }

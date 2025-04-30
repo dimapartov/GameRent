@@ -3,6 +3,7 @@ package org.example.gamerent.services;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
+import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +16,7 @@ public interface OfferService {
     void seedOffer(OfferCreationInputModel newOffer, String username);
 
 
-    OfferCreationInputModel createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
+    void createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
 
     Page<OfferDemoViewModel> getAllOffersFiltered(
             BigDecimal priceFrom,
@@ -25,9 +26,15 @@ public interface OfferService {
             int page,
             int size,
             String sortBy,
-            String searchTerm   // + новый параметр
+            String searchTerm
     );
 
     OfferViewModel getById(Long id);
+
+    void updateOffer(Long id, OfferUpdateInputModel input);
+
+    void deleteOffer(Long id);
+
+    OfferUpdateInputModel getOfferUpdateModel(Long id);
 
 }
