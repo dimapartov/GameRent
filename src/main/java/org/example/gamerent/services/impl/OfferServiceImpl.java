@@ -68,6 +68,7 @@ public class OfferServiceImpl implements OfferService {
         this.brandRepository = brandRepository;
     }
 
+
     //    Для инициализации данных
     @Override
     public void seedOffer(OfferCreationInputModel newOffer, String username) {
@@ -250,6 +251,7 @@ public class OfferServiceImpl implements OfferService {
             default -> Sort.unsorted();
         };
     }
+
     private SortFinalStep applySearchSort(SearchSortFactory f, String sortBy) {
         return switch (sortBy) {
             case "priceAsc" -> f.field("price").asc();

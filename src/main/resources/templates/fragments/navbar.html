@@ -21,6 +21,8 @@
         <li><a href="/brand/all">Бренды</a></li>
         <li sec:authorize="isAuthenticated()"><a th:href="@{/rentals/my}">Мои аренды</a></li>
         <li sec:authorize="isAuthenticated()"><a th:href="@{/owner/rentals/dashboard}">Личный кабинет</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/reviews}">Отзывы</a>
+        </li>
     </ul>
 </nav>
 </body>

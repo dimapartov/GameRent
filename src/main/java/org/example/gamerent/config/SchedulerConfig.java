@@ -13,10 +13,12 @@ public class SchedulerConfig {
 
     private RentalService rentalService;
 
+
     @Autowired
     public SchedulerConfig(RentalService rentalService) {
         this.rentalService = rentalService;
     }
+
 
     @Scheduled(fixedDelay = 3600000) // Каждый час
     public void declineOld() {

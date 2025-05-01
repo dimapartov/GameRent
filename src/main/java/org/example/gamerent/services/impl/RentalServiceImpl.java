@@ -32,6 +32,7 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepo;
     private final ModelMapper modelMapper;
 
+
     @Autowired
     public RentalServiceImpl(RentalRepository rentalRepo,
                              OfferRepository offerRepo,
@@ -42,6 +43,7 @@ public class RentalServiceImpl implements RentalService {
         this.userRepo = userRepo;
         this.modelMapper = modelMapper;
     }
+
 
     @Override
     @Transactional

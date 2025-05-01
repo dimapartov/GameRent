@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Отзывы о <span th:text="${revieweeUsername}"></span></title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h1>Отзывы о <strong th:text="${revieweeUsername}">user</strong></h1>
+    <p>Средний рейтинг:
+        <strong th:text="${#numbers.formatDecimal(avgRating,1,1)}">—</strong>
+    </p>
+
+    <!-- Форма добавления нового отзыва -->
+    <form th:action="@{/reviews/about/{username}(username=${revieweeUsername})}"
+          th:object="${newReview}"
+          method="post"
+          style="margin-bottom:20px;">
+        <input type="hidden" th:field="*{revieweeUsername}"/>
+
+        <!-- CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label>Оценка:
+            <select th:field="*{rating}">
+                <option th:value="1">1</option>
+                <option th:value="2">2</option>
+                <option th:value="3">3</option>
+                <option th:value="4">4</option>
+                <option th:value="5">5</option>
+            </select>
+        </label>
+        <div th:errors="*{rating}" style="color:red;"></div>
+        <br/>
+        <label>Текст:<br/>
+            <textarea th:field="*{text}" rows="3"></textarea>
+        </label>
+        <div th:errors="*{text}" style="color:red;"></div>
+        <br/>
+        <button type="submit">Оставить отзыв</button>
+    </form>
+
+    <!-- Форма сортировки -->
+    <form th:action="@{/reviews/about/{username}(username=${revieweeUsername})}"
+          th:object="${filters}"
+          method="get"
+          style="margin-bottom:20px;">
+        <input type="hidden" name="page" th:value="${reviewsPage.number}"/>
+        <label>Сортировать:</label>
+        <select th:field="*{sortBy}">
+            <option value="">Без сортировки</option>
+            <option value="ratingDesc" th:selected="${filters.sortBy=='ratingDesc'}">Рейтинг ↓</option>
+            <option value="ratingAsc" th:selected="${filters.sortBy=='ratingAsc'}">Рейтинг ↑</option>
+            <option value="dateDesc" th:selected="${filters.sortBy=='dateDesc'}">Дата ↓</option>
+            <option value="dateAsc" th:selected="${filters.sortBy=='dateAsc'}">Дата ↑</option>
+        </select>
+        <button type="submit">Применить</button>
+        <a th:href="@{/reviews/about/{username}(username=${revieweeUsername})}"
+           style="margin-left:10px;">Сбросить</a>
+    </form>
+
+    <!-- Список отзывов -->
+    <section>
+        <div th:each="rev : ${reviewsPage.content}">
+            <p>
+                <strong th:text="${rev.reviewerFullName}">Имя Фамилия</strong>
+                (<span th:text="${rev.reviewerUsername}">username</span>) —
+                <span th:text="${rev.rating}">0</span>/5,
+                <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">01.01.2025</span>
+            </p>
+            <p th:text="${rev.text}">Текст отзыва…</p>
+        </div>
+        <div>
+            <a th:if="${reviewsPage.hasPrevious()}"
+               th:href="@{/reviews/about/{username}(
+                       username=${revieweeUsername},
+                       page=${reviewsPage.number - 1},
+                       sortBy=${filters.sortBy}
+                   )}">‹ Назад</a>
+            |
+            <a th:if="${reviewsPage.hasNext()}"
+               th:href="@{/reviews/about/{username}(
+                       username=${revieweeUsername},
+                       page=${reviewsPage.number + 1},
+                       sortBy=${filters.sortBy}
+                   )}">Вперёд ›</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои отзывы</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h1>Мои отзывы</h1>
+    <p>Средний рейтинг:
+        <strong th:text="${#numbers.formatDecimal(avgRating,1,1)}">—</strong>
+    </p>
+
+    <!-- Форма сортировки -->
+    <form th:action="@{/reviews}"
+          th:object="${filters}"
+          method="get"
+          style="margin-bottom:20px;">
+        <input type="hidden" name="page" th:value="${aboutPage.number}"/>
+        <label>Сортировать:</label>
+        <select th:field="*{sortBy}">
+            <option value="">Без сортировки</option>
+            <option value="ratingDesc" th:selected="${filters.sortBy=='ratingDesc'}">Рейтинг ↓</option>
+            <option value="ratingAsc" th:selected="${filters.sortBy=='ratingAsc'}">Рейтинг ↑</option>
+            <option value="dateDesc" th:selected="${filters.sortBy=='dateDesc'}">Дата ↓</option>
+            <option value="dateAsc" th:selected="${filters.sortBy=='dateAsc'}">Дата ↑</option>
+        </select>
+        <button type="submit">Применить</button>
+        <a th:href="@{/reviews}" style="margin-left:10px;">Сбросить</a>
+    </form>
+
+    <!-- Раздел "Отзывы обо мне" -->
+    <section>
+        <h2>Отзывы обо мне</h2>
+        <div th:each="rev : ${aboutPage.content}">
+            <p>
+                <strong th:text="${rev.reviewerFullName}">Имя Фамилия</strong>
+                (<span th:text="${rev.reviewerUsername}">username</span>) —
+                <span th:text="${rev.rating}">0</span>/5,
+                <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">01.01.2025</span>
+            </p>
+            <p th:text="${rev.text}">Текст отзыва…</p>
+        </div>
+        <div>
+            <a th:if="${aboutPage.hasPrevious()}"
+               th:href="@{/reviews(
+                       page=${aboutPage.number - 1},
+                       sortBy=${filters.sortBy}
+                   )}">‹ Назад</a>
+            |
+            <a th:if="${aboutPage.hasNext()}"
+               th:href="@{/reviews(
+                       page=${aboutPage.number + 1},
+                       sortBy=${filters.sortBy}
+                   )}">Вперёд ›</a>
+        </div>
+    </section>
+
+    <!-- Раздел "Мои отзывы" -->
+    <section style="margin-top:2em;">
+        <h2>Мои отзывы</h2>
+        <div th:each="rev : ${byPage.content}">
+            <p>
+                <strong th:text="${rev.reviewerUsername}">user</strong> —
+                <span th:text="${rev.rating}">0</span>/5,
+                <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">01.01.2025</span>
+            <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
+                  method="post"
+                  style="display:inline;">
+                <input type="hidden" name="page" th:value="${byPage.number}"/>
+                <input type="hidden" name="sortBy" th:value="${filters.sortBy}"/>
+                <button type="submit">Удалить</button>
+            </form>
+            </p>
+            <p th:text="${rev.text}">Текст отзыва…</p>
+        </div>
+        <div>
+            <a th:if="${byPage.hasPrevious()}"
+               th:href="@{/reviews(
+                       page=${byPage.number - 1},
+                       sortBy=${filters.sortBy}
+                   )}">‹ Назад</a>
+            |
+            <a th:if="${byPage.hasNext()}"
+               th:href="@{/reviews(
+                       page=${byPage.number + 1},
+                       sortBy=${filters.sortBy}
+                   )}">Вперёд ›</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

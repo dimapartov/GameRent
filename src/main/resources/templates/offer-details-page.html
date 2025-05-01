@@ -74,6 +74,10 @@
         —
         <a th:href="'mailto:' + ${offer.ownerEmail}"
            th:text="${offer.ownerEmail}">email</a>
+        <a th:href="@{/reviews/about/{username}(username=${offer.ownerUsername})}"
+           style="margin-left:1em; text-decoration:none; font-weight:bold;">
+            Смотреть отзывы
+        </a>
     </p>
     <div th:if="${success}" style="color:green; margin-top:1em;" th:text="${success}"></div>
     <div th:if="${error}" style="color:red; margin-top:1em;" th:text="${error}"></div>

@@ -18,4 +18,10 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     List<Rental> findAllByStatusAndCreatedBefore(RentalStatus status, LocalDateTime cutoff);
 
+    boolean existsByRenterUsernameAndOfferOwnerIdAndEndDateBefore(
+            String renterUsername,
+            Long ownerId,
+            LocalDateTime now
+    );
+
 }
