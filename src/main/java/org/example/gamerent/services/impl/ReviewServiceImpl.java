@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -42,24 +44,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewViewModel createReview(ReviewInputModel input) {
-        String reviewerUsername = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-
-        // Находим reviewee по username
-        User reviewee = userRepo.findUserByUsername(input.getRevieweeUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь для отзыва не найден"));
-
-
-        User reviewer = userRepo.findUserByUsername(reviewerUsername)
-                .orElseThrow(() -> new IllegalArgumentException("Ревьюер не найден"));
-
+        String reviewerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (reviewerUsername.equals(input.getRevieweeUsername()))
+            throw new IllegalArgumentException("Нельзя оставить отзыв самому себе");
+        User reviewee = userRepo.findUserByUsername(input.getRevieweeUsername()).orElseThrow(() -> new IllegalArgumentException("Пользователь для отзыва не найден"));
+        User reviewer = userRepo.findUserByUsername(reviewerUsername).orElseThrow(() -> new IllegalArgumentException("Ревьюер не найден"));
         Review entity = mapper.map(input, Review.class);
         entity.setReviewer(reviewer);
         entity.setReviewee(reviewee);
-
         entity = reviewRepo.save(entity);
-        return mapper.map(entity, ReviewViewModel.class);
+        ReviewViewModel vm = mapper.map(entity, ReviewViewModel.class);
+        vm.setReviewerUsername(reviewer.getUsername());
+        vm.setReviewerFullName(reviewer.getFirstName() + " " + reviewer.getLastName());
+        return vm;
     }
+
 
     @Override
     @Transactional
