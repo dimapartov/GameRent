@@ -18,87 +18,87 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
-    private final ReviewRepository reviewRepo;
-    private final UserRepository userRepo;
-    private final RentalRepository rentalRepo;
-    private final ModelMapper mapper;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final RentalRepository rentalRepository;
+    private final ModelMapper modelMapper;
+
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepo,
-                             UserRepository userRepo,
-                             RentalRepository rentalRepo,
-                             ModelMapper mapper) {
-        this.reviewRepo = reviewRepo;
-        this.userRepo = userRepo;
-        this.rentalRepo = rentalRepo;
-        this.mapper = mapper;
+    public ReviewServiceImpl(ReviewRepository reviewRepository,
+                             UserRepository userRepository,
+                             RentalRepository rentalRepository,
+                             ModelMapper modelMapper) {
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.rentalRepository = rentalRepository;
+        this.modelMapper = modelMapper;
     }
 
 
     @Override
     @Transactional
-    public ReviewViewModel createReview(ReviewInputModel input) {
-        String reviewerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (reviewerUsername.equals(input.getRevieweeUsername()))
-            throw new IllegalArgumentException("Нельзя оставить отзыв самому себе");
-        User reviewee = userRepo.findUserByUsername(input.getRevieweeUsername()).orElseThrow(() -> new IllegalArgumentException("Пользователь для отзыва не найден"));
-        User reviewer = userRepo.findUserByUsername(reviewerUsername).orElseThrow(() -> new IllegalArgumentException("Ревьюер не найден"));
-        Review entity = mapper.map(input, Review.class);
-        entity.setReviewer(reviewer);
-        entity.setReviewee(reviewee);
-        entity = reviewRepo.save(entity);
-        ReviewViewModel vm = mapper.map(entity, ReviewViewModel.class);
-        vm.setReviewerUsername(reviewer.getUsername());
-        vm.setReviewerFullName(reviewer.getFirstName() + " " + reviewer.getLastName());
-        return vm;
-    }
+    public ReviewViewModel createReview(ReviewInputModel reviewInputModel) {
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-
-    @Override
-    @Transactional
-    public void deleteReview(Long reviewId) {
-        String reviewerUsername = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-
-        Review r = reviewRepo.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Отзыв не найден"));
-        if (!r.getReviewer().getUsername().equals(reviewerUsername)) {
-            throw new SecurityException("Нельзя удалить чужой отзыв.");
+        if (currentUserUsername.equals(reviewInputModel.getRevieweeUsername())) {
+            throw new RuntimeException("Нельзя оставить отзыв самому себе");
         }
-        reviewRepo.delete(r);
+
+        User reviewer = userRepository.findUserByUsername(currentUserUsername).orElseThrow(() -> new RuntimeException("Ревьюер не найден"));
+        User reviewee = userRepository.findUserByUsername(reviewInputModel.getRevieweeUsername()).orElseThrow(() -> new RuntimeException("Пользователь для отзыва не найден"));
+
+        Review review = modelMapper.map(reviewInputModel, Review.class);
+        review.setReviewer(reviewer);
+        review.setReviewee(reviewee);
+        review = reviewRepository.save(review);
+
+        ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
+        reviewViewModel.setReviewerUsername(reviewer.getUsername());
+        reviewViewModel.setReviewerFullName(reviewer.getFirstName() + " " + reviewer.getLastName());
+
+        return reviewViewModel;
+    }
+
+    @Override
+    @Transactional
+    public void deleteReviewById(Long id) {
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Отзыв не найден"));
+        if (!review.getReviewer().getUsername().equals(currentUserUsername)) {
+            throw new RuntimeException("Нельзя удалить чужой отзыв");
+        }
+        reviewRepository.delete(review);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReviewViewModel> getReviewsAboutUser(
-            String username, String sortBy, int pageNumber, int pageSize
-    ) {
-        Sort sort = buildSpringSort(sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return reviewRepo.findAllByRevieweeUsername(username, pageable)
-                .map(r -> {
-                    ReviewViewModel vm = mapper.map(r, ReviewViewModel.class);
-                    vm.setReviewerUsername(r.getReviewer().getUsername());
-                    return vm;
+    public Page<ReviewViewModel> getReviewsAboutUser(String revieweeUsername, String sortBy, int pageNumber, int pageSize) {
+        Sort springSort = buildSpringSort(sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
+        return reviewRepository.findAllByRevieweeUsername(revieweeUsername, pageable)
+                .map(review -> {
+                    ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
+                    reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+                    return reviewViewModel;
                 });
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<ReviewViewModel> getReviewsByUser(
-            String username, String sortBy, int pageNumber, int pageSize
+            String reviewerUsername, String sortBy, int pageNumber, int pageSize
     ) {
         Sort sort = buildSpringSort(sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return reviewRepo.findAllByReviewerUsername(username, pageable)
+        return reviewRepository.findAllByReviewerUsername(reviewerUsername, pageable)
                 .map(r -> {
-                    ReviewViewModel vm = mapper.map(r, ReviewViewModel.class);
+                    ReviewViewModel vm = modelMapper.map(r, ReviewViewModel.class);
                     vm.setReviewerUsername(r.getReviewer().getUsername());
                     return vm;
                 });
@@ -106,8 +106,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Double getAverageRating(String username) {
-        return reviewRepo.findAverageRatingByRevieweeUsername(username);
+    public Double getUserAverageRating(String username) {
+        return reviewRepository.findAverageRatingByRevieweeUsername(username);
     }
 
 

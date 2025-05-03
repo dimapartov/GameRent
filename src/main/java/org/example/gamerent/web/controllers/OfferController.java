@@ -99,7 +99,7 @@ public class OfferController {
     public String getOfferDetailsPage(@PathVariable Long id,
                                       @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
                                       Model model) {
-        OfferViewModel offer = offerService.getById(id);
+        OfferViewModel offer = offerService.getOfferById(id);
         model.addAttribute("offer", offer);
         rentalInput.setOfferId(id);
 
@@ -135,7 +135,7 @@ public class OfferController {
     public String deleteOffer(@PathVariable Long id,
                               RedirectAttributes redirectAttributes) {
         try {
-            offerService.deleteOffer(id);
+            offerService.deleteOfferById(id);
             redirectAttributes.addFlashAttribute("success", "Оффер удалён");
             return "redirect:/offer/all";
         } catch (RuntimeException ex) {

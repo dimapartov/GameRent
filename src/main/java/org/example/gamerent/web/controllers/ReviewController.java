@@ -46,7 +46,7 @@ public class ReviewController {
 
         model.addAttribute("aboutPage", aboutPage);
         model.addAttribute("byPage", byPage);
-        model.addAttribute("avgRating", reviewService.getAverageRating(currentUser));
+        model.addAttribute("avgRating", reviewService.getUserAverageRating(currentUser));
         return "reviews";
     }
 
@@ -60,7 +60,7 @@ public class ReviewController {
     ) {
         Page<ReviewViewModel> reviewsPage = reviewService.getReviewsAboutUser(revieweeUsername, sortBy, page, pageSize);
         model.addAttribute("reviewsPage", reviewsPage);
-        model.addAttribute("avgRating", reviewService.getAverageRating(revieweeUsername));
+        model.addAttribute("avgRating", reviewService.getUserAverageRating(revieweeUsername));
         ReviewInputModel newReview = new ReviewInputModel();
         newReview.setRevieweeUsername(revieweeUsername);
         model.addAttribute("newReview", newReview);
@@ -91,7 +91,7 @@ public class ReviewController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "sortBy", defaultValue = "") String sortBy
     ) {
-        reviewService.deleteReview(id);
+        reviewService.deleteReviewById(id);
         return "redirect:/reviews?page=" + page + "&sortBy=" + sortBy;
     }
 

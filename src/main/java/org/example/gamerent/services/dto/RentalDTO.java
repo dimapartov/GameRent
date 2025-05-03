@@ -15,6 +15,19 @@ public class RentalDTO {
     private LocalDateTime endDate;
     private RentalStatus status;
 
+
+    public RentalDTO() {
+    }
+
+    public RentalDTO(Offer offer, User renter, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status) {
+        this.offer = offer;
+        this.renter = renter;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
+
     public Offer getOffer() {
         return offer;
     }

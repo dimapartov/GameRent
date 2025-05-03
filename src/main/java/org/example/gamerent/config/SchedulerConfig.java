@@ -22,7 +22,7 @@ public class SchedulerConfig {
 
     @Scheduled(fixedDelay = 3600000) // Каждый час
     public void declineOld() {
-        rentalService.autoDecline();
+        rentalService.autoDeclineRentalRequest();
     }
 
 }

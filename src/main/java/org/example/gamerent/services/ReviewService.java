@@ -7,14 +7,14 @@ import org.springframework.data.domain.Page;
 
 public interface ReviewService {
 
-    ReviewViewModel createReview(ReviewInputModel input);
+    ReviewViewModel createReview(ReviewInputModel reviewInputModel);
 
-    void deleteReview(Long reviewId);
+    void deleteReviewById(Long id);
 
-    Page<ReviewViewModel> getReviewsAboutUser(String username, String sortBy, int pageNumber, int pageSize);
+    Page<ReviewViewModel> getReviewsAboutUser(String revieweeUsername, String sortBy, int pageNumber, int pageSize);
 
-    Page<ReviewViewModel> getReviewsByUser(String username, String sortBy, int pageNumber, int pageSize);
+    Page<ReviewViewModel> getReviewsByUser(String reviewerUsername, String sortBy, int pageNumber, int pageSize);
 
-    Double getAverageRating(String username);
+    Double getUserAverageRating(String username);
 
 }

@@ -71,43 +71,45 @@ public class OfferServiceImpl implements OfferService {
 
     //    Для инициализации данных
     @Override
-    public void seedOffer(OfferCreationInputModel newOffer, String username) {
-        Offer offer = modelMapper.map(newOffer, Offer.class);
+    public void seedOffer(OfferCreationInputModel newOfferInputModel, String offerOwnerUsername) {
+        Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
-        offer.setBrand(brandRepository.findByName(newOffer.getBrand()));
-        offer.setPhoto(newOffer.getPhoto());
-        offer.setMinRentalDays(newOffer.getMinRentalDays());
-        offer.setMaxRentalDays(newOffer.getMaxRentalDays());
+        Brand brand = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
+        offer.setBrand(brand);
+        offer.setPhoto(newOfferInputModel.getPhoto());
+        offer.setMinRentalDays(newOfferInputModel.getMinRentalDays());
+        offer.setMaxRentalDays(newOfferInputModel.getMaxRentalDays());
         offer.setStatus(OfferStatus.AVAILABLE);
-        User owner = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Пользователь не найден: " + username));
+        User owner = userRepository.findUserByUsername(offerOwnerUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offerRepository.save(offer);
     }
 
 
     @Override
-    public Long createOffer(OfferCreationInputModel newOffer, MultipartFile photo) {
-        Offer offer = modelMapper.map(newOffer, Offer.class);
+    public Long createOffer(OfferCreationInputModel newOfferInputModel, MultipartFile offerPhoto) {
+        Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
-        offer.setMinRentalDays(newOffer.getMinRentalDays());
-        offer.setMaxRentalDays(newOffer.getMaxRentalDays());
-        Brand brand = brandRepository.findByName(newOffer.getBrand());
+        offer.setMinRentalDays(newOfferInputModel.getMinRentalDays());
+        offer.setMaxRentalDays(newOfferInputModel.getMaxRentalDays());
+        Brand brand = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
         offer.setBrand(brand);
-        if (!photo.isEmpty()) {
+        if (!offerPhoto.isEmpty()) {
             try {
-                String filename = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-                Path filePath = Paths.get(uploadPath, filename);
+                String fileName = System.currentTimeMillis() + "_" + offerPhoto.getOriginalFilename();
+                Path filePath = Paths.get(uploadPath, fileName);
                 Files.createDirectories(filePath.getParent());
-                Files.copy(photo.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                offer.setPhoto(filename);
+                Files.copy(offerPhoto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                offer.setPhoto(fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Ошибка загрузки файла", e);
             }
+        } else {
+            throw new RuntimeException("Оффер не имеет фото");
         }
         offer.setStatus(OfferStatus.AVAILABLE);
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        User owner = userRepository.findUserByUsername(currentUser)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User owner = userRepository.findUserByUsername(currentUserUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offer = offerRepository.save(offer);
         return offer.getId();
@@ -124,46 +126,38 @@ public class OfferServiceImpl implements OfferService {
             String sortBy,
             String searchTerm
     ) {
-        System.out.println("Вход в метод сервиса");
         Sort springSort = buildSpringSort(sortBy);
         Pageable pageable = PageRequest.of(page, size, springSort);
 
         if (searchTerm != null && !searchTerm.isBlank()) {
-            // Полнотекстовый поиск через Hibernate Search
-            SearchSession search = Search.session(entityManager);
-            SearchResult<Offer> result = search.search(Offer.class)
+            SearchSession searchSession = Search.session(entityManager);
+            SearchResult<Offer> searchResult = searchSession.search(Offer.class)
                     .where(f -> {
                         var b = f.bool();
-                        b.must(f.match()
-                                .fields("gameName", "brand.name")
-                                .matching(searchTerm));
+                        b.must(f.match().fields("gameName", "brand.name").matching(searchTerm));
                         if (priceFrom != null) b.must(f.range().field("price").atLeast(priceFrom));
                         if (priceTo != null) b.must(f.range().field("price").atMost(priceTo));
                         if (brand != null && !brand.isBlank()) {
                             b.must(f.match().field("brand.name").matching(brand));
                         }
                         if (Boolean.TRUE.equals(myOffers)) {
-                            String user = SecurityContextHolder.getContext().getAuthentication().getName();
-                            b.must(f.match().field("owner.username").matching(user));
+                            String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+                            b.must(f.match().field("owner.username").matching(currentUserUsername));
                         }
                         return b;
                     })
-                    .sort(f -> applySearchSort(f, sortBy))
+                    .sort(f -> buildSearchSort(f, sortBy))
                     .fetch((int) pageable.getOffset(), pageable.getPageSize());
-
-            // Inline-маппинг сущностей в ViewModel
-            List<OfferDemoViewModel> vms = result.hits().stream()
+            List<OfferDemoViewModel> offerViewModels = searchResult.hits().stream()
                     .map(offer -> {
-                        OfferDemoViewModel vm = modelMapper.map(offer, OfferDemoViewModel.class);
-                        vm.setOwner(offer.getOwner().getUsername());
-                        return vm;
+                        OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+                        offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+                        return offerDemoViewModel;
                     })
                     .toList();
-            System.out.println("вызван метод сервиса. условие с текстовым поиском");
-            return new PageImpl<>(vms, pageable, result.total().hitCount());
+            return new PageImpl<>(offerViewModels, pageable, searchResult.total().hitCount());
         } else {
-            // Обычная фильтрация через репозиторий JPA
-            Page<Offer> pageOfOffers = offerRepository.findFilteredOffers(
+            Page<Offer> filteredOffers = offerRepository.findFilteredOffers(
                     priceFrom,
                     priceTo,
                     brand,
@@ -171,71 +165,65 @@ public class OfferServiceImpl implements OfferService {
                     SecurityContextHolder.getContext().getAuthentication().getName(),
                     pageable
             );
-            System.out.println("вызван метод сервиса. условие без текстового поиска");
-            // Inline-маппинг через Page.map
-            return pageOfOffers.map(offer -> {
-                OfferDemoViewModel vm = modelMapper.map(offer, OfferDemoViewModel.class);
-                vm.setOwner(offer.getOwner().getUsername());
-                return vm;
+            return filteredOffers.map(offer -> {
+                OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+                offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+                return offerDemoViewModel;
             });
         }
     }
 
     @Override
     public OfferUpdateInputModel getOfferUpdateModel(Long id) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!offer.getOwner().getUsername().equals(currentUser)) {
-            throw new RuntimeException("Access denied");
+        Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!offer.getOwner().getUsername().equals(currentUserUsername)) {
+            throw new RuntimeException("Доступ запрещен");
         }
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
-            throw new RuntimeException("Offer is not editable");
+            throw new RuntimeException("Оффер недоступен. Изменения невозможны");
         }
         return modelMapper.map(offer, OfferUpdateInputModel.class);
     }
 
     @Override
-    public void updateOffer(Long id, OfferUpdateInputModel input) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!offer.getOwner().getUsername().equals(currentUser)) {
-            throw new RuntimeException("Access denied");
+    public void updateOffer(Long id, OfferUpdateInputModel offerUpdateInputModel) {
+        Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!offer.getOwner().getUsername().equals(currentUserUsername)) {
+            throw new RuntimeException("Доступ запрещен");
         }
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
-            throw new RuntimeException("Offer is not editable");
+            throw new RuntimeException("Оффер недоступен. Изменения невозможны");
         }
-        offer.setDescription(input.getDescription());
-        offer.setPrice(input.getPrice());
-        offer.setMinRentalDays(input.getMinRentalDays());
-        offer.setMaxRentalDays(input.getMaxRentalDays());
+        offer.setDescription(offerUpdateInputModel.getDescription());
+        offer.setPrice(offerUpdateInputModel.getPrice());
+        offer.setMinRentalDays(offerUpdateInputModel.getMinRentalDays());
+        offer.setMaxRentalDays(offerUpdateInputModel.getMaxRentalDays());
         offerRepository.save(offer);
         Search.session(entityManager).indexingPlan().addOrUpdate(offer);
     }
 
     @Override
-    public void deleteOffer(Long id) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
+    public void deleteOfferById(Long id) {
+        Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!offer.getOwner().getUsername().equals(currentUser)) {
-            throw new RuntimeException("Access denied");
+            throw new RuntimeException("Доступ запрещен");
         }
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
-            throw new RuntimeException("Offer is not deletable");
+            throw new RuntimeException("Оффер недоступен. Изменения невозможны");
         }
         offerRepository.delete(offer);
         Search.session(entityManager).indexingPlan().delete(offer);
     }
 
     @Override
-    public OfferViewModel getById(Long id) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-        OfferViewModel viewModel = modelMapper.map(offer, OfferViewModel.class);
-        viewModel.setOwnerUsername(offer.getOwner().getUsername());
-        return viewModel;
+    public OfferViewModel getOfferById(Long id) {
+        Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
+        OfferViewModel offerViewModel = modelMapper.map(offer, OfferViewModel.class);
+        offerViewModel.setOwnerUsername(offer.getOwner().getUsername());
+        return offerViewModel;
     }
 
 
@@ -252,13 +240,13 @@ public class OfferServiceImpl implements OfferService {
         };
     }
 
-    private SortFinalStep applySearchSort(SearchSortFactory f, String sortBy) {
+    private SortFinalStep buildSearchSort(SearchSortFactory searchSortFactory, String sortBy) {
         return switch (sortBy) {
-            case "priceAsc" -> f.field("price").asc();
-            case "priceDesc" -> f.field("price").desc();
-            case "daysAsc" -> f.field("maxRentalDays").asc();
-            case "daysDesc" -> f.field("maxRentalDays").desc();
-            default -> f.score();
+            case "priceAsc" -> searchSortFactory.field("price").asc();
+            case "priceDesc" -> searchSortFactory.field("price").desc();
+            case "daysAsc" -> searchSortFactory.field("maxRentalDays").asc();
+            case "daysDesc" -> searchSortFactory.field("maxRentalDays").desc();
+            default -> searchSortFactory.score();
         };
     }
 

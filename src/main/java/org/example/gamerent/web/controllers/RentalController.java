@@ -47,7 +47,7 @@ public class RentalController {
 
     @PostMapping("/{id}/return")
     public String initiateReturn(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.initiateReturn(id);
+        rentalService.initiateRentalReturn(id);
         ra.addFlashAttribute("success", "Запрос на возврат отправлен");
         return "redirect:/rentals/my";
     }

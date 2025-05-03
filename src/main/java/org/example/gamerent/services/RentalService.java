@@ -8,26 +8,26 @@ import java.util.List;
 
 public interface RentalService {
 
-    void createRentalRequest(RentalRequestInputModel input);
+    void createRentalRequest(RentalRequestInputModel rentalRequestInputModel);
 
-    void cancelRentalRequest(Long rentalId);
+    void cancelRentalRequest(Long id);
 
-    void rejectRentalRequest(Long rentalId);
+    void rejectRentalRequest(Long id);
 
-    void confirmRentalRequest(Long rentalId);
+    void confirmRentalRequest(Long id);
 
-    void initiateReturn(Long rentalId);
+    void initiateRentalReturn(Long id);
 
-    void confirmReturn(Long rentalId);
+    void confirmRentalReturn(Long id);
 
-    void autoDecline();
-
-    List<RentalViewModel> getOwnerPendingRequests();
+    void autoDeclineRentalRequest();
 
     List<RentalViewModel> getMyRentals();
 
-    List<RentalViewModel> getOwnerActiveRentals();
+    List<RentalViewModel> getPendingRequestsForOwner();
 
-    List<RentalViewModel> getOwnerPendingReturns();
+    List<RentalViewModel> getActiveRentalsForOwner();
+
+    List<RentalViewModel> getPendingReturnsForOwner();
 
 }

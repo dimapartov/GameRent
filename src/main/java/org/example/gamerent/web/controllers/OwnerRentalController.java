@@ -24,9 +24,9 @@ public class OwnerRentalController {
 
     @GetMapping("/dashboard")
     public String getRentalOwnerDashboardPage(Model model) {
-        model.addAttribute("pendingRequests", rentalService.getOwnerPendingRequests());
-        model.addAttribute("activeRentals", rentalService.getOwnerActiveRentals());
-        model.addAttribute("pendingReturns", rentalService.getOwnerPendingReturns());
+        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner());
+        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner());
+        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner());
         return "rental-owner-dashboard-page";
     }
 
@@ -47,7 +47,7 @@ public class OwnerRentalController {
 
     @PostMapping("/{id}/confirm-return")
     public String confirmReturn(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.confirmReturn(id);
+        rentalService.confirmRentalReturn(id);
         ra.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/owner/rentals/dashboard";
     }

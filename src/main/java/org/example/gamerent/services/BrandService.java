@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BrandService {
 
-    BrandCreationInputModel createBrand(BrandCreationInputModel newBrand);
+    void createBrand(BrandCreationInputModel newBrandInputModel);
 
     List<BrandDTO> getAllBrandsDTOs();
 
