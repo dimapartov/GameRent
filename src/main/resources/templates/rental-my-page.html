@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:inline="text">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои аренды</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h1>Мои аренды</h1>
+    <div th:if="${rentals.isEmpty()}">
+        <p>У вас пока нет ни одной аренды.</p>
+    </div>
+    <table th:if="${!rentals.isEmpty()}" border="1" cellpadding="5">
+        <tr>
+            <th>Игра</th>
+            <th>Период</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+        <tr th:each="r : ${rentals}">
+            <td th:text="${r.offerName}"></td>
+            <td th:text="|${r.startDate != null ? #temporals.format(r.startDate, 'dd-MM-yyyy') : 'С момента подтверждения'} по ${r.endDate   != null ? #temporals.format(r.endDate,   'dd-MM-yyyy') : 'не указано'}|"></td>
+            <td th:text="${r.status}"></td>
+            <td>
+                <form th:if="${r.status} == 'Ожидает подтверждения владельцем'"
+                      th:action="@{/rentals/{id}/cancel(id=${r.rentalId})}"
+                      method="post">
+                    <button>Отменить</button>
+                </form>
+                <form th:if="${r.status} == 'Активна'"
+                      th:action="@{/rentals/{id}/return(id=${r.rentalId})}"
+                      method="post">
+                    <button>Вернуть</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div th:if="${success}" style="color:green;" th:text="${success}"></div>
+</main>
+</body>
+</html>

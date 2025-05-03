@@ -13,14 +13,17 @@ public class Review extends IdCreatedModified {
     private User reviewer;
     private User reviewee;
 
-    protected Review() { }
 
-    @Column(name = "text")
+    protected Review() {
+    }
+
+
+    @Column(name = "text", nullable = false)
     public String getText() {
         return text;
     }
 
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = false)
     public Integer getRating() {
         return rating;
     }
@@ -37,16 +40,21 @@ public class Review extends IdCreatedModified {
         return reviewee;
     }
 
+
     public void setText(String text) {
         this.text = text;
     }
+
     public void setRating(Integer rating) {
         this.rating = rating;
     }
+
     public void setReviewer(User reviewer) {
         this.reviewer = reviewer;
     }
+
     public void setReviewee(User reviewee) {
         this.reviewee = reviewee;
     }
+
 }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${offer.brandName + ' ' + offer.gameName}">Детали оффера</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h1 th:text="${offer.brandName + ' ' + offer.gameName}">Название игры</h1>
+    <img th:src="@{'/images/' + ${offer.photo}}"
+         alt="Фото оффера"
+         style="max-width:200px; display:block; margin-bottom:20px;"/>
+    <p><strong>Описание:</strong> <span th:text="${offer.description}"></span></p>
+    <p><strong>Цена в день:</strong> <span th:text="${offer.price}"></span></p>
+    <p>
+        <strong>Срок аренды:</strong>
+        от <span th:text="${offer.minRentalDays}"></span>
+        до <span th:text="${offer.maxRentalDays}"></span> дней
+    </p>
+    <p><strong>Статус:</strong> <span th:text="${offer.status}"></span></p>
+    <!-- Действия владельца -->
+    <div sec:authorize="isAuthenticated()">
+        <div th:if="${offer.ownerUsername == #authentication.name}">
+            <!-- Кнопки только если Доступно -->
+            <div th:if="${offer.status == 'Доступно'}" style="margin-top:1em;">
+                <button id="editBtn" style="margin-right:1em;">Редактировать</button>
+                <form th:action="@{'/offer/' + ${offer.id} + '/delete'}"
+                      method="post"
+                      style="display:inline;">
+                    <button type="submit">Удалить</button>
+                </form>
+            </div>
+            <!-- Сообщение если неДоступно -->
+            <div th:if="${offer.status != 'Доступно'}"
+                 style="color:red; margin-top:1em;">
+                Оффер находится в аренде, изменение и удаление невозможно
+            </div>
+        </div>
+    </div>
+    <div th:if="${offer.status == 'Доступно'}">
+        <div sec:authorize="isAuthenticated()"
+             th:if="${offer.ownerUsername != #authentication.name}"
+             style="margin-top:1em;">
+            <form th:action="@{/rentals}"
+                  th:object="${rentalInput}"
+                  method="post">
+                <input type="hidden" th:field="*{offerId}"/>
+                <div>
+                    <label>Дней аренды:</label>
+                    <input type="number"
+                           th:field="*{days}"
+                           min="${offer.minRentalDays}"
+                           max="${offer.maxRentalDays}"/>
+                </div>
+                <div th:errors="*{days}" style="color:red;"></div>
+                <button type="submit">Арендовать</button>
+            </form>
+        </div>
+        <div sec:authorize="isAuthenticated()"
+             th:if="${offer.ownerUsername == #authentication.name}"
+             style="color:gray; margin-top:1em;">
+            Вы не можете арендовать свой собственный оффер.
+        </div>
+        <div sec:authorize="!isAuthenticated()"
+             style="margin-top:1em;">
+            <a th:href="@{/login}">Войдите в систему</a>, чтобы арендовать этот оффер.
+        </div>
+    </div>
+    <p>
+        <strong>Владелец:</strong>
+        <span th:text="${offer.ownerFirstName + ' ' + offer.ownerLastName}">Имя Фамилия</span>
+        —
+        <a th:href="'mailto:' + ${offer.ownerEmail}"
+           th:text="${offer.ownerEmail}">email</a>
+        <a th:href="@{/reviews/about/{username}(username=${offer.ownerUsername})}"
+           style="margin-left:1em; text-decoration:none; font-weight:bold;">
+            Смотреть отзывы
+        </a>
+    </p>
+    <div th:if="${success}" style="color:green; margin-top:1em;" th:text="${success}"></div>
+    <div th:if="${error}" style="color:red; margin-top:1em;" th:text="${error}"></div>
+    <div id="editModal"
+         th:if="${offerUpdateInputModel != null}"
+         style="display:none;
+                position:fixed;
+                top:20%;
+                left:30%;
+                width:40%;
+                background:#fff;
+                padding:20px;
+                box-shadow:0 0 10px rgba(0,0,0,0.5);
+                z-index:1000;">
+        <form th:action="@{'/offer/' + ${offer.id} + '/edit'}"
+              th:object="${offerUpdateInputModel}"
+              method="post">
+            <div>
+                <label>Описание:</label><br/>
+                <textarea th:field="*{description}" rows="3" style="width:100%;"></textarea>
+                <div th:errors="*{description}" style="color:red;"></div>
+            </div>
+            <div style="margin-top:1em;">
+                <label>Цена в день:</label><br/>
+                <input type="number" step="0.01" th:field="*{price}" style="width:100%;"/>
+                <div th:errors="*{price}" style="color:red;"></div>
+            </div>
+            <div style="margin-top:1em;">
+                <label>Мин. дней:</label><br/>
+                <input type="number" th:field="*{minRentalDays}" style="width:48%;"/>
+                <label style="margin-left:4%;">Макс. дней:</label><br/>
+                <input type="number" th:field="*{maxRentalDays}" style="width:48%;"/>
+                <div th:errors="*{minRentalDays}" style="color:red;"></div>
+                <div th:errors="*{maxRentalDays}" style="color:red;"></div>
+            </div>
+            <div style="margin-top:1em;">
+                <button type="submit">Сохранить</button>
+                <button type="button" id="cancelEdit">Отмена</button>
+            </div>
+        </form>
+    </div>
+    <script th:inline="javascript">
+        document.getElementById('editBtn')?.addEventListener('click', function () {
+            document.getElementById('editModal').style.display = 'block';
+        });
+        document.getElementById('cancelEdit')?.addEventListener('click', function () {
+            document.getElementById('editModal').style.display = 'none';
+        });
+    </script>
+</main>
+</body>
+</html>

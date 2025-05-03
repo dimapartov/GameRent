@@ -3,6 +3,11 @@ package org.example.gamerent.models;
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
 import org.example.gamerent.models.consts.OfferStatus;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -10,30 +15,68 @@ import java.util.Set;
 
 @Entity
 @Table(name = "offers")
+@Indexed
 public class Offer extends IdCreatedModified {
 
+    private User owner;
+    private Brand brand;
+    private String gameName;
     private String description;
     private BigDecimal price;
+    private Integer minRentalDays;
+    private Integer maxRentalDays;
     private OfferStatus status;
-    private String photo;   // URL или путь к изображению оффера
-    private Game game;
-    private User owner;
+    private String photo;
     private Set<Rental> rentals;
 
-    protected Offer() { }
+    protected Offer() {
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    @IndexedEmbedded(includePaths = {"username"})
+    public User getOwner() {
+        return owner;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
+    @IndexedEmbedded
+    public Brand getBrand() {
+        return brand;
+    }
+
+    @Column(name = "game_name", nullable = false)
+    @FullTextField(analyzer = "english")
+    public String getGameName() {
+        return gameName;
+    }
 
     @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "price", precision = 10, scale = 2, nullable = false)
+    @GenericField(sortable = Sortable.YES)
     public BigDecimal getPrice() {
         return price;
     }
 
+    @Column(name = "min_rental_days", nullable = false)
+    @GenericField(sortable = Sortable.YES)
+    public Integer getMinRentalDays() {
+        return minRentalDays;
+    }
+
+    @Column(name = "max_rental_days", nullable = false)
+    @GenericField(sortable = Sortable.YES)
+    public Integer getMaxRentalDays() {
+        return maxRentalDays;
+    }
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     public OfferStatus getStatus() {
         return status;
     }
@@ -43,42 +86,49 @@ public class Offer extends IdCreatedModified {
         return photo;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false)
-    public Game getGame() {
-        return game;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    public User getOwner() {
-        return owner;
-    }
-
     @OneToMany(mappedBy = "offer", fetch = FetchType.LAZY)
     public Set<Rental> getRentals() {
         return rentals;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-    public void setStatus(OfferStatus status) {
-        this.status = status;
-    }
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-    public void setGame(Game game) {
-        this.game = game;
-    }
     public void setOwner(User owner) {
         this.owner = owner;
     }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public void setMinRentalDays(Integer minRentalDays) {
+        this.minRentalDays = minRentalDays;
+    }
+
+    public void setMaxRentalDays(Integer maxRentalDays) {
+        this.maxRentalDays = maxRentalDays;
+    }
+
+    public void setStatus(OfferStatus status) {
+        this.status = status;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
     public void setRentals(Set<Rental> rentals) {
         this.rentals = rentals;
     }
+
 }

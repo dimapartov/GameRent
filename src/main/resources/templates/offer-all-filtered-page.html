@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Объявления</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <h2>Объявления</h2>
+    <form th:action="@{/offer/all}" method="get" th:object="${filters}" style="margin-bottom:20px;">
+        <input type="hidden" name="page" th:value="${offersPage.number}"/>
+        <!-- ▶ Здесь вставляем поле поиска -->
+        <div style="margin-bottom:10px;">
+            <label for="searchTerm">Поиск:</label>
+            <input id="searchTerm"
+                   type="text"
+                   th:field="*{searchTerm}"
+                   placeholder="Название игры или бренд"
+                   style="width:300px; padding:4px;"/>
+        </div>
+        <div>
+            <label>Цена от:</label>
+            <input type="number" step="0.01" th:field="*{priceFrom}"/>
+            <label>до:</label>
+            <input type="number" step="0.01" th:field="*{priceTo}"/>
+        </div>
+        <div>
+            <label>Бренд:</label>
+            <select th:field="*{brand}">
+                <option value="">Все бренды</option>
+                <option th:each="b : ${allBrands}"
+                        th:value="${b.name}"
+                        th:text="${b.name}"></option>
+            </select>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" name="myOffers" value="true" th:checked="${filters.myOffers}"/>
+                Мои объявления
+            </label>
+        </div>
+        <div>
+            <label>Сортировать:</label>
+            <select th:field="*{sortBy}">
+                <option value="">Без сортировки</option>
+                <option value="priceAsc">Цена ↑</option>
+                <option value="priceDesc">Цена ↓</option>
+                <option value="daysAsc">Срок аренды ↑</option>
+                <option value="daysDesc">Срок аренды ↓</option>
+            </select>
+        </div>
+        <div style="margin-top:10px;">
+            <button type="submit">Применить фильтры</button>
+            <a th:href="@{/offer/all}"
+               style="margin-left: 10px; text-decoration: none; border: 1px solid #ccc; padding: 5px 10px;">
+                Сбросить фильтры
+            </a>
+        </div>
+    </form>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <div th:each="o : ${offersPage.content}"
+             style="border: 1px solid #ccc; padding: 10px; width: 250px;">
+            <img th:src="@{'/images/' + ${o.photo}}"
+                 alt="Offer Image"
+                 style="max-width: 100%; height: auto;"/>
+            <h3 th:text="${o.brand.name + ' ' + o.gameName}">Offer Name</h3>
+            <p>
+
+                <strong>Цена:</strong> <span th:text="${o.price}">Price</span><br/>
+                <strong>Срок аренды:</strong>
+                от <span th:text="${o.minRentalDays}">min</span> до <span th:text="${o.maxRentalDays}">max</span>
+                дней<br/>
+                <strong>Статус:</strong> <span th:text="${o.status}">Status</span><br/>
+                <strong>Описание:</strong> <span th:text="${o.description}">Description</span><br/>
+                <strong>Владелец:</strong> <span th:text="${o.owner}">Owner</span>
+            </p>
+            <div style="margin-top:10px; display:flex; gap:5px;">
+                <a th:href="@{/offer/{id}(id=${o.id})}">
+                    <button type="button">Подробнее</button>
+                </a>
+                <form th:if="${o.status} == 'Доступно'"
+                      th:action="@{/rentals}"
+                      th:object="${rentalInput}"
+                      method="post" style="display:inline;">
+                    <input type="hidden" th:field="*{offerId}" th:value="${o.id}"/>
+                    <input type="hidden" th:field="*{days}" th:value="${o.minRentalDays}"/>
+                    <button type="submit">Арендовать</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Пагинация -->
+    <div style="margin-top:20px;">
+        <ul style="list-style: none; display: flex; gap: 10px;">
+
+            <li th:if="${offersPage.hasPrevious()}">
+                <a th:href="@{/offer/all(
+                             page=${offersPage.number - 1},
+                             priceFrom=${filters.priceFrom},
+                             priceTo=${filters.priceTo},
+                             brand=${filters.brand},
+                             myOffers=${filters.myOffers},
+                             sortBy=${filters.sortBy},
+                             searchTerm=${filters.searchTerm}
+            )}">&#8592; Назад</a>
+            </li>
+
+            <li>
+                Страница <span th:text="${offersPage.number + 1}"></span>
+                из <span th:text="${offersPage.totalPages}"></span>
+            </li>
+
+            <li th:if="${offersPage.hasNext()}">
+                <a th:href="@{/offer/all(
+                             page=${offersPage.number + 1},
+                             priceFrom=${filters.priceFrom},
+                             priceTo=${filters.priceTo},
+                             brand=${filters.brand},
+                             myOffers=${filters.myOffers},
+                             sortBy=${filters.sortBy},
+                             searchTerm=${filters.searchTerm}
+            )}">Вперед &#8594;</a>
+            </li>
+
+        </ul>
+    </div>
+
+</main>
+</body>
+</html>

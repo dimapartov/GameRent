@@ -2,6 +2,7 @@ package org.example.gamerent.models;
 
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import java.util.Set;
 
@@ -12,12 +13,16 @@ public class Brand extends IdCreatedModified {
 
     private String name;
     private String description;
-    private String photo;   // URL или путь к изображению бренда
-    private Set<Game> games;
+    private String photo;
+    private Set<Offer> offers;
 
-    protected Brand() { }
+
+    protected Brand() {
+    }
+
 
     @Column(name = "name", nullable = false)
+    @GenericField
     public String getName() {
         return name;
     }
@@ -33,20 +38,25 @@ public class Brand extends IdCreatedModified {
     }
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-    public Set<Game> getGames() {
-        return games;
+    public Set<Offer> getOffers() {
+        return offers;
     }
+
 
     public void setName(String name) {
         this.name = name;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setPhoto(String photo) {
         this.photo = photo;
     }
-    public void setGames(Set<Game> games) {
-        this.games = games;
+
+    public void setOffers(Set<Offer> offers) {
+        this.offers = offers;
     }
+
 }
