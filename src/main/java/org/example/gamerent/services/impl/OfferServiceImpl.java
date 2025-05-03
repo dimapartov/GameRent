@@ -174,7 +174,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferUpdateInputModel getOfferUpdateModel(Long id) {
+    public OfferUpdateInputModel getOfferUpdateInputModel(Long id) {
         Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!offer.getOwner().getUsername().equals(currentUserUsername)) {

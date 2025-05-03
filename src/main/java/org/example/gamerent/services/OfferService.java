@@ -35,6 +35,6 @@ public interface OfferService {
 
     void deleteOfferById(Long id);
 
-    OfferUpdateInputModel getOfferUpdateModel(Long id);
+    OfferUpdateInputModel getOfferUpdateInputModel(Long id);
 
 }

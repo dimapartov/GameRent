@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/brand")
 public class BrandController {
 
-    private final BrandService brandService;
+    private BrandService brandService;
 
 
     @Autowired
-    public BrandController(BrandService brandService) {
+    public void setBrandService(BrandService brandService) {
         this.brandService = brandService;
     }
 
