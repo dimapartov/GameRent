@@ -1,9 +1,6 @@
 package org.example.gamerent.web.viewmodels.user_input;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
@@ -24,6 +21,14 @@ public class OfferUpdateInputModel {
     @NotNull(message = "Введите максимальное количество дней для аренды")
     @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer maxRentalDays;
+
+    @AssertTrue(message = "Минимальное количество дней не может превышать максимальное")
+    public boolean isRentalDaysValid() {
+        if (minRentalDays == null || maxRentalDays == null) {
+            return true;
+        }
+        return minRentalDays <= maxRentalDays;
+    }
 
 
     public OfferUpdateInputModel() {
