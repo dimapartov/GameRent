@@ -17,6 +17,7 @@ public class BrandViewModel {
         this.photo = photo;
     }
 
+
     public String getName() {
         return name;
     }

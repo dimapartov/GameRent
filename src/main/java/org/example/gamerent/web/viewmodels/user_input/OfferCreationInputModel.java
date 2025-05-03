@@ -10,10 +10,12 @@ import java.math.BigDecimal;
 
 public class OfferCreationInputModel {
 
+    private String photo;
+
     @NotBlank(message = "Введите описание")
     private String description;
 
-    @NotNull(message = "Введите цену")
+    @NotNull(message = "Введите стоимость")
     @DecimalMin("0.01")
     private BigDecimal price;
 
@@ -31,7 +33,19 @@ public class OfferCreationInputModel {
     @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer maxRentalDays;
 
-    private String photo;
+
+    public OfferCreationInputModel() {
+    }
+
+    public OfferCreationInputModel(String description, BigDecimal price, String brand, String gameName, Integer minRentalDays, Integer maxRentalDays, String photo) {
+        this.description = description;
+        this.price = price;
+        this.brand = brand;
+        this.gameName = gameName;
+        this.minRentalDays = minRentalDays;
+        this.maxRentalDays = maxRentalDays;
+        this.photo = photo;
+    }
 
 
     public String getDescription() {

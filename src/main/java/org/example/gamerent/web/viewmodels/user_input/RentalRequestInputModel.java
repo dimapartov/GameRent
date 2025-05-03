@@ -9,9 +9,10 @@ public class RentalRequestInputModel {
     @NotNull
     private Long offerId;
 
-    @NotNull
-    @Min(1)
+    @NotNull(message = "Введите количество дней аренды")
+    @Min(value = 1,message = "Количество дней для аренды должно быть больше или равно 1")
     private Integer days;
+
 
     public RentalRequestInputModel() {
     }
@@ -20,6 +21,7 @@ public class RentalRequestInputModel {
         this.offerId = offerId;
         this.days = days;
     }
+
 
     public Long getOfferId() {
         return offerId;

@@ -35,7 +35,7 @@ public class RentalController {
         model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner());
         model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner());
         model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner());
-        return "rental-owner-dashboard-page";
+        return "rentals-owner-dashboard-page";
     }
 
     @PostMapping("/owner/{id}/confirm")
@@ -62,7 +62,7 @@ public class RentalController {
     @GetMapping("/my")
     public String getMyRentalsPage(Model model) {
         model.addAttribute("myRentals", rentalService.getMyRentals());
-        return "rental-my-page";
+        return "rentals-my-page";
     }
 
     @PostMapping("/create")

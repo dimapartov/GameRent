@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/reviews")
 public class ReviewController {
 
-    private final ReviewService reviewService;
-
     @Value("${review.page.size}")
     private int pageSize;
+
+    private final ReviewService reviewService;
 
 
     @Autowired
@@ -33,12 +33,10 @@ public class ReviewController {
 
 
     @GetMapping
-    public String myReviews(
-            @ModelAttribute("filters") ReviewFiltersDTO filters,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-            Model model
-    ) {
+    public String myReviews(@ModelAttribute("filters") ReviewFiltersDTO filters,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                            Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
         Page<ReviewViewModel> aboutPage = reviewService.getReviewsAboutUser(currentUser, sortBy, page, pageSize);
@@ -47,17 +45,15 @@ public class ReviewController {
         model.addAttribute("aboutPage", aboutPage);
         model.addAttribute("byPage", byPage);
         model.addAttribute("avgRating", reviewService.getUserAverageRating(currentUser));
-        return "reviews";
+        return "reviews-page";
     }
 
     @GetMapping("/about/{username}")
-    public String reviewsAbout(
-            @PathVariable("username") String revieweeUsername,
-            @ModelAttribute("filters") ReviewFiltersDTO filters,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-            Model model
-    ) {
+    public String reviewsAbout(@PathVariable("username") String revieweeUsername,
+                               @ModelAttribute("filters") ReviewFiltersDTO filters,
+                               @RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                               Model model) {
         Page<ReviewViewModel> reviewsPage = reviewService.getReviewsAboutUser(revieweeUsername, sortBy, page, pageSize);
         model.addAttribute("reviewsPage", reviewsPage);
         model.addAttribute("avgRating", reviewService.getUserAverageRating(revieweeUsername));
@@ -65,19 +61,17 @@ public class ReviewController {
         newReview.setRevieweeUsername(revieweeUsername);
         model.addAttribute("newReview", newReview);
         model.addAttribute("revieweeUsername", revieweeUsername);
-        return "reviews-about";
+        return "reviews-about-user-page";
     }
 
     @PostMapping("/about/{username}")
-    public String postReview(
-            @PathVariable("username") String revieweeUsername,
-            @Valid @ModelAttribute("newReview") ReviewInputModel input,
-            BindingResult errors,
-            @ModelAttribute("filters") ReviewFiltersDTO filters,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-            Model model
-    ) {
+    public String postReview(@PathVariable("username") String revieweeUsername,
+                             @Valid @ModelAttribute("newReview") ReviewInputModel input,
+                             BindingResult errors,
+                             @ModelAttribute("filters") ReviewFiltersDTO filters,
+                             @RequestParam(value = "page", defaultValue = "0") int page,
+                             @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                             Model model) {
         if (errors.hasErrors()) {
             return reviewsAbout(revieweeUsername, filters, page, sortBy, model);
         }
@@ -86,11 +80,9 @@ public class ReviewController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteReview(
-            @PathVariable Long id,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy
-    ) {
+    public String deleteReview(@PathVariable Long id,
+                               @RequestParam(value = "page", defaultValue = "0") int page,
+                               @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         reviewService.deleteReviewById(id);
         return "redirect:/reviews?page=" + page + "&sortBy=" + sortBy;
     }

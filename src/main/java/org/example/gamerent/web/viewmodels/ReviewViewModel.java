@@ -13,6 +13,19 @@ public class ReviewViewModel {
     private LocalDateTime created;
 
 
+    public ReviewViewModel() {
+    }
+
+    public ReviewViewModel(Long id, String reviewerUsername, String reviewerFullName, Integer rating, String text, LocalDateTime created) {
+        this.id = id;
+        this.reviewerUsername = reviewerUsername;
+        this.reviewerFullName = reviewerFullName;
+        this.rating = rating;
+        this.text = text;
+        this.created = created;
+    }
+
+
     public Long getId() {
         return id;
     }
