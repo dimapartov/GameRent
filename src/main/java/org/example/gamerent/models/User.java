@@ -27,8 +27,8 @@ public class User extends IdCreatedModified {
     }
 
 
-    @Column(name = "username", unique = true, nullable = false)
     @GenericField
+    @Column(name = "username", unique = true, nullable = false)
     public String getUsername() {
         return username;
     }

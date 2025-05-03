@@ -18,6 +18,7 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         File uploadDir = new File(uploadPath);
         String absolutePath = uploadDir.getAbsolutePath();
+
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:" + absolutePath + "/");
     }

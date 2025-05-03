@@ -21,8 +21,8 @@ public class Brand extends IdCreatedModified {
     }
 
 
-    @Column(name = "name", nullable = false)
     @GenericField
+    @Column(name = "name", nullable = false)
     public String getName() {
         return name;
     }

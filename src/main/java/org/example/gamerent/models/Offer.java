@@ -29,25 +29,27 @@ public class Offer extends IdCreatedModified {
     private String photo;
     private Set<Rental> rentals;
 
+
     protected Offer() {
     }
 
+
+    @IndexedEmbedded(includePaths = {"username"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
-    @IndexedEmbedded(includePaths = {"username"})
     public User getOwner() {
         return owner;
     }
 
+    @IndexedEmbedded
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
-    @IndexedEmbedded
     public Brand getBrand() {
         return brand;
     }
 
-    @Column(name = "game_name", nullable = false)
     @FullTextField(analyzer = "english")
+    @Column(name = "game_name", nullable = false)
     public String getGameName() {
         return gameName;
     }
@@ -57,20 +59,20 @@ public class Offer extends IdCreatedModified {
         return description;
     }
 
-    @Column(name = "price", precision = 10, scale = 2, nullable = false)
     @GenericField(sortable = Sortable.YES)
+    @Column(name = "price", precision = 10, scale = 2, nullable = false)
     public BigDecimal getPrice() {
         return price;
     }
 
-    @Column(name = "min_rental_days", nullable = false)
     @GenericField(sortable = Sortable.YES)
+    @Column(name = "min_rental_days", nullable = false)
     public Integer getMinRentalDays() {
         return minRentalDays;
     }
 
-    @Column(name = "max_rental_days", nullable = false)
     @GenericField(sortable = Sortable.YES)
+    @Column(name = "max_rental_days", nullable = false)
     public Integer getMaxRentalDays() {
         return maxRentalDays;
     }
@@ -90,6 +92,7 @@ public class Offer extends IdCreatedModified {
     public Set<Rental> getRentals() {
         return rentals;
     }
+
 
     public void setOwner(User owner) {
         this.owner = owner;
