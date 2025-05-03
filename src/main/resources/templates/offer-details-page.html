@@ -43,7 +43,7 @@
         <div sec:authorize="isAuthenticated()"
              th:if="${offer.ownerUsername != #authentication.name}"
              style="margin-top:1em;">
-            <form th:action="@{/rentals}"
+            <form th:action="@{/rental/create}"
                   th:object="${rentalInput}"
                   method="post">
                 <input type="hidden" th:field="*{offerId}"/>

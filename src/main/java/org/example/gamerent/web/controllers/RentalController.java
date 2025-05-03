@@ -12,50 +12,85 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
-@RequestMapping("/rentals")
+@RequestMapping("/rental")
 public class RentalController {
 
-    private final RentalService rentalService;
+    private RentalService rentalService;
+
 
     @Autowired
-    public RentalController(RentalService rentalService) {
+    public void setRentalService(RentalService rentalService) {
         this.rentalService = rentalService;
     }
 
-    @PostMapping
-    public String requestRental(@ModelAttribute("rentalInput") @Valid RentalRequestInputModel input, BindingResult errors, RedirectAttributes ra) {
-        if (errors.hasErrors()) {
-            ra.addFlashAttribute("org.springframework.validation.BindingResult.rentalInput", errors);
-            ra.addFlashAttribute("rentalInput", input);
-            return "redirect:/offer/" + input.getOfferId();
-        }
-        try {
-            rentalService.createRentalRequest(input);
-            ra.addFlashAttribute("success", "Заявка отправлена");
-        } catch (RuntimeException ex) {
-            ra.addFlashAttribute("error", ex.getMessage());
-        }
-        return "redirect:/offer/" + input.getOfferId();
+
+    @ModelAttribute("rentalInput")
+    public RentalRequestInputModel initRentalRequestInputModel() {
+        return new RentalRequestInputModel();
     }
 
-    @PostMapping("/{id}/cancel")
-    public String cancel(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.cancelRentalRequest(id);
-        ra.addFlashAttribute("success", "Заявка отменена");
-        return "redirect:/rentals/my";
+
+    @GetMapping("/owner/dashboard")
+    public String getOwnerDashboardPage(Model model) {
+        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner());
+        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner());
+        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner());
+        return "rental-owner-dashboard-page";
     }
 
-    @PostMapping("/{id}/return")
-    public String initiateReturn(@PathVariable Long id, RedirectAttributes ra) {
-        rentalService.initiateRentalReturn(id);
-        ra.addFlashAttribute("success", "Запрос на возврат отправлен");
-        return "redirect:/rentals/my";
+    @PostMapping("/owner/{id}/confirm")
+    public String confirmRentalRequest(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        rentalService.confirmRentalRequest(id);
+        redirectAttributes.addFlashAttribute("success", "Аренда подтверждена");
+        return "redirect:/rental/owner/dashboard";
+    }
+
+    @PostMapping("/owner/{id}/reject")
+    public String rejectRentalRequest(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        rentalService.rejectRentalRequest(id);
+        redirectAttributes.addFlashAttribute("success", "Заявка отклонена владельцем");
+        return "redirect:/rental/owner/dashboard";
+    }
+
+    @PostMapping("/owner/{id}/confirm-return")
+    public String confirmRentalReturn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        rentalService.confirmRentalReturn(id);
+        redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
+        return "redirect:/rental/owner/dashboard";
     }
 
     @GetMapping("/my")
-    public String myRentals(Model model) {
-        model.addAttribute("rentals", rentalService.getMyRentals());
+    public String getMyRentalsPage(Model model) {
+        model.addAttribute("myRentals", rentalService.getMyRentals());
         return "rental-my-page";
+    }
+
+    @PostMapping("/create")
+    public String createRentalRequest(@ModelAttribute("rentalInput") @Valid RentalRequestInputModel rentalRequestInputModel,
+                                      BindingResult bindingResult,
+                                      RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.rentalInput", bindingResult);
+            redirectAttributes.addFlashAttribute("rentalInput", rentalRequestInputModel);
+            return "redirect:/offer/" + rentalRequestInputModel.getOfferId();
+        }
+        rentalService.createRentalRequest(rentalRequestInputModel);
+        redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
+        return "redirect:/offer/" + rentalRequestInputModel.getOfferId();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public String cancelRentalRequest(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        rentalService.cancelRentalRequest(id);
+        redirectAttributes.addFlashAttribute("success", "Заявка отменена");
+        return "redirect:/rental/my";
+    }
+
+    @PostMapping("/{id}/return")
+    public String initiateRentalReturn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        rentalService.initiateRentalReturn(id);
+        redirectAttributes.addFlashAttribute("success", "Запрос на возврат отправлен");
+        return "redirect:/rental/my";
     }
 
 }
