@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class ReviewInputModel {
 
-    @NotNull
+    @NotBlank
     private String revieweeUsername;
 
     @NotNull

@@ -1,48 +1,85 @@
 package org.example.gamerent.web.viewmodels.user_input;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 
 public class OfferCreationInputModel {
 
+    @NotBlank(message = "Введите описание")
     private String description;
+
+    @NotNull(message = "Введите цену")
+    @DecimalMin("0.01")
     private BigDecimal price;
-    private String photo;
+
+    @NotBlank(message = "Выберите бренд из выпадающего списка")
     private String brand;
+
+    @NotBlank(message = "Введите название игры")
     private String gameName;
+
+    @NotNull(message = "Введите минимальное количество дней для аренды")
+    @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer minRentalDays;
+
+    @NotNull(message = "Введите максимальное количество дней для аренды")
+    @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer maxRentalDays;
 
-
-    public OfferCreationInputModel() {
-    }
-
-    public OfferCreationInputModel(String description, BigDecimal price, String photo, String brand, String gameName,
-                                   Integer minRentalDays, Integer maxRentalDays) {
-        this.description = description;
-        this.price = price;
-        this.photo = photo;
-        this.brand = brand;
-        this.gameName = gameName;
-        this.minRentalDays = minRentalDays;
-        this.maxRentalDays = maxRentalDays;
-    }
+    private String photo;
 
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String d) {
+        description = d;
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setPrice(BigDecimal p) {
+        price = p;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String b) {
+        brand = b;
+    }
+
+    public String getGameName() {
+        return gameName;
+    }
+
+    public void setGameName(String g) {
+        gameName = g;
+    }
+
+    public Integer getMinRentalDays() {
+        return minRentalDays;
+    }
+
+    public void setMinRentalDays(Integer m) {
+        minRentalDays = m;
+    }
+
+    public Integer getMaxRentalDays() {
+        return maxRentalDays;
+    }
+
+    public void setMaxRentalDays(Integer m) {
+        maxRentalDays = m;
     }
 
     public String getPhoto() {
@@ -51,38 +88,6 @@ public class OfferCreationInputModel {
 
     public void setPhoto(String photo) {
         this.photo = photo;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getGameName() {
-        return gameName;
-    }
-
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
-    }
-
-    public Integer getMinRentalDays() {
-        return minRentalDays;
-    }
-
-    public void setMinRentalDays(Integer minRentalDays) {
-        this.minRentalDays = minRentalDays;
-    }
-
-    public Integer getMaxRentalDays() {
-        return maxRentalDays;
-    }
-
-    public void setMaxRentalDays(Integer maxRentalDays) {
-        this.maxRentalDays = maxRentalDays;
     }
 
 }

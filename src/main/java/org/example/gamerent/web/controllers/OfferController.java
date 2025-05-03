@@ -61,19 +61,23 @@ public class OfferController {
     }
 
     @PostMapping("/create")
-    public String createOffer(@ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
+    public String createOffer(@Valid @ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
+                              BindingResult bindingResult,
                               @RequestParam("file") MultipartFile file,
                               RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            return "redirect:/offer/create";
+        }
         Long newId = offerService.createOffer(newOfferInputModel, file);
         return "redirect:/offer/" + newId;
     }
 
     @GetMapping("/all")
-    public String getAllOffersFilteredPage(
-            @ModelAttribute("filters") OfferFiltersDTO filters,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-            Model model) {
+    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters,
+                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                                           Model model) {
         System.out.println("Вызван метод контроллера /all");
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
@@ -103,6 +107,7 @@ public class OfferController {
             OfferUpdateInputModel updateModel = offerService.getOfferUpdateModel(id);
             model.addAttribute("offerUpdateInputModel", updateModel);
         } catch (RuntimeException ignored) {
+
         }
 
         return "offer-details-page";
@@ -127,7 +132,8 @@ public class OfferController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteOffer(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteOffer(@PathVariable Long id,
+                              RedirectAttributes redirectAttributes) {
         try {
             offerService.deleteOffer(id);
             redirectAttributes.addFlashAttribute("success", "Оффер удалён");
