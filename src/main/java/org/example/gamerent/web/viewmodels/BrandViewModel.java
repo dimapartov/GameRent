@@ -10,7 +10,6 @@ public class BrandViewModel {
     public BrandViewModel() {
     }
 
-
     public BrandViewModel(String name, String description, String photo) {
         this.name = name;
         this.description = description;
