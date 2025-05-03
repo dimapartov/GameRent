@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = UniqueEmailValidator.class)
 public @interface UniqueEmail {
 
-    String message() default "На данную почту уже зарегистрирован аккаунт!";
+    String message() default "На данную почту уже зарегистрирован аккаунт";
 
     Class<?>[] groups() default {};
 

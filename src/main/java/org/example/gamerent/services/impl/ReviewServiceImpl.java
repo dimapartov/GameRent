@@ -68,7 +68,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void deleteReviewById(Long id) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Отзыв не найден"));
         if (!review.getReviewer().getUsername().equals(currentUserUsername)) {
             throw new RuntimeException("Нельзя удалить чужой отзыв");
@@ -91,23 +90,21 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReviewViewModel> getReviewsByUser(
-            String reviewerUsername, String sortBy, int pageNumber, int pageSize
-    ) {
-        Sort sort = buildSpringSort(sortBy);
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+    public Page<ReviewViewModel> getReviewsByUser(String reviewerUsername, String sortBy, int pageNumber, int pageSize) {
+        Sort springSort = buildSpringSort(sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
         return reviewRepository.findAllByReviewerUsername(reviewerUsername, pageable)
-                .map(r -> {
-                    ReviewViewModel vm = modelMapper.map(r, ReviewViewModel.class);
-                    vm.setReviewerUsername(r.getReviewer().getUsername());
-                    return vm;
+                .map(review -> {
+                    ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
+                    reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+                    return reviewViewModel;
                 });
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Double getUserAverageRating(String username) {
-        return reviewRepository.findAverageRatingByRevieweeUsername(username);
+    public Double getUserAverageRating(String revieweeUsername) {
+        return reviewRepository.findAverageRatingByRevieweeUsername(revieweeUsername);
     }
 
 

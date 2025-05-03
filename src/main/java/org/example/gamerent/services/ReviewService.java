@@ -15,6 +15,6 @@ public interface ReviewService {
 
     Page<ReviewViewModel> getReviewsByUser(String reviewerUsername, String sortBy, int pageNumber, int pageSize);
 
-    Double getUserAverageRating(String username);
+    Double getUserAverageRating(String revieweeUsername);
 
 }

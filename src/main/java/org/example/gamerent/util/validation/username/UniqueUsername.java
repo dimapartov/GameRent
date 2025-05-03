@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = UniqueUsernameValidator.class)
 public @interface UniqueUsername {
 
-    String message() default "Имя пользователя уже занято!";
+    String message() default "Имя пользователя уже занято";
 
     Class<?>[] groups() default {};
 
