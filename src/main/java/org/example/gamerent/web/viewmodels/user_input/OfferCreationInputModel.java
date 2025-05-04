@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 public class OfferCreationInputModel {
 
-    @NotNull(message = "Пожалуйста, загрузите фото")
     private MultipartFile offerPhoto;
 
     @NotBlank(message = "Введите описание")
