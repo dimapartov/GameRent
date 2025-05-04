@@ -22,15 +22,12 @@ public class ReviewController {
 
     @Value("${reviews.page.size}")
     private int pageSize;
-
     private final ReviewService reviewService;
-
 
     @Autowired
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
-
 
     @GetMapping
     public String myReviews(@ModelAttribute("filters") ReviewFiltersDTO filters,
@@ -41,7 +38,6 @@ public class ReviewController {
         String currentUser = auth.getName();
         Page<ReviewViewModel> aboutPage = reviewService.getReviewsAboutUser(currentUser, sortBy, page, pageSize);
         Page<ReviewViewModel> byPage = reviewService.getReviewsByUser(currentUser, sortBy, page, pageSize);
-
         model.addAttribute("aboutPage", aboutPage);
         model.addAttribute("byPage", byPage);
         model.addAttribute("avgRating", reviewService.getUserAverageRating(currentUser));
@@ -57,9 +53,11 @@ public class ReviewController {
         Page<ReviewViewModel> reviewsPage = reviewService.getReviewsAboutUser(revieweeUsername, sortBy, page, pageSize);
         model.addAttribute("reviewsPage", reviewsPage);
         model.addAttribute("avgRating", reviewService.getUserAverageRating(revieweeUsername));
-        ReviewInputModel newReview = new ReviewInputModel();
-        newReview.setRevieweeUsername(revieweeUsername);
-        model.addAttribute("newReview", newReview);
+        if (!model.containsAttribute("newReview")) {
+            ReviewInputModel newReview = new ReviewInputModel();
+            newReview.setRevieweeUsername(revieweeUsername);
+            model.addAttribute("newReview", newReview);
+        }
         model.addAttribute("revieweeUsername", revieweeUsername);
         return "reviews-about-user-page";
     }
@@ -67,16 +65,22 @@ public class ReviewController {
     @PostMapping("/about/{username}")
     public String postReview(@PathVariable("username") String revieweeUsername,
                              @Valid @ModelAttribute("newReview") ReviewInputModel input,
-                             BindingResult errors,
+                             BindingResult bindingResult,
                              @ModelAttribute("filters") ReviewFiltersDTO filters,
                              @RequestParam(value = "page", defaultValue = "0") int page,
                              @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                              Model model) {
-        if (errors.hasErrors()) {
-            return reviewsAbout(revieweeUsername, filters, page, sortBy, model);
+        if (bindingResult.hasErrors()) {
+            Page<ReviewViewModel> reviewsPage =
+                    reviewService.getReviewsAboutUser(revieweeUsername, sortBy, page, pageSize);
+            model.addAttribute("reviewsPage", reviewsPage);
+            model.addAttribute("avgRating", reviewService.getUserAverageRating(revieweeUsername));
+            model.addAttribute("revieweeUsername", revieweeUsername);
+            return "reviews-about-user-page";
         }
         reviewService.createReview(input);
-        return "redirect:/reviews/about/" + revieweeUsername + "?page=" + page + "&sortBy=" + sortBy;
+        return "redirect:/reviews/about/" + revieweeUsername +
+                "?page=" + page + "&sortBy=" + sortBy;
     }
 
     @PostMapping("/{id}/delete")

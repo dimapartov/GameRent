@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -29,10 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepository,
-                             UserRepository userRepository,
-                             RentalRepository rentalRepository,
-                             ModelMapper modelMapper) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository, RentalRepository rentalRepository, ModelMapper modelMapper) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
@@ -41,7 +37,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    @Transactional
     public ReviewViewModel createReview(ReviewInputModel reviewInputModel) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -65,7 +60,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Transactional
     public void deleteReviewById(Long id) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Отзыв не найден"));
@@ -76,33 +70,28 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ReviewViewModel> getReviewsAboutUser(String revieweeUsername, String sortBy, int pageNumber, int pageSize) {
         Sort springSort = buildSpringSort(sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
-        return reviewRepository.findAllByRevieweeUsername(revieweeUsername, pageable)
-                .map(review -> {
-                    ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
-                    reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
-                    return reviewViewModel;
-                });
+        return reviewRepository.findAllByRevieweeUsername(revieweeUsername, pageable).map(review -> {
+            ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
+            reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+            return reviewViewModel;
+        });
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<ReviewViewModel> getReviewsByUser(String reviewerUsername, String sortBy, int pageNumber, int pageSize) {
         Sort springSort = buildSpringSort(sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
-        return reviewRepository.findAllByReviewerUsername(reviewerUsername, pageable)
-                .map(review -> {
-                    ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
-                    reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
-                    return reviewViewModel;
-                });
+        return reviewRepository.findAllByReviewerUsername(reviewerUsername, pageable).map(review -> {
+            ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
+            reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+            return reviewViewModel;
+        });
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Double getUserAverageRating(String revieweeUsername) {
         return reviewRepository.findAverageRatingByRevieweeUsername(revieweeUsername);
     }

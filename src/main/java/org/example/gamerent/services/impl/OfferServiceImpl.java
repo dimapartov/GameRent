@@ -2,6 +2,7 @@ package org.example.gamerent.services.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.example.gamerent.models.Brand;
 import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.User;
@@ -87,6 +88,7 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Override
+    @Transactional
     public Long createOffer(OfferCreationInputModel newOfferInputModel) {
         Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
@@ -188,6 +190,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
+    @Transactional
     public void updateOffer(Long id, OfferUpdateInputModel offerUpdateInputModel) {
         Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -206,6 +209,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
+    @Transactional
     public void deleteOfferById(Long id) {
         Offer offer = offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Оффер не найден"));
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();

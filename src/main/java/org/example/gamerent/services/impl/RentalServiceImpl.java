@@ -46,7 +46,6 @@ public class RentalServiceImpl implements RentalService {
 
 
     @Override
-    @Transactional
     public void createRentalRequest(RentalRequestInputModel rentalRequestInputModel) {
         Offer offer = offerRepository.findById(rentalRequestInputModel.getOfferId()).orElseThrow(() -> new RuntimeException("Оффер не найден"));
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
@@ -70,7 +69,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void cancelRentalRequest(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
@@ -84,7 +82,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void rejectRentalRequest(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
@@ -98,7 +95,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void confirmRentalRequest(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
@@ -113,7 +109,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void initiateRentalReturn(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
         if (rental.getStatus() != RentalStatus.ACTIVE) {
@@ -124,7 +119,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void confirmRentalReturn(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
         if (rental.getStatus() != RentalStatus.PENDING_FOR_RETURN) {
@@ -138,7 +132,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalViewModel> getPendingRequestsForOwner() {
         String owner = SecurityContextHolder.getContext().getAuthentication().getName();
         return rentalRepository.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM)
@@ -154,7 +147,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalViewModel> getMyRentals() {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return rentalRepository.findByRenterUsername(currentUserUsername)
@@ -164,7 +156,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalViewModel> getActiveRentalsForOwner() {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.ACTIVE)
@@ -179,7 +170,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalViewModel> getPendingReturnsForOwner() {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.PENDING_FOR_RETURN)
@@ -194,7 +184,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public void autoDeclineRentalRequest() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
         rentalRepository.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
