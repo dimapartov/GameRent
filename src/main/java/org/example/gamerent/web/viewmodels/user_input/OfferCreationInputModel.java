@@ -30,14 +30,6 @@ public class OfferCreationInputModel {
     @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer maxRentalDays;
 
-    @AssertTrue(message = "Минимальное количество дней не может превышать максимальное")
-    public boolean isRentalDaysValid() {
-        if (minRentalDays == null || maxRentalDays == null) {
-            return true;
-        }
-        return minRentalDays <= maxRentalDays;
-    }
-
 
     public OfferCreationInputModel() {
     }

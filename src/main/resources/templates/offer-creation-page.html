@@ -2,47 +2,76 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Create Offer</title>
+    <title>Создать объявление</title>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <h1>Создать объявление</h1>
-<form th:action="@{/offer/create}" th:object="${newOfferInputModel}"
-      method="post" enctype="multipart/form-data">
+
+<form th:action="@{/offer/create}"
+      th:object="${newOfferInputModel}"
+      method="post"
+      enctype="multipart/form-data">
+
     <div>
-        <label>Описание:</label>
-        <textarea th:field="*{description}" required></textarea>
+        <label>Описание:</label><br/>
+        <textarea th:field="*{description}" rows="3" required></textarea>
+        <div th:if="${#fields.hasErrors('description')}"
+             th:errors="*{description}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Цена:</label>
+        <label>Цена:</label><br/>
         <input type="number" step="0.01" th:field="*{price}" required/>
+        <div th:if="${#fields.hasErrors('price')}"
+             th:errors="*{price}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Бренд:</label>
+        <label>Бренд:</label><br/>
         <select th:field="*{brand}">
-            <option th:each="brand : ${allBrands}"
-                    th:value="${brand.name}"
-                    th:text="${brand.name}"></option>
+            <option th:each="b : ${allBrands}"
+                    th:value="${b.name}"
+                    th:text="${b.name}"></option>
         </select>
+        <div th:if="${#fields.hasErrors('brand')}"
+             th:errors="*{brand}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Название игры:</label>
+        <label>Название игры:</label><br/>
         <input type="text" th:field="*{gameName}" required/>
+        <div th:if="${#fields.hasErrors('gameName')}"
+             th:errors="*{gameName}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Мин. дней аренды:</label>
+        <label>Мин. дней аренды:</label><br/>
         <input type="number" th:field="*{minRentalDays}" min="1" required/>
+        <div th:if="${#fields.hasErrors('minRentalDays')}"
+             th:errors="*{minRentalDays}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Макс. дней аренды:</label>
+        <label>Макс. дней аренды:</label><br/>
         <input type="number" th:field="*{maxRentalDays}" min="1" required/>
+        <div th:if="${#fields.hasErrors('maxRentalDays')}"
+             th:errors="*{maxRentalDays}"
+             style="color:red;"></div>
     </div>
+
     <div>
-        <label>Загрузите фото:</label>
+        <label>Фото:</label><br/>
         <input type="file" name="offerPhoto" required/>
+        <div th:if="${photoRequired}" style="color:red; margin-top:1em;" th:text="${photoRequired}"></div>
     </div>
+
     <button type="submit">Создать</button>
-    <div th:if="${error}" style="color:red;" th:text="${error}"></div>
 </form>
 </body>
 </html>

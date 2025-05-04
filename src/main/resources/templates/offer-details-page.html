@@ -51,10 +51,11 @@
                     <label>Дней аренды:</label>
                     <input type="number"
                            th:field="*{days}"
-                           min="${offer.minRentalDays}"
-                           max="${offer.maxRentalDays}"/>
+                           required/>
                 </div>
-                <div th:errors="*{days}" style="color:red;"></div>
+                <div th:if="${#fields.hasErrors('days')}"
+                     th:errors="*{days}"
+                     style="color:red;"></div>
                 <button type="submit">Арендовать</button>
             </form>
         </div>
@@ -81,48 +82,69 @@
     </p>
     <div th:if="${success}" style="color:green; margin-top:1em;" th:text="${success}"></div>
     <div th:if="${error}" style="color:red; margin-top:1em;" th:text="${error}"></div>
+    <!-- Контейнер модалки -->
     <div id="editModal"
-         th:if="${offerUpdateInputModel != null}"
-         style="display:none;
-                position:fixed;
-                top:20%;
-                left:30%;
-                width:40%;
-                background:#fff;
-                padding:20px;
-                box-shadow:0 0 10px rgba(0,0,0,0.5);
-                z-index:1000;">
+         th:object="${offerUpdateInputModel}"
+         th:attr="style=
+         ${#fields.hasAnyErrors()} ?
+           'display:block;position:fixed;top:20%;left:30%;width:40%;background:#fff;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.5);z-index:1000;'
+         :
+           'display:none;position:fixed;top:20%;left:30%;width:40%;background:#fff;padding:20px;box-shadow:0 0 10px rgba(0,0,0,0.5);z-index:1000;'">
+
+        <!-- Форма уже без th:object -->
         <form th:action="@{'/offer/' + ${offer.id} + '/edit'}"
-              th:object="${offerUpdateInputModel}"
               method="post">
+
+            <!-- Описание -->
             <div>
                 <label>Описание:</label><br/>
                 <textarea th:field="*{description}" rows="3" style="width:100%;"></textarea>
-                <div th:errors="*{description}" style="color:red;"></div>
+                <div th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}"
+                     style="color:red;"></div>
             </div>
+
+            <!-- Цена -->
             <div style="margin-top:1em;">
                 <label>Цена в день:</label><br/>
                 <input type="number" step="0.01" th:field="*{price}" style="width:100%;"/>
-                <div th:errors="*{price}" style="color:red;"></div>
+                <div th:if="${#fields.hasErrors('price')}"
+                     th:errors="*{price}"
+                     style="color:red;"></div>
             </div>
-            <div style="margin-top:1em;">
-                <label>Мин. дней:</label><br/>
-                <input type="number" th:field="*{minRentalDays}" style="width:48%;"/>
-                <label style="margin-left:4%;">Макс. дней:</label><br/>
-                <input type="number" th:field="*{maxRentalDays}" style="width:48%;"/>
-                <div th:errors="*{minRentalDays}" style="color:red;"></div>
-                <div th:errors="*{maxRentalDays}" style="color:red;"></div>
+
+            <!-- Мин/Макс дни -->
+            <div style="margin-top:1em; display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>Мин. дней:</label><br/>
+                    <input type="number" th:field="*{minRentalDays}" style="width:100%;"/>
+                    <div th:if="${#fields.hasErrors('minRentalDays')}"
+                         th:errors="*{minRentalDays}"
+                         style="color:red;"></div>
+                </div>
+                <div style="flex:1;">
+                    <label>Макс. дней:</label><br/>
+                    <input type="number" th:field="*{maxRentalDays}" style="width:100%;"/>
+                    <div th:if="${#fields.hasErrors('maxRentalDays')}"
+                         th:errors="*{maxRentalDays}"
+                         style="color:red;"></div>
+                </div>
             </div>
-            <div style="margin-top:1em;">
+
+            <!-- Кнопки -->
+            <div style="margin-top:1em; display:flex; gap:10px;">
                 <button type="submit">Сохранить</button>
                 <button type="button" id="cancelEdit">Отмена</button>
             </div>
         </form>
     </div>
+    <!-- Скрипт для открытия/закрытия модалки вручную -->
     <script th:inline="javascript">
+        // Кнопка «Редактировать»
         document.getElementById('editBtn')?.addEventListener('click', function () {
             document.getElementById('editModal').style.display = 'block';
         });
+        // Кнопка «Отмена»
         document.getElementById('cancelEdit')?.addEventListener('click', function () {
             document.getElementById('editModal').style.display = 'none';
         });

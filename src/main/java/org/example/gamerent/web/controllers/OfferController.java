@@ -66,7 +66,9 @@ public class OfferController {
                               @RequestParam("offerPhoto") MultipartFile offerPhoto,
                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            redirectAttributes.addFlashAttribute("newOfferInputModel", newOfferInputModel);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "newOfferInputModel", bindingResult);
+            redirectAttributes.addFlashAttribute("photoRequired", "offer.photo.required");
             return "redirect:/offer/create";
         }
         Long newId = offerService.createOffer(newOfferInputModel, offerPhoto);
@@ -86,8 +88,8 @@ public class OfferController {
                 page,
                 pageSize,
                 filters.getSortBy(),
-                filters.getSearchTerm()
-        );
+                filters.getSearchTerm());
+
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
         return "offer-all-filtered-page";
@@ -97,16 +99,17 @@ public class OfferController {
     public String getOfferDetailsPage(@PathVariable Long id,
                                       @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
                                       Model model) {
-        OfferViewModel offerViewModel = offerService.getOfferById(id);
-        model.addAttribute("offer", offerViewModel);
+        OfferViewModel offer = offerService.getOfferById(id);
+        model.addAttribute("offer", offer);
         rentalInput.setOfferId(id);
-
-        try {
-            OfferUpdateInputModel offerUpdateInputModel = offerService.getOfferUpdateInputModel(id);
-            model.addAttribute("offerUpdateInputModel", offerUpdateInputModel);
-        } catch (RuntimeException ignored) {
+        if (!model.containsAttribute("offerUpdateInputModel")) {
+            try {
+                OfferUpdateInputModel updateModel = offerService.getOfferUpdateInputModel(id);
+                model.addAttribute("offerUpdateInputModel", updateModel);
+            } catch (RuntimeException ignored) {
+                model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
+            }
         }
-
         return "offer-details-page";
     }
 
@@ -116,7 +119,8 @@ public class OfferController {
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            redirectAttributes.addFlashAttribute("offerUpdateInputModel", offerUpdateInputModel);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "offerUpdateInputModel", bindingResult);
             return "redirect:/offer/" + id;
         }
         offerService.updateOffer(id, offerUpdateInputModel);
