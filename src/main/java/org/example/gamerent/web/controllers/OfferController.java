@@ -84,7 +84,7 @@ public class OfferController {
 
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
-        return "offer-all-filtered-page";
+        return "offers-all-filtered-page";
     }
 
     @GetMapping("/{id}")

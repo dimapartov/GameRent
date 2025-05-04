@@ -24,7 +24,7 @@ public class BrandController {
     @GetMapping("/all")
     public String getBrandsPage(Model model) {
         model.addAttribute("allBrands", brandService.getAllBrandsForView());
-        return "brand-all-page";
+        return "brands-all-page";
     }
 
 }

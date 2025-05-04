@@ -14,11 +14,10 @@
     </p>
 
     <!-- Форма сортировки -->
-    <form th:action="@{/reviews}"
+    <form th:action="@{/reviews/my}"
           th:object="${filters}"
           method="get"
           style="margin-bottom:20px;">
-        <input type="hidden" name="page" th:value="${aboutPage.number}"/>
         <label>Сортировать:</label>
         <select th:field="*{sortBy}">
             <option value="">Без сортировки</option>
@@ -28,35 +27,8 @@
             <option value="dateAsc" th:selected="${filters.sortBy=='dateAsc'}">Дата ↑</option>
         </select>
         <button type="submit">Применить</button>
-        <a th:href="@{/reviews}" style="margin-left:10px;">Сбросить</a>
+        <a th:href="@{/reviews/my}" style="margin-left:10px;">Сбросить</a>
     </form>
-
-    <!-- Раздел "Отзывы обо мне" -->
-    <section>
-        <h2>Отзывы обо мне</h2>
-        <div th:each="rev : ${aboutPage.content}">
-            <p>
-                <strong th:text="${rev.reviewerFullName}">Имя Фамилия</strong>
-                (<span th:text="${rev.reviewerUsername}">username</span>) —
-                <span th:text="${rev.rating}">0</span>/5,
-                <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">01.01.2025</span>
-            </p>
-            <p th:text="${rev.text}">Текст отзыва…</p>
-        </div>
-        <div>
-            <a th:if="${aboutPage.hasPrevious()}"
-               th:href="@{/reviews(
-                       page=${aboutPage.number - 1},
-                       sortBy=${filters.sortBy}
-                   )}">‹ Назад</a>
-            |
-            <a th:if="${aboutPage.hasNext()}"
-               th:href="@{/reviews(
-                       page=${aboutPage.number + 1},
-                       sortBy=${filters.sortBy}
-                   )}">Вперёд ›</a>
-        </div>
-    </section>
 
     <!-- Раздел "Мои отзывы" -->
     <section style="margin-top:2em;">
@@ -78,13 +50,13 @@
         </div>
         <div>
             <a th:if="${byPage.hasPrevious()}"
-               th:href="@{/reviews(
+               th:href="@{/reviews/my(
                        page=${byPage.number - 1},
                        sortBy=${filters.sortBy}
                    )}">‹ Назад</a>
             |
             <a th:if="${byPage.hasNext()}"
-               th:href="@{/reviews(
+               th:href="@{/reviews/my(
                        page=${byPage.number + 1},
                        sortBy=${filters.sortBy}
                    )}">Вперёд ›</a>

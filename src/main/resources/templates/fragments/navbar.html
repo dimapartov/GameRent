@@ -17,7 +17,12 @@
         <li sec:authorize="isAuthenticated()"><a th:href="@{/offer/create}">Создать объявление</a></li>
         <li sec:authorize="isAuthenticated()"><a th:href="@{/rental/my}">Мои аренды</a></li>
         <li sec:authorize="isAuthenticated()"><a th:href="@{/rental/owner/dashboard}">Управление заявками</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/reviews}">Отзывы</a>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/reviews/my}">Мои отзывы</a>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/reviews/about/{username}(username=${#authentication.name})}">
+                Отзывы обо мне
+            </a>
+        </li>
         </li>
     </ul>
 </nav>
