@@ -12,13 +12,13 @@
 
     <div>
         <label>Описание:</label><br/>
-        <textarea th:field="*{description}" rows="3" ></textarea>
+        <textarea th:field="*{description}" rows="3"></textarea>
         <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Цена:</label><br/>
-        <input type="number" step="0.01" th:field="*{price}" />
+        <input type="number" step="0.01" th:field="*{price}"/>
         <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:red;"></div>
     </div>
 
@@ -32,25 +32,28 @@
 
     <div>
         <label>Название игры:</label><br/>
-        <input type="text" th:field="*{gameName}" />
+        <input type="text" th:field="*{gameName}"/>
         <div th:if="${#fields.hasErrors('gameName')}" th:errors="*{gameName}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Мин. дней аренды:</label><br/>
-        <input type="number" th:field="*{minRentalDays}" min="1" />
+        <input type="number" th:field="*{minRentalDays}"/>
         <div th:if="${#fields.hasErrors('minRentalDays')}" th:errors="*{minRentalDays}" style="color:red;"></div>
     </div>
-
+    <div th:if="${#fields.hasErrors('validRentalDaysRange')}"
+         th:errors="*{validRentalDaysRange}"
+         style="color:red; margin-top:0.5em;">
+    </div>
     <div>
         <label>Макс. дней аренды:</label><br/>
-        <input type="number" th:field="*{maxRentalDays}" min="1" />
+        <input type="number" th:field="*{maxRentalDays}"/>
         <div th:if="${#fields.hasErrors('maxRentalDays')}" th:errors="*{maxRentalDays}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Фото:</label><br/>
-        <input type="file" th:field="*{offerPhoto}" />
+        <input type="file" th:field="*{offerPhoto}"/>
         <div th:if="${#fields.hasErrors('photoProvided')}"
              th:errors="*{photoProvided}"
              style="color:red; margin-top:1em;">

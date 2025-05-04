@@ -29,26 +29,24 @@ public class OfferController {
     private final OfferService offerService;
     private final BrandService brandService;
 
+
     @Autowired
     public OfferController(OfferService offerService, BrandService brandService) {
         this.offerService = offerService;
         this.brandService = brandService;
     }
 
+
     @ModelAttribute("filters")
     public OfferFiltersDTO initFiltersDTO() {
         return new OfferFiltersDTO();
-    }
-
-    @ModelAttribute("rentalInput")
-    public RentalRequestInputModel initRentalRequestInputModel() {
-        return new RentalRequestInputModel();
     }
 
     @ModelAttribute("newOfferInputModel")
     public OfferCreationInputModel initOfferCreationInputModel() {
         return new OfferCreationInputModel();
     }
+
 
     @GetMapping("/create")
     public String getOfferCreationPage(Model model) {
@@ -93,10 +91,12 @@ public class OfferController {
     @GetMapping("/{id}")
     public String getOfferDetailsPage(@PathVariable Long id,
                                       @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
+                                      BindingResult bindingResult,
                                       Model model) {
         OfferViewModel offer = offerService.getOfferById(id);
         model.addAttribute("offer", offer);
         rentalInput.setOfferId(id);
+
         if (!model.containsAttribute("offerUpdateInputModel")) {
             try {
                 OfferUpdateInputModel updateModel = offerService.getOfferUpdateInputModel(id);

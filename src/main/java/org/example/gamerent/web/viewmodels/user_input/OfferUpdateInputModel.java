@@ -11,7 +11,7 @@ public class OfferUpdateInputModel {
     private String description;
 
     @NotNull(message = "Введите стоимость")
-    @DecimalMin("0.01")
+    @DecimalMin(value = "0.01", message = "Цена должна быть не менее 0.01")
     private BigDecimal price;
 
     @NotNull(message = "Введите минимальное количество дней для аренды")
@@ -21,6 +21,14 @@ public class OfferUpdateInputModel {
     @NotNull(message = "Введите максимальное количество дней для аренды")
     @Min(value = 1, message = "Количество дней должно быть больше или равно 1")
     private Integer maxRentalDays;
+
+    @AssertTrue(message = "Минимальное количество дней аренды не может быть больше максимального")
+    public boolean isValidRentalDaysRange() {
+        if (minRentalDays == null || maxRentalDays == null) {
+            return true;
+        }
+        return minRentalDays <= maxRentalDays;
+    }
 
 
     public OfferUpdateInputModel() {

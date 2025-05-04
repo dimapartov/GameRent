@@ -37,6 +37,14 @@ public class OfferCreationInputModel {
         return offerPhoto != null && !offerPhoto.isEmpty();
     }
 
+    @AssertTrue(message = "Минимальное количество дней аренды не может быть больше максимального")
+    public boolean isValidRentalDaysRange() {
+        if (minRentalDays == null || maxRentalDays == null) {
+            return true;
+        }
+        return minRentalDays <= maxRentalDays;
+    }
+
 
     public OfferCreationInputModel() {
     }

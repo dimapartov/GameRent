@@ -1,7 +1,10 @@
 package org.example.gamerent.web.controllers;
 
 import jakarta.validation.Valid;
+import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.RentalService;
+import org.example.gamerent.web.viewmodels.OfferViewModel;
+import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,18 +19,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class RentalController {
 
     private RentalService rentalService;
+    private OfferService offerService;
 
 
     @Autowired
-    public void setRentalService(RentalService rentalService) {
+    public RentalController(RentalService rentalService, OfferService offerService) {
         this.rentalService = rentalService;
+        this.offerService = offerService;
     }
 
 
-//    @ModelAttribute("rentalInput")
-//    public RentalRequestInputModel initRentalRequestInputModel() {
-//        return new RentalRequestInputModel();
-//    }
+    @ModelAttribute("rentalInput")
+    public RentalRequestInputModel initRentalRequestInputModel() {
+        return new RentalRequestInputModel();
+    }
 
 
     @GetMapping("/owner/dashboard")
@@ -66,14 +71,29 @@ public class RentalController {
     }
 
     @PostMapping("/create")
-    public String createRentalRequest(@Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes) {
+    public String createRentalRequest(
+            @Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
+            BindingResult bindingResult,
+            Model model,                               // добавили Model
+            RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "rentalInput", bindingResult);
-            redirectAttributes.addFlashAttribute("rentalInput", rentalInput);
-            return "redirect:/offer/" + rentalInput.getOfferId();
+            // Получаем оффер для отображения на странице
+            OfferViewModel offer = offerService.getOfferById(rentalInput.getOfferId());
+            model.addAttribute("offer", offer);
+
+            // Получаем модель данных для редактирования оффера (чтобы не было NPE в шаблоне)
+            try {
+                model.addAttribute("offerUpdateInputModel",
+                        offerService.getOfferUpdateInputModel(offer.getId()));
+            } catch (RuntimeException ignored) {
+                model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
+            }
+
+            // Здесь возвращаем тот же view, без redirect
+            return "offer-details-page";
         }
+
         try {
             rentalService.createRentalRequest(rentalInput);
             redirectAttributes.addFlashAttribute("success", "Заявка отправлена");

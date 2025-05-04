@@ -70,20 +70,20 @@ public class OfferServiceImpl implements OfferService {
 
 
     //    Для инициализации данных
-/*    @Override
+    @Override
     public void seedOffer(OfferCreationInputModel newOfferInputModel, String offerOwnerUsername) {
         Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
         Brand brand = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
         offer.setBrand(brand);
-        offer.setPhoto(newOfferInputModel.getPhoto());
+        offer.setPhoto("brand_logo.png");
         offer.setMinRentalDays(newOfferInputModel.getMinRentalDays());
         offer.setMaxRentalDays(newOfferInputModel.getMaxRentalDays());
         offer.setStatus(OfferStatus.AVAILABLE);
         User owner = userRepository.findUserByUsername(offerOwnerUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offerRepository.save(offer);
-    }*/
+    }
 
 
     @Override

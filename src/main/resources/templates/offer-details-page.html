@@ -33,29 +33,21 @@
                 </form>
             </div>
             <!-- Сообщение если неДоступно -->
-            <div th:if="${offer.status != 'Доступно'}"
-                 style="color:red; margin-top:1em;">
-                Оффер находится в аренде, изменение и удаление невозможно
+            <div th:if="${offer.status != 'Доступно'}" style="color:red; margin-top:1em;">Оффер находится в аренде,
+                изменение и удаление невозможно
             </div>
         </div>
     </div>
     <div th:if="${offer.status == 'Доступно'}">
-        <div sec:authorize="isAuthenticated()"
-             th:if="${offer.ownerUsername != #authentication.name}"
+        <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername != #authentication.name}"
              style="margin-top:1em;">
-            <form th:action="@{/rental/create}"
-                  th:object="${rentalInput}"
-                  method="post">
+            <form th:action="@{/rental/create}" th:object="${rentalInput}" method="post">
                 <input type="hidden" th:field="*{offerId}"/>
                 <div>
                     <label>Дней аренды:</label>
-                    <input type="number"
-                           th:field="*{days}"
-                           required/>
+                    <input type="number" th:field="*{days}"/>
+                    <div th:if="${#fields.hasErrors('days')}" th:errors="*{days}" style="color:red;"></div>
                 </div>
-                <div th:if="${#fields.hasErrors('days')}"
-                     th:errors="*{days}"
-                     style="color:red;"></div>
                 <button type="submit">Арендовать</button>
             </form>
         </div>
@@ -129,6 +121,9 @@
                          th:errors="*{maxRentalDays}"
                          style="color:red;"></div>
                 </div>
+                <div th:if="${#fields.hasErrors('validRentalDaysRange')}"
+                     th:errors="*{validRentalDaysRange}"
+                     style="color:red; margin-top:0.5em;"></div>
             </div>
 
             <!-- Кнопки -->

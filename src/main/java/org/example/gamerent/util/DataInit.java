@@ -52,7 +52,7 @@ public class DataInit implements CommandLineRunner {
         try {
             seedUsers();
             seedBrands();
-//            seedOffers();
+            seedOffers();
             seedReviews();
             System.out.println("Приложение готово к работе");
         } catch (Exception e) {
@@ -103,24 +103,22 @@ public class DataInit implements CommandLineRunner {
         System.out.println("Бренды добавлены");
     }
 
-/*    private void seedOffers() {
+    private void seedOffers() {
         List<String> brandNames = brandService.getAllBrandsDTOs().stream()
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
         for (int i = 0; i < 1; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
-            offerCreationInputModel.setPhoto("brand_logo.png");
             offerService.seedOffer(offerCreationInputModel, "d");
         }
         System.out.println("Офферы юзера 1 добавлены");
         for (int i = 0; i < 1; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
-            model.setPhoto("brand_logo.png");
             offerService.seedOffer(model, "dd");
         }
         System.out.println("Офферы юзера 2 добавлены");
-    }*/
+    }
 
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
