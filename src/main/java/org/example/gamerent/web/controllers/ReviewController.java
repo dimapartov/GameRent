@@ -22,12 +22,15 @@ public class ReviewController {
 
     @Value("${reviews.page.size}")
     private int pageSize;
+
     private final ReviewService reviewService;
+
 
     @Autowired
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
+
 
     @GetMapping
     public String myReviews(@ModelAttribute("filters") ReviewFiltersDTO filters,
