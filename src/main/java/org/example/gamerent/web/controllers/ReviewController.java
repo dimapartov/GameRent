@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/reviews")
 public class ReviewController {
 
-    @Value("${review.page.size}")
+    @Value("${reviews.page.size}")
     private int pageSize;
 
     private final ReviewService reviewService;

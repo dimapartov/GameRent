@@ -8,67 +8,53 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <h1>Создать объявление</h1>
 
-<form th:action="@{/offer/create}"
-      th:object="${newOfferInputModel}"
-      method="post"
-      enctype="multipart/form-data">
+<form th:action="@{/offer/create}" th:object="${newOfferInputModel}" method="post" enctype="multipart/form-data">
 
     <div>
         <label>Описание:</label><br/>
-        <textarea th:field="*{description}" rows="3" required></textarea>
-        <div th:if="${#fields.hasErrors('description')}"
-             th:errors="*{description}"
-             style="color:red;"></div>
+        <textarea th:field="*{description}" rows="3" ></textarea>
+        <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Цена:</label><br/>
-        <input type="number" step="0.01" th:field="*{price}" required/>
-        <div th:if="${#fields.hasErrors('price')}"
-             th:errors="*{price}"
-             style="color:red;"></div>
+        <input type="number" step="0.01" th:field="*{price}" />
+        <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Бренд:</label><br/>
         <select th:field="*{brand}">
-            <option th:each="b : ${allBrands}"
-                    th:value="${b.name}"
-                    th:text="${b.name}"></option>
+            <option th:each="b : ${allBrands}" th:value="${b.name}" th:text="${b.name}"></option>
         </select>
-        <div th:if="${#fields.hasErrors('brand')}"
-             th:errors="*{brand}"
-             style="color:red;"></div>
+        <div th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Название игры:</label><br/>
-        <input type="text" th:field="*{gameName}" required/>
-        <div th:if="${#fields.hasErrors('gameName')}"
-             th:errors="*{gameName}"
-             style="color:red;"></div>
+        <input type="text" th:field="*{gameName}" />
+        <div th:if="${#fields.hasErrors('gameName')}" th:errors="*{gameName}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Мин. дней аренды:</label><br/>
-        <input type="number" th:field="*{minRentalDays}" min="1" required/>
-        <div th:if="${#fields.hasErrors('minRentalDays')}"
-             th:errors="*{minRentalDays}"
-             style="color:red;"></div>
+        <input type="number" th:field="*{minRentalDays}" min="1" />
+        <div th:if="${#fields.hasErrors('minRentalDays')}" th:errors="*{minRentalDays}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Макс. дней аренды:</label><br/>
-        <input type="number" th:field="*{maxRentalDays}" min="1" required/>
-        <div th:if="${#fields.hasErrors('maxRentalDays')}"
-             th:errors="*{maxRentalDays}"
-             style="color:red;"></div>
+        <input type="number" th:field="*{maxRentalDays}" min="1" />
+        <div th:if="${#fields.hasErrors('maxRentalDays')}" th:errors="*{maxRentalDays}" style="color:red;"></div>
     </div>
 
     <div>
         <label>Фото:</label><br/>
-        <input type="file" name="offerPhoto" required/>
-        <div th:if="${photoRequired}" style="color:red; margin-top:1em;" th:text="${photoRequired}"></div>
+        <input type="file" th:field="*{offerPhoto}" />
+        <div th:if="${#fields.hasErrors('photoProvided')}"
+             th:errors="*{photoProvided}"
+             style="color:red; margin-top:1em;">
+        </div>
     </div>
 
     <button type="submit">Создать</button>

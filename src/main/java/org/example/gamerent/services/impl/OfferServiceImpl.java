@@ -70,7 +70,7 @@ public class OfferServiceImpl implements OfferService {
 
 
     //    Для инициализации данных
-    @Override
+/*    @Override
     public void seedOffer(OfferCreationInputModel newOfferInputModel, String offerOwnerUsername) {
         Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
@@ -83,17 +83,18 @@ public class OfferServiceImpl implements OfferService {
         User owner = userRepository.findUserByUsername(offerOwnerUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offer.setOwner(owner);
         offerRepository.save(offer);
-    }
+    }*/
 
 
     @Override
-    public Long createOffer(OfferCreationInputModel newOfferInputModel, MultipartFile offerPhoto) {
+    public Long createOffer(OfferCreationInputModel newOfferInputModel) {
         Offer offer = modelMapper.map(newOfferInputModel, Offer.class);
         offer.setId(null);
         offer.setMinRentalDays(newOfferInputModel.getMinRentalDays());
         offer.setMaxRentalDays(newOfferInputModel.getMaxRentalDays());
         Brand brand = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
         offer.setBrand(brand);
+        MultipartFile offerPhoto = newOfferInputModel.getOfferPhoto();
         if (!offerPhoto.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + offerPhoto.getOriginalFilename();

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -24,19 +23,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/offer")
 public class OfferController {
 
-    @Value("${offer.page.size}")
+    @Value("${offers.page.size}")
     private int pageSize;
 
     private final OfferService offerService;
     private final BrandService brandService;
-
 
     @Autowired
     public OfferController(OfferService offerService, BrandService brandService) {
         this.offerService = offerService;
         this.brandService = brandService;
     }
-
 
     @ModelAttribute("filters")
     public OfferFiltersDTO initFiltersDTO() {
@@ -53,7 +50,6 @@ public class OfferController {
         return new OfferCreationInputModel();
     }
 
-
     @GetMapping("/create")
     public String getOfferCreationPage(Model model) {
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
@@ -63,23 +59,22 @@ public class OfferController {
     @PostMapping("/create")
     public String createOffer(@Valid @ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
                               BindingResult bindingResult,
-                              @RequestParam("offerPhoto") MultipartFile offerPhoto,
                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("newOfferInputModel", newOfferInputModel);
             redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "newOfferInputModel", bindingResult);
-            redirectAttributes.addFlashAttribute("photoRequired", "offer.photo.required");
             return "redirect:/offer/create";
         }
-        Long newId = offerService.createOffer(newOfferInputModel, offerPhoto);
+        Long newId = offerService.createOffer(newOfferInputModel);
         return "redirect:/offer/" + newId;
     }
 
     @GetMapping("/all")
-    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters,
-                                           @RequestParam(value = "page", defaultValue = "0") int page,
-                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-                                           Model model) {
+    public String getAllOffersFilteredPage(
+            @ModelAttribute("filters") OfferFiltersDTO filters,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+            Model model) {
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
                 filters.getPriceTo(),

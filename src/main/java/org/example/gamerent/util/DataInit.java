@@ -52,7 +52,7 @@ public class DataInit implements CommandLineRunner {
         try {
             seedUsers();
             seedBrands();
-            seedOffers();
+//            seedOffers();
             seedReviews();
             System.out.println("Приложение готово к работе");
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class DataInit implements CommandLineRunner {
         System.out.println("Бренды добавлены");
     }
 
-    private void seedOffers() {
+/*    private void seedOffers() {
         List<String> brandNames = brandService.getAllBrandsDTOs().stream()
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
@@ -120,7 +120,7 @@ public class DataInit implements CommandLineRunner {
             offerService.seedOffer(model, "dd");
         }
         System.out.println("Офферы юзера 2 добавлены");
-    }
+    }*/
 
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
