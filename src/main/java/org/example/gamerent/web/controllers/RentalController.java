@@ -82,8 +82,7 @@ public class RentalController {
             OfferViewModel offer = offerService.getOfferById(rentalInput.getOfferId());
             model.addAttribute("offer", offer);
             try {
-                model.addAttribute("offerUpdateInputModel",
-                        offerService.getOfferUpdateInputModel(offer.getId()));
+                model.addAttribute("offerUpdateInputModel", offerService.getOfferUpdateInputModel(offer.getId()));
             } catch (RuntimeException ignored) {
                 model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
             }
