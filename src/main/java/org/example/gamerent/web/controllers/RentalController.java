@@ -18,8 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/rental")
 public class RentalController {
 
-    private RentalService rentalService;
-    private OfferService offerService;
+    private final RentalService rentalService;
+    private final OfferService offerService;
 
 
     @Autowired
@@ -44,21 +44,24 @@ public class RentalController {
     }
 
     @PostMapping("/owner/{id}/confirm")
-    public String confirmRentalRequest(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String confirmRentalRequest(@PathVariable Long id,
+                                       RedirectAttributes redirectAttributes) {
         rentalService.confirmRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Аренда подтверждена");
         return "redirect:/rental/owner/dashboard";
     }
 
     @PostMapping("/owner/{id}/reject")
-    public String rejectRentalRequest(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String rejectRentalRequest(@PathVariable Long id,
+                                      RedirectAttributes redirectAttributes) {
         rentalService.rejectRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Заявка отклонена владельцем");
         return "redirect:/rental/owner/dashboard";
     }
 
     @PostMapping("/owner/{id}/confirm-return")
-    public String confirmRentalReturn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String confirmRentalReturn(@PathVariable Long id,
+                                      RedirectAttributes redirectAttributes) {
         rentalService.confirmRentalReturn(id);
         redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/rental/owner/dashboard";
@@ -71,29 +74,21 @@ public class RentalController {
     }
 
     @PostMapping("/create")
-    public String createRentalRequest(
-            @Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
-            BindingResult bindingResult,
-            Model model,                               // добавили Model
-            RedirectAttributes redirectAttributes) {
-
+    public String createRentalRequest(@Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
+                                      BindingResult bindingResult,
+                                      Model model,
+                                      RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            // Получаем оффер для отображения на странице
             OfferViewModel offer = offerService.getOfferById(rentalInput.getOfferId());
             model.addAttribute("offer", offer);
-
-            // Получаем модель данных для редактирования оффера (чтобы не было NPE в шаблоне)
             try {
                 model.addAttribute("offerUpdateInputModel",
                         offerService.getOfferUpdateInputModel(offer.getId()));
             } catch (RuntimeException ignored) {
                 model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
             }
-
-            // Здесь возвращаем тот же view, без redirect
             return "offer-details-page";
         }
-
         try {
             rentalService.createRentalRequest(rentalInput);
             redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
