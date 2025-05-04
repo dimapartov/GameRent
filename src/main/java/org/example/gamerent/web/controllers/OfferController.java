@@ -68,11 +68,10 @@ public class OfferController {
     }
 
     @GetMapping("/all")
-    public String getAllOffersFilteredPage(
-            @ModelAttribute("filters") OfferFiltersDTO filters,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
-            Model model) {
+    public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters,
+                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+                                           Model model) {
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
                 filters.getPriceTo(),
@@ -91,7 +90,6 @@ public class OfferController {
     @GetMapping("/{id}")
     public String getOfferDetailsPage(@PathVariable Long id,
                                       @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
-                                      BindingResult bindingResult,
                                       Model model) {
         OfferViewModel offer = offerService.getOfferById(id);
         model.addAttribute("offer", offer);
