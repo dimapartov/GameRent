@@ -1,26 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head}">
     <title>Вход</title>
 </head>
 <body>
+
+<!-- Navbar -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<h1>Вход</h1>
-<div th:if="${badCredentials}">
-    <p style="color:red;">Неверное имя пользователя или пароль!</p>
-</div>
-<form th:action="@{/user/login}" method="post">
-    <div>
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" name="username" required/>
+
+<!-- Login form -->
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <h1 class="text-center mb-4">Вход</h1>
+
+            <!-- Error alert -->
+            <div th:if="${badCredentials}"
+                 class="alert alert-danger"
+                 role="alert">
+                Неверное имя пользователя или пароль!
+            </div>
+
+            <form th:action="@{/user/login}"
+                  method="post"
+                  class="needs-validation"
+                  novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя</label>
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-control"
+                           required>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary w-100">
+                    Войти
+                </button>
+            </form>
+
+            <p class="text-center mt-3">
+                Нет аккаунта?
+                <a th:href="@{/user/register}">Зарегистрироваться</a>
+            </p>
+        </div>
     </div>
-    <div>
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password" required/>
-    </div>
-    <button type="submit">Войти</button>
-</form>
-<p>Нет аккаунта? <a th:href="@{/user/register}">Зарегистрироваться</a></p>
+</main>
+
+<!-- Bootstrap JS bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

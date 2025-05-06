@@ -1,40 +1,106 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}">
     <title>Регистрация</title>
 </head>
 <body>
+
+<!-- Navbar -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<h1>Регистрация</h1>
-<form th:action="@{/user/register}" th:object="${newUser}" method="post">
-    <div>
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" th:field="*{username}" required/>
-        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color:red;"></div>
+
+<!-- Registration form -->
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-6 col-lg-5">
+            <h1 class="text-center mb-4">Регистрация</h1>
+
+            <form th:action="@{/user/register}"
+                  th:object="${newUser}"
+                  method="post"
+                  class="needs-validation"
+                  novalidate>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя</label>
+                    <input type="text"
+                           id="username"
+                           th:field="*{username}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('username')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('username')}"
+                         th:errors="*{username}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password"
+                           id="password"
+                           th:field="*{password}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('password')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('password')}"
+                         th:errors="*{password}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Почта</label>
+                    <input type="email"
+                           id="email"
+                           th:field="*{email}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('email')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('email')}"
+                         th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">Ваше имя</label>
+                    <input type="text"
+                           id="firstName"
+                           th:field="*{firstName}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('firstName')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('firstName')}"
+                         th:errors="*{firstName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Ваша фамилия</label>
+                    <input type="text"
+                           id="lastName"
+                           th:field="*{lastName}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('lastName')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('lastName')}"
+                         th:errors="*{lastName}"></div>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary w-100">
+                    Зарегистрироваться
+                </button>
+            </form>
+
+            <p class="text-center mt-3">
+                Уже есть аккаунт?
+                <a th:href="@{/user/login}">Войти</a>
+            </p>
+        </div>
     </div>
-    <div>
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" th:field="*{password}" required/>
-        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red;"></div>
-    </div>
-    <div>
-        <label for="email">Почта:</label>
-        <input type="email" id="email" th:field="*{email}" required/>
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;"></div>
-    </div>
-    <div>
-        <label for="firstName">Ваше имя:</label>
-        <input type="text" id="firstName" th:field="*{firstName}" required/>
-        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" style="color:red;"></div>
-    </div>
-    <div>
-        <label for="lastName">Ваша фамилия:</label>
-        <input type="text" id="lastName" th:field="*{lastName}" required/>
-        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" style="color:red;"></div>
-    </div>
-    <button type="submit">Зарегистрироваться</button>
-</form>
-<p>Уже есть аккаунт? <a th:href="@{/user/login}">Войти</a></p>
+</main>
+
+<!-- Bootstrap JS bundle via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
