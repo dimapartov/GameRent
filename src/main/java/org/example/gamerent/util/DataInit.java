@@ -93,7 +93,7 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedBrands() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 500; i++) {
             BrandCreationInputModel brandModel = new BrandCreationInputModel();
             brandModel.setName(faker.company().name());
             brandModel.setDescription(faker.lorem().sentence());
