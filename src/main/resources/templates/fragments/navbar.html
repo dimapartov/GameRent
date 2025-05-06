@@ -1,6 +1,4 @@
-<nav th:fragment="navbar"
-     class="navbar navbar-expand-lg navbar-light bg-light"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<nav th:fragment="navbar" class="navbar navbar-expand-xl navbar-light bg-light" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="container-fluid">
         <button class="navbar-toggler"
                 type="button"
@@ -11,48 +9,47 @@
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <form th:action="@{/user/logout}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-outline-secondary nav-link">
-                            Выйти
-                        </button>
-                    </form>
+            <ul class="navbar-nav d-flex flex-column flex-xl-row flex-xl-nowrap mb-2 mb-xl-0">
+                <li class="nav-item px-2">
+                    <a class="nav-link text-nowrap" th:href="@{/}">Главная</a>
                 </li>
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" th:href="@{/user/register}">Зарегистрироваться</a>
+                <li class="nav-item px-2">
+                    <a class="nav-link text-nowrap" th:href="@{/brand/all}">Бренды</a>
                 </li>
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" th:href="@{/user/login}">Войти</a>
+                <li class="nav-item px-2">
+                    <a class="nav-link text-nowrap" th:href="@{/offer/all}">Все объявления</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/}">Главная</a>
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/offer/create}">Создать объявление</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/brand/all}">Бренды</a>
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/rental/my}">Мои аренды</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/offer/all}">Все объявления</a>
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/rental/owner/dashboard}">Управление заявками</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/offer/create}">Создать объявление</a>
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/reviews/my}">Мои отзывы</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/rental/my}">Мои аренды</a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/rental/owner/dashboard}">Управление заявками</a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/reviews/my}">Мои отзывы</a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link"
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-nowrap"
                        th:href="@{/reviews/about/{username}(username=${#authentication.name})}">
                         Отзывы обо мне
                     </a>
+                </li>
+                <li class="nav-item px-2" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/user/register}">Регистрация</a>
+                </li>
+                <li class="nav-item px-2" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link text-nowrap" th:href="@{/user/login}">Войти</a>
+                </li>
+                <li class="nav-item px-2" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/user/logout}"
+                          method="post"
+                          class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary nav-link text-nowrap">Выйти</button>
+                    </form>
                 </li>
             </ul>
         </div>
