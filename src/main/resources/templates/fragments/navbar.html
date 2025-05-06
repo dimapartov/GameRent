@@ -1,30 +1,60 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<body>
-<nav th:fragment="navbar">
-    <ul>
-        <li sec:authorize="isAuthenticated()">
-            <form th:action="@{/user/logout}" method="post">
-                <button type="submit">Выйти</button>
-            </form>
-        </li>
-        <li sec:authorize="!isAuthenticated()"><a th:href="@{/user/register}">Зарегистрироваться</a></li>
-        <li sec:authorize="!isAuthenticated()"><a th:href="@{/user/login}">Войти</a></li>
-        <li><a href="/">Домашняя страница</a></li>
-        <li><a href="/brand/all">Бренды</a></li>
-        <li><a href="/offer/all">Все объявления</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/offer/create}">Создать объявление</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/rental/my}">Мои аренды</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/rental/owner/dashboard}">Управление заявками</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/reviews/my}">Мои отзывы</a>
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/reviews/about/{username}(username=${#authentication.name})}">
-                Отзывы обо мне
-            </a>
-        </li>
-        </li>
-    </ul>
+<nav th:fragment="navbar"
+     class="navbar navbar-expand-lg navbar-light bg-light"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="container-fluid">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/user/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary nav-link">
+                            Выйти
+                        </button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/user/register}">Зарегистрироваться</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/user/login}">Войти</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/brand/all}">Бренды</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/offer/all}">Все объявления</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/offer/create}">Создать объявление</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/rental/my}">Мои аренды</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/rental/owner/dashboard}">Управление заявками</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/reviews/my}">Мои отзывы</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link"
+                       th:href="@{/reviews/about/{username}(username=${#authentication.name})}">
+                        Отзывы обо мне
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
-</body>
-</html>
