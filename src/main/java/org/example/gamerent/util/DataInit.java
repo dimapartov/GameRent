@@ -93,7 +93,7 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedBrands() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 5; i++) {
             BrandCreationInputModel brandModel = new BrandCreationInputModel();
             brandModel.setName(faker.company().name());
             brandModel.setDescription(faker.lorem().sentence());
@@ -108,12 +108,12 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerService.seedOffer(offerCreationInputModel, "d");
         }
         System.out.println("Офферы юзера 1 добавлены");
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             offerService.seedOffer(model, "dd");
         }
@@ -136,7 +136,7 @@ public class DataInit implements CommandLineRunner {
     private void seedReviews() {
         User u1 = userRepo.findUserByUsername("d").orElseThrow(() -> new IllegalStateException("d не найден"));
         User u2 = userRepo.findUserByUsername("dd").orElseThrow(() -> new IllegalStateException("dd не найден"));
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             ReviewInputModel in = new ReviewInputModel();
             in.setRevieweeUsername("dd");
             in.setRating(random.nextInt(5) + 1);
@@ -148,7 +148,7 @@ public class DataInit implements CommandLineRunner {
             reviewRepo.save(r);
         }
         System.out.println("10 отзывов от d на dd добавлены");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             ReviewInputModel in = new ReviewInputModel();
             in.setRevieweeUsername("d");
             in.setRating(random.nextInt(5) + 1);
