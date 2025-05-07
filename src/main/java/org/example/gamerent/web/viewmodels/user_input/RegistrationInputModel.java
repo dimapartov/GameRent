@@ -16,8 +16,8 @@ public class RegistrationInputModel {
     private String password;
 
     @UniqueEmail
-    @NotBlank(message = "Введите почту")
-    @Email(message = "Введите верную почту")
+    @NotBlank(message = "Введите email")
+    @Email(message = "Введите корректный email")
     private String email;
 
     @NotBlank(message = "Введите имя")

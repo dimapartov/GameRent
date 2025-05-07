@@ -30,20 +30,20 @@ public class DataInit implements CommandLineRunner {
     private final BrandService brandService;
     private final OfferService offerService;
     private final RegistrationService registrationService;
-    private final UserRepository userRepo;
-    private final ReviewRepository reviewRepo;
+    private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
     private final Faker faker = new Faker();
     private final Random random = new Random();
-    private final ModelMapper mapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
 
     @Autowired
-    public DataInit(BrandService brandService, OfferService offerService, RegistrationService registrationService, UserRepository userRepo, ReviewRepository reviewRepo) {
+    public DataInit(BrandService brandService, OfferService offerService, RegistrationService registrationService, UserRepository userRepository, ReviewRepository reviewRepository) {
         this.brandService = brandService;
         this.offerService = offerService;
         this.registrationService = registrationService;
-        this.userRepo = userRepo;
-        this.reviewRepo = reviewRepo;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
     }
 
 
@@ -64,26 +64,26 @@ public class DataInit implements CommandLineRunner {
 
     private void seedUsers() {
         RegistrationInputModel user1 = new RegistrationInputModel();
-        user1.setUsername("d");
+        user1.setUsername("a");
         user1.setEmail("dima@dima.ru");
-        user1.setPassword("d");
+        user1.setPassword("a");
         user1.setFirstName("Dima");
         user1.setLastName("Partov");
         registrationService.registerUser(user1);
 
         RegistrationInputModel user2 = new RegistrationInputModel();
-        user2.setUsername("dd");
+        user2.setUsername("aa");
         user2.setEmail("dima2@dima.ru");
-        user2.setPassword("dd");
+        user2.setPassword("aa");
         user2.setFirstName("Dima");
         user2.setLastName("Kubarev");
         registrationService.registerUser(user2);
 
-/*        for (int i = 0; i < 4; i++) {
+        /*for (int i = 0; i < 10; i++) {
             RegistrationInputModel randomUser = new RegistrationInputModel();
-            randomUser.setUsername(faker.name().username());
+            randomUser.setUsername("a" + i);
             randomUser.setEmail(faker.internet().emailAddress());
-            randomUser.setPassword(faker.internet().password());
+            randomUser.setPassword("a" + i);
             randomUser.setFirstName(faker.name().firstName());
             randomUser.setLastName(faker.name().lastName());
             registrationService.registerUser(randomUser);
@@ -108,18 +108,17 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
-            offerService.seedOffer(offerCreationInputModel, "d");
+            offerService.seedOffer(offerCreationInputModel, "a");
         }
         System.out.println("Офферы юзера 1 добавлены");
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
-            offerService.seedOffer(model, "dd");
+            offerService.seedOffer(model, "aa");
         }
         System.out.println("Офферы юзера 2 добавлены");
     }
-
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
         model.setDescription(faker.lorem().sentence());
@@ -132,34 +131,37 @@ public class DataInit implements CommandLineRunner {
         return model;
     }
 
-
     private void seedReviews() {
-        User u1 = userRepo.findUserByUsername("d").orElseThrow(() -> new IllegalStateException("d не найден"));
-        User u2 = userRepo.findUserByUsername("dd").orElseThrow(() -> new IllegalStateException("dd не найден"));
-        for (int i = 0; i < 100; i++) {
+        // Получаем список всех пользователей
+        List<User> users = userRepository.findAll();
+        int userCount = users.size();
+        if (userCount < 2) {
+            throw new IllegalStateException("Должно быть как минимум 2 пользователя для генерации отзывов");
+        }
+
+        for (int i = 0; i < 50; i++) {
+            // Выбираем случайного автора
+            User reviewer = users.get(random.nextInt(userCount));
+            // Выбираем случайного получателя, гарантируя, что это не тот же самый
+            User reviewee;
+            do {
+                reviewee = users.get(random.nextInt(userCount));
+            } while (reviewee.getId().equals(reviewer.getId()));
+
+            // Формируем входную модель и мапим её в сущность
             ReviewInputModel in = new ReviewInputModel();
-            in.setRevieweeUsername("dd");
+            in.setRevieweeUsername(reviewee.getUsername());
             in.setRating(random.nextInt(5) + 1);
             in.setText(faker.lorem().sentence());
-            Review r = mapper.map(in, Review.class);
-            r.setReviewer(u1);
-            r.setReviewee(u2);
+
+            Review r = modelMapper.map(in, Review.class);
+            r.setReviewer(reviewer);
+            r.setReviewee(reviewee);
             r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
-            reviewRepo.save(r);
+
+            reviewRepository.save(r);
         }
-        System.out.println("10 отзывов от d на dd добавлены");
-        for (int i = 0; i < 100; i++) {
-            ReviewInputModel in = new ReviewInputModel();
-            in.setRevieweeUsername("d");
-            in.setRating(random.nextInt(5) + 1);
-            in.setText(faker.lorem().sentence());
-            Review r = mapper.map(in, Review.class);
-            r.setReviewer(u2);
-            r.setReviewee(u1);
-            r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
-            reviewRepo.save(r);
-        }
-        System.out.println("10 отзывов от dd на d добавлены");
+        System.out.println("500 случайных отзывов добавлены");
     }
 
 }

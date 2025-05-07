@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public class ReviewViewModel {
 
     private Long id;
-    private String reviewerUsername;
-    private String reviewerFullName;
+    private String username;
+    private String fullName;
     private Integer rating;
     private String text;
     private LocalDateTime created;
@@ -16,10 +16,10 @@ public class ReviewViewModel {
     public ReviewViewModel() {
     }
 
-    public ReviewViewModel(Long id, String reviewerUsername, String reviewerFullName, Integer rating, String text, LocalDateTime created) {
+    public ReviewViewModel(Long id, String username, String fullName, Integer rating, String text, LocalDateTime created) {
         this.id = id;
-        this.reviewerUsername = reviewerUsername;
-        this.reviewerFullName = reviewerFullName;
+        this.username = username;
+        this.fullName = fullName;
         this.rating = rating;
         this.text = text;
         this.created = created;
@@ -34,20 +34,20 @@ public class ReviewViewModel {
         this.id = id;
     }
 
-    public String getReviewerUsername() {
-        return reviewerUsername;
+    public String getUsername() {
+        return username;
     }
 
-    public void setReviewerUsername(String reviewerUsername) {
-        this.reviewerUsername = reviewerUsername;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getReviewerFullName() {
-        return reviewerFullName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setReviewerFullName(String reviewerFullName) {
-        this.reviewerFullName = reviewerFullName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public Integer getRating() {

@@ -41,7 +41,7 @@ public class ReviewController {
         String currentUser = auth.getName();
         Page<ReviewViewModel> byPage = reviewService.getReviewsByUser(currentUser, sortBy, page, pageSize);
         model.addAttribute("byPage", byPage);
-        model.addAttribute("avgRating", reviewService.getUserAverageRating(currentUser));
+//        model.addAttribute("avgRating", reviewService.getUserAverageRating(currentUser));
         return "reviews-my-page";
     }
 

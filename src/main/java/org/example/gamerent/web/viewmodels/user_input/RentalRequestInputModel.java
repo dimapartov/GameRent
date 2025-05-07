@@ -1,16 +1,16 @@
 package org.example.gamerent.web.viewmodels.user_input;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.example.gamerent.util.validation.rental_days_range.RentalDaysInOfferRange;
 
 
+@RentalDaysInOfferRange
 public class RentalRequestInputModel {
 
     @NotNull
     private Long offerId;
 
     @NotNull(message = "Введите количество дней аренды")
-    @Min(value = 1, message = "Количество дней для аренды должно быть больше или равно 1")
     private Integer days;
 
 

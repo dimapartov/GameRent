@@ -51,9 +51,6 @@ public class RentalServiceImpl implements RentalService {
         if (offer.getStatus() != OfferStatus.AVAILABLE) {
             throw new RuntimeException("Оффер недоступен");
         }
-        if (rentalRequestInputModel.getDays() < offer.getMinRentalDays() || rentalRequestInputModel.getDays() > offer.getMaxRentalDays()) {
-            throw new RuntimeException("Некорректные сроки аренды");
-        }
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User renter = userRepository.findUserByUsername(currentUserUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         RentalDTO rentalDTO = new RentalDTO();

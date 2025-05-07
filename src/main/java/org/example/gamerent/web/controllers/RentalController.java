@@ -88,12 +88,10 @@ public class RentalController {
             }
             return "offer-details-page";
         }
-        try {
-            rentalService.createRentalRequest(rentalInput);
-            redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
+
+        rentalService.createRentalRequest(rentalInput);
+        redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
+
         return "redirect:/offer/" + rentalInput.getOfferId();
     }
 

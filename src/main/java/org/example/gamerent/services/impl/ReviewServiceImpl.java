@@ -53,8 +53,8 @@ public class ReviewServiceImpl implements ReviewService {
         review = reviewRepository.save(review);
 
         ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
-        reviewViewModel.setReviewerUsername(reviewer.getUsername());
-        reviewViewModel.setReviewerFullName(reviewer.getFirstName() + " " + reviewer.getLastName());
+        reviewViewModel.setUsername(reviewer.getUsername());
+        reviewViewModel.setFullName(reviewer.getFirstName() + " " + reviewer.getLastName());
 
         return reviewViewModel;
     }
@@ -75,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
         return reviewRepository.findAllByRevieweeUsername(revieweeUsername, pageable).map(review -> {
             ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
-            reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+            reviewViewModel.setUsername(review.getReviewer().getUsername());
             return reviewViewModel;
         });
     }
@@ -86,7 +86,7 @@ public class ReviewServiceImpl implements ReviewService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, springSort);
         return reviewRepository.findAllByReviewerUsername(reviewerUsername, pageable).map(review -> {
             ReviewViewModel reviewViewModel = modelMapper.map(review, ReviewViewModel.class);
-            reviewViewModel.setReviewerUsername(review.getReviewer().getUsername());
+            reviewViewModel.setUsername(review.getReviewee().getUsername());
             return reviewViewModel;
         });
     }
