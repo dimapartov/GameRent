@@ -1,5 +1,6 @@
 package org.example.gamerent.services;
 
+import org.example.gamerent.models.consts.RentalStatus;
 import org.example.gamerent.web.viewmodels.RentalViewModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.springframework.data.domain.Page;
@@ -23,12 +24,12 @@ public interface RentalService {
 
     void autoDeclineRentalRequest();
 
-    Page<RentalViewModel> getMyRentals(int pageNumber, int pageSize);
-
     Page<RentalViewModel> getPendingRequestsForOwner(int pageNumber, int pageSize);
 
     Page<RentalViewModel> getActiveRentalsForOwner(int pageNumber, int pageSize);
 
     Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize);
+
+    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus status, int pageNumber, int pageSize);
 
 }

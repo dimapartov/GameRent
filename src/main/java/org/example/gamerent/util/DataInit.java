@@ -1,4 +1,3 @@
-/*
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
@@ -13,11 +12,7 @@ import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.RentalService;
 import org.example.gamerent.services.impl.security.RegistrationService;
-import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.RegistrationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.ReviewInputModel;
-import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
+import org.example.gamerent.web.viewmodels.user_input.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -72,9 +67,7 @@ public class DataInit implements CommandLineRunner {
             seedOffers();
             seedReviews();
             seedRentalRequests();
-            System.out.println("Приложение готово к работе");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
     }
 
@@ -86,7 +79,6 @@ public class DataInit implements CommandLineRunner {
         user1.setFirstName("Dima");
         user1.setLastName("Partov");
         registrationService.registerUser(user1);
-
         RegistrationInputModel user2 = new RegistrationInputModel();
         user2.setUsername("aa");
         user2.setEmail("dima2@dima.ru");
@@ -94,18 +86,15 @@ public class DataInit implements CommandLineRunner {
         user2.setFirstName("Dima");
         user2.setLastName("Kubarev");
         registrationService.registerUser(user2);
-
-        for (int i = 0; i < 10; i++) {
-            RegistrationInputModel randomUser = new RegistrationInputModel();
-            randomUser.setUsername("a" + i);
-            randomUser.setEmail(faker.internet().emailAddress());
-            randomUser.setPassword("a" + i);
-            randomUser.setFirstName(faker.name().firstName());
-            randomUser.setLastName(faker.name().lastName());
-            registrationService.registerUser(randomUser);
-        }
-
-        System.out.println("Пользователи добавлены");
+//        for (int i = 0; i < 10; i++) {
+//            RegistrationInputModel randomUser = new RegistrationInputModel();
+//            randomUser.setUsername("a" + i);
+//            randomUser.setEmail(faker.internet().emailAddress());
+//            randomUser.setPassword("a" + i);
+//            randomUser.setFirstName(faker.name().firstName());
+//            randomUser.setLastName(faker.name().lastName());
+//            registrationService.registerUser(randomUser);
+//        }
     }
 
     private void seedBrands() {
@@ -116,24 +105,20 @@ public class DataInit implements CommandLineRunner {
             brandModel.setPhoto("brand_logo.png");
             brandService.createBrand(brandModel);
         }
-        System.out.println("Бренды добавлены");
     }
 
     private void seedOffers() {
         List<String> brandNames = brandService.getAllBrandsDTOs().stream()
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
-
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerService.seedOffer(offerCreationInputModel, "a");
         }
-        System.out.println("Офферы юзера a добавлены");
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             offerService.seedOffer(model, "aa");
         }
-        System.out.println("Офферы юзера aa добавлены");
     }
 
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
@@ -159,28 +144,24 @@ public class DataInit implements CommandLineRunner {
             do {
                 reviewee = users.get(random.nextInt(users.size()));
             } while (reviewee.getId().equals(reviewer.getId()));
-
             ReviewInputModel in = new ReviewInputModel();
             in.setRevieweeUsername(reviewee.getUsername());
             in.setRating(random.nextInt(5) + 1);
             in.setText(faker.lorem().sentence());
-
             Review r = modelMapper.map(in, Review.class);
             r.setReviewer(reviewer);
             r.setReviewee(reviewee);
             r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
             reviewRepository.save(r);
         }
-        System.out.println("500 случайных отзывов добавлены");
     }
 
     private void seedRentalRequests() {
         List<Offer> offersA = offerRepository.findAllByOwnerUsername("a");
         List<Offer> offersAA = offerRepository.findAllByOwnerUsername("aa");
-
         UsernamePasswordAuthenticationToken authA = new UsernamePasswordAuthenticationToken("a", null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authA);
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 2; i++) {
             Offer offer = offersAA.get(random.nextInt(offersAA.size()));
             int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
             RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
@@ -188,10 +169,9 @@ public class DataInit implements CommandLineRunner {
             offer.setStatus(OfferStatus.AVAILABLE);
             offerRepository.save(offer);
         }
-
         UsernamePasswordAuthenticationToken authAA = new UsernamePasswordAuthenticationToken("aa", null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authAA);
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 2; i++) {
             Offer offer = offersA.get(random.nextInt(offersA.size()));
             int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
             RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
@@ -199,8 +179,6 @@ public class DataInit implements CommandLineRunner {
             offer.setStatus(OfferStatus.AVAILABLE);
             offerRepository.save(offer);
         }
-
-        System.out.println("100 запросов аренды добавлены");
     }
 
-}*/
+}

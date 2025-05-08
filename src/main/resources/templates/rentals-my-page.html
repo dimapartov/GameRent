@@ -7,112 +7,429 @@
     <title>Мои аренды</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Force fixed layout so borders never shift */
+        /* фиксированная таблица, чтобы не было горизонтальной прокрутки */
         .table-fixed {
             table-layout: fixed;
             width: 100%;
         }
-        /* Make cells wrap their text but keep fixed column widths */
-        .table-fixed td,
-        .table-fixed th {
-            white-space: normal;
-            word-wrap: break-word;
+        .table-fixed th,
+        .table-fixed td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body>
-
-<!-- Navbar -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-
 <main class="container my-5">
-
     <h1 class="mb-4">Мои аренды</h1>
 
-    <!-- Нет аренд -->
-    <div th:if="${myRentals.isEmpty()}" class="alert alert-light">
-        У вас пока нет ни одной аренды.
+    <!-- Навигация по статусам -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='PENDING_FOR_CONFIRM'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='PENDING_FOR_CONFIRM'
+               )}">
+                Ожидает подтверждения
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='ACTIVE'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='ACTIVE'
+               )}">
+                Активна
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='RETURNED'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='RETURNED'
+               )}">
+                Возвращена
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='PENDING_FOR_RETURN'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='PENDING_FOR_RETURN'
+               )}">
+                Ожидает возврата
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='CANCELED_BY_RENTER'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='CANCELED_BY_RENTER'
+               )}">
+                Отменена арендатором
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${currentTab=='CANCELED_BY_OWNER'}?' active':''"
+               th:href="@{/rental/my(
+                   pendingPage=${pendingRentals.number},
+                   activePage=${activeRentals.number},
+                   returnedPage=${returnedRentals.number},
+                   pendingReturnPage=${pendingReturnRentals.number},
+                   canceledByRenterPage=${canceledByRenter.number},
+                   canceledByOwnerPage=${canceledByOwner.number},
+                   tab='CANCELED_BY_OWNER'
+               )}">
+                Отклонена владельцем
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- PENDING_FOR_CONFIRM -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='PENDING_FOR_CONFIRM'}?' show active':''">
+            <div th:if="${pendingRentals.content.empty}" class="alert alert-light">Нет заявок.</div>
+            <div th:if="${!pendingRentals.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:25%"/>
+                        <col style="width:15%"/>
+                        <col style="width:15%"/>
+                        <col style="width:15%"/>
+                        <col style="width:30%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th>
+                        <th>Дней</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Действие</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${pendingRentals.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${r.days}"></td>
+                        <td th:text="${r.startDate!=null? #temporals.format(r.startDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td th:text="${r.endDate  !=null? #temporals.format(r.endDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td>
+                            <form th:action="@{/rental/{id}/cancel(id=${r.rentalId})}" method="post" class="d-inline">
+                                <input type="hidden" name="tab" th:value="${currentTab}"/>
+                                <button class="btn btn-sm btn-warning">Отменить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!pendingRentals.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                pendingPage=${pendingRentals.number-1}, tab='PENDING_FOR_CONFIRM'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${pendingRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${pendingRentals.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!pendingRentals.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                pendingPage=${pendingRentals.number+1}, tab='PENDING_FOR_CONFIRM'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- ACTIVE -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='ACTIVE'}?' show active':''">
+            <div th:if="${activeRentals.content.empty}" class="alert alert-light">Нет активных.</div>
+            <div th:if="${!activeRentals.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:30%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                        <col style="width:15%"/>
+                        <col style="width:15%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Контакт</th>
+                        <th>Действие</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${activeRentals.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
+                        <td>
+                            <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                        </td>
+                        <td>
+                            <form th:action="@{/rental/{id}/return(id=${r.rentalId})}" method="post" class="d-inline">
+                                <input type="hidden" name="tab" th:value="${currentTab}"/>
+                                <button class="btn btn-sm btn-primary">Вернуть</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!activeRentals.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                activePage=${activeRentals.number-1}, tab='ACTIVE'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${activeRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${activeRentals.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!activeRentals.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                activePage=${activeRentals.number+1}, tab='ACTIVE'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- RETURNED -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='RETURNED'}?' show active':''">
+            <div th:if="${returnedRentals.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
+            <div th:if="${!returnedRentals.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:40%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${returnedRentals.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
+                        <td>
+                            <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!returnedRentals.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                returnedPage=${returnedRentals.number-1}, tab='RETURNED'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${returnedRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${returnedRentals.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!returnedRentals.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                returnedPage=${returnedRentals.number+1}, tab='RETURNED'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- PENDING_FOR_RETURN -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='PENDING_FOR_RETURN'}?' show active':''">
+            <div th:if="${pendingReturnRentals.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
+            <div th:if="${!pendingReturnRentals.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:40%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${pendingReturnRentals.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
+                        <td>
+                            <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!pendingReturnRentals.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                pendingReturnPage=${pendingReturnRentals.number-1}, tab='PENDING_FOR_RETURN'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${pendingReturnRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${pendingReturnRentals.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!pendingReturnRentals.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                pendingReturnPage=${pendingReturnRentals.number+1}, tab='PENDING_FOR_RETURN'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- CANCELED_BY_RENTER -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='CANCELED_BY_RENTER'}?' show active':''">
+            <div th:if="${canceledByRenter.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
+            <div th:if="${!canceledByRenter.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:40%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${canceledByRenter.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${r.startDate!=null? #temporals.format(r.startDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td th:text="${r.endDate  !=null? #temporals.format(r.endDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td>
+                            <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!canceledByRenter.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                canceledByRenterPage=${canceledByRenter.number-1}, tab='CANCELED_BY_RENTER'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${canceledByRenter.number+1}"></span>&nbsp;из&nbsp;<span th:text="${canceledByRenter.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!canceledByRenter.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                canceledByRenterPage=${canceledByRenter.number+1}, tab='CANCELED_BY_RENTER'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- CANCELED_BY_OWNER -->
+        <div class="tab-pane fade" th:classappend="${currentTab=='CANCELED_BY_OWNER'}?' show active':''">
+            <div th:if="${canceledByOwner.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
+            <div th:if="${!canceledByOwner.content.empty}" class="table-responsive">
+                <table class="table table-fixed mb-0">
+                    <colgroup>
+                        <col style="width:40%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                        <col style="width:20%"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${canceledByOwner.content}">
+                        <td th:text="${r.offerName}"></td>
+                        <td th:text="${r.startDate!=null? #temporals.format(r.startDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td th:text="${r.endDate  !=null? #temporals.format(r.endDate,'dd.MM.yyyy'):'-'}"></td>
+                        <td>
+                            <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!canceledByOwner.hasPrevious()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                canceledByOwnerPage=${canceledByOwner.number-1}, tab='CANCELED_BY_OWNER'
+                            )}">‹ Назад</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Стр&nbsp;<span th:text="${canceledByOwner.number+1}"></span>&nbsp;из&nbsp;<span th:text="${canceledByOwner.totalPages}"></span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!canceledByOwner.hasNext()}?' disabled':''">
+                            <a class="page-link" th:href="@{/rental/my(
+                                canceledByOwnerPage=${canceledByOwner.number+1}, tab='CANCELED_BY_OWNER'
+                            )}">Вперёд ›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
     </div>
-
-    <!-- Таблица аренд и пагинация -->
-    <div th:if="${!myRentals.isEmpty()}">
-        <!-- Fixed-layout table with explicit column widths -->
-        <table class="table mb-0 table-fixed">
-            <colgroup>
-                <col style="width: 30%;">   <!-- Игра -->
-                <col style="width: 30%;">   <!-- Период -->
-                <col style="width: 25%;">   <!-- Статус -->
-                <col style="width: 15%;">   <!-- Действия -->
-            </colgroup>
-            <thead>
-            <tr>
-                <th>Игра</th>
-                <th>Период</th>
-                <th>Статус</th>
-                <th>Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="r : ${myRentals}">
-                <td class="align-middle" th:text="${r.offerName}">Название игры</td>
-                <td class="align-middle"
-                    th:text="|${r.startDate != null
-                         ? #temporals.format(r.startDate,'dd.MM.yyyy')
-                         : 'С момента подтверждения'} —
-                         ${r.endDate != null
-                         ? #temporals.format(r.endDate,'dd.MM.yyyy')
-                         : 'не указано'}|">
-                    период
-                </td>
-                <td class="align-middle" th:text="${r.status}">Статус</td>
-                <td class="align-middle">
-                    <div class="d-flex flex-nowrap gap-2">
-                        <form th:if="${r.status == 'Ожидает подтверждения владельцем'}"
-                              th:action="@{/rental/{id}/cancel(id=${r.rentalId})}"
-                              method="post" class="m-0 p-0">
-                            <button class="btn btn-sm btn-warning">Отменить</button>
-                        </form>
-                        <form th:if="${r.status == 'Активна'}"
-                              th:action="@{/rental/{id}/return(id=${r.rentalId})}"
-                              method="post" class="m-0 p-0">
-                            <button class="btn btn-sm btn-primary">Вернуть</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <!-- Пагинация -->
-        <nav aria-label="Пагинация" class="mt-3">
-            <ul class="pagination justify-content-center mb-0">
-                <li class="page-item" th:classappend="${!myRentals.hasPrevious()} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/rental/my(page=${myRentals.number - 1})}">
-                        ‹ Назад
-                    </a>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">
-                        Страница <span th:text="${myRentals.number + 1}">1</span>
-                        из <span th:text="${myRentals.totalPages}">1</span>
-                    </span>
-                </li>
-                <li class="page-item" th:classappend="${!myRentals.hasNext()} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/rental/my(page=${myRentals.number + 1})}">
-                        Вперёд ›
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Уведомление об успехе -->
-    <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
-
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

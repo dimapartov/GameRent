@@ -139,22 +139,32 @@ public class RentalServiceImpl implements RentalService {
         Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM, pageable);
 
         return rentals.map(rental -> {
-                    RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
-                    rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
-                    Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
-                    rentalViewModel.setDays((int) duration.toDays());
-                    return rentalViewModel;
-                });
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
+            rentalViewModel.setDays((int) duration.toDays());
+            return rentalViewModel;
+        });
     }
 
     @Override
-    public Page<RentalViewModel> getMyRentals(int pageNumber, int pageSize) {
+    public Page<RentalViewModel> getMyRentalsByStatus(RentalStatus status, int pageNumber, int pageSize) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Rental> rentals = rentalRepository.findByRenterUsername(currentUserUsername, pageable);
+        Page<Rental> rentals = rentalRepository.findByRenterUsernameAndStatus(currentUserUsername, status, pageable);
 
-        return rentals.map(rental -> modelMapper.map(rental, RentalViewModel.class));
+        return rentals.map(rental -> {
+            RentalViewModel vm = modelMapper.map(rental, RentalViewModel.class);
+
+            // вот здесь добавляем ownerContact
+            vm.setOwnerContact(rental.getOffer().getOwner().getEmail());
+
+            if (rental.getStatus() == RentalStatus.PENDING_FOR_CONFIRM) {
+                Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
+                vm.setDays((int) duration.toDays());
+            }
+            return vm;
+        });
     }
 
     @Override
@@ -165,11 +175,11 @@ public class RentalServiceImpl implements RentalService {
         Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.ACTIVE, pageable);
 
         return rentals.map(rental -> {
-                    RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
-                    rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
-                    rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
-                    return rentalViewModel;
-                });
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            return rentalViewModel;
+        });
     }
 
     @Override
@@ -178,11 +188,11 @@ public class RentalServiceImpl implements RentalService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.PENDING_FOR_RETURN, pageable);
         return rentals.map(rental -> {
-                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
-                    viewModel.setRenterUsername(rental.getRenter().getUsername());
-                    viewModel.setOwnerContact(rental.getRenter().getEmail());
-                    return viewModel;
-                });
+            RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
+            viewModel.setRenterUsername(rental.getRenter().getUsername());
+            viewModel.setOwnerContact(rental.getRenter().getEmail());
+            return viewModel;
+        });
     }
 
     @Override
