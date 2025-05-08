@@ -12,17 +12,57 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <main class="container my-5">
-
     <h1 class="mb-4">Кабинет владельца</h1>
 
-    <!-- 1. Новые запросы -->
-    <section class="mb-5">
-        <h2 class="h4">Ожидают подтверждения</h2>
-        <div th:if="${pendingRequests.isEmpty()}" class="alert alert-light">
-            Нет новых заявок.
-        </div>
-        <div th:if="${!pendingRequests.isEmpty()}">
-            <div class="table-responsive">
+    <!-- Навигация по табам -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${currentTab=='pending'} ? ' active'"
+               th:href="@{/rental/owner/dashboard(
+                   pendingPage=${pendingRequests.number},
+                   activePage=${activeRentals.number},
+                   returnPage=${pendingReturns.number},
+                   tab='pending'
+               )}">
+                Новые запросы
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${currentTab=='active'} ? ' active'"
+               th:href="@{/rental/owner/dashboard(
+                   pendingPage=${pendingRequests.number},
+                   activePage=${activeRentals.number},
+                   returnPage=${pendingReturns.number},
+                   tab='active'
+               )}">
+                Активные
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${currentTab=='returns'} ? ' active'"
+               th:href="@{/rental/owner/dashboard(
+                   pendingPage=${pendingRequests.number},
+                   activePage=${activeRentals.number},
+                   returnPage=${pendingReturns.number},
+                   tab='returns'
+               )}">
+                Запросы на возврат
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- 1. Новые запросы -->
+        <div class="tab-pane fade"
+             th:classappend="${currentTab=='pending'} ? ' show active'"
+             id="pending">
+            <div th:if="${pendingRequests.content.empty}" class="alert alert-light">
+                Нет новых заявок.
+            </div>
+            <div th:if="${!pendingRequests.content.empty}" class="table-responsive">
                 <table class="table align-middle">
                     <thead>
                     <tr>
@@ -34,7 +74,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="r : ${pendingRequests}">
+                    <tr th:each="r : ${pendingRequests.content}">
                         <td th:text="${r.offerName}">Game</td>
                         <td th:text="${r.renterUsername}">user</td>
                         <td th:text="${r.days}">X</td>
@@ -42,10 +82,10 @@
                             <a th:href="'mailto:' + ${r.ownerContact}"
                                th:text="${r.ownerContact}">email</a>
                         </td>
-                        <td class="d-flex flex-nowrap align-items-center">
+                        <td class="d-flex flex-nowrap">
                             <form th:action="@{/rental/owner/{id}/confirm(id=${r.rentalId})}"
-                                  method="post">
-                                <button class="btn btn-sm btn-success me-2">Подтвердить</button>
+                                  method="post" class="me-2">
+                                <button class="btn btn-sm btn-success">Подтвердить</button>
                             </form>
                             <form th:action="@{/rental/owner/{id}/reject(id=${r.rentalId})}"
                                   method="post">
@@ -55,18 +95,50 @@
                     </tr>
                     </tbody>
                 </table>
+                <!-- Пагинация -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!pendingRequests.hasPrevious()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number - 1},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number},
+                                   tab='pending'
+                               )}">
+                                ‹ Назад
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Страница <span th:text="${pendingRequests.number + 1}"/>
+                                из <span th:text="${pendingRequests.totalPages}"/>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!pendingRequests.hasNext()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number + 1},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number},
+                                   tab='pending'
+                               )}">
+                                Вперёд ›
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </section>
 
-    <!-- 2. Активные аренды -->
-    <section class="mb-5">
-        <h2 class="h4">Активные</h2>
-        <div th:if="${activeRentals.isEmpty()}" class="alert alert-light">
-            Нет активных аренд.
-        </div>
-        <div th:if="${!activeRentals.isEmpty()}">
-            <div class="table-responsive">
+        <!-- 2. Активные аренды -->
+        <div class="tab-pane fade"
+             th:classappend="${currentTab=='active'} ? ' show active'"
+             id="active">
+            <div th:if="${activeRentals.content.empty}" class="alert alert-light">
+                Нет активных аренд.
+            </div>
+            <div th:if="${!activeRentals.content.empty}" class="table-responsive">
                 <table class="table align-middle">
                     <thead>
                     <tr>
@@ -77,7 +149,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="r : ${activeRentals}">
+                    <tr th:each="r : ${activeRentals.content}">
                         <td th:text="${r.offerName}">Game</td>
                         <td th:text="${r.renterUsername}">user</td>
                         <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} — ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
@@ -90,18 +162,50 @@
                     </tr>
                     </tbody>
                 </table>
+                <!-- Пагинация -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!activeRentals.hasPrevious()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number - 1},
+                                   returnPage=${pendingReturns.number},
+                                   tab='active'
+                               )}">
+                                ‹ Назад
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Страница <span th:text="${activeRentals.number + 1}"/>
+                                из <span th:text="${activeRentals.totalPages}"/>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!activeRentals.hasNext()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number + 1},
+                                   returnPage=${pendingReturns.number},
+                                   tab='active'
+                               )}">
+                                Вперёд ›
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </section>
 
-    <!-- 3. Запросы на возврат -->
-    <section class="mb-4">
-        <h2 class="h4">Запросы на возврат</h2>
-        <div th:if="${pendingReturns.isEmpty()}" class="alert alert-light">
-            Нет запросов на возврат.
-        </div>
-        <div th:if="${!pendingReturns.isEmpty()}">
-            <div class="table-responsive">
+        <!-- 3. Запросы на возврат -->
+        <div class="tab-pane fade"
+             th:classappend="${currentTab=='returns'} ? ' show active'"
+             id="returns">
+            <div th:if="${pendingReturns.content.empty}" class="alert alert-light">
+                Нет запросов на возврат.
+            </div>
+            <div th:if="${!pendingReturns.content.empty}" class="table-responsive">
                 <table class="table align-middle">
                     <thead>
                     <tr>
@@ -113,7 +217,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="r : ${pendingReturns}">
+                    <tr th:each="r : ${pendingReturns.content}">
                         <td th:text="${r.offerName}">Game</td>
                         <td th:text="${r.renterUsername}">user</td>
                         <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} — ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
@@ -132,12 +236,45 @@
                     </tr>
                     </tbody>
                 </table>
+                <!-- Пагинация -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${!pendingReturns.hasPrevious()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number - 1},
+                                   tab='returns'
+                               )}">
+                                ‹ Назад
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Страница <span th:text="${pendingReturns.number + 1}"/>
+                                из <span th:text="${pendingReturns.totalPages}"/>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!pendingReturns.hasNext()} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number + 1},
+                                   tab='returns'
+                               )}">
+                                Вперёд ›
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Уведомление об успехе -->
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${success}" class="alert alert-success mt-4" th:text="${success}"></div>
 
 </main>
 

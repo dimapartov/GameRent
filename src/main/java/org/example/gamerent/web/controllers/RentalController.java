@@ -7,6 +7,7 @@ import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/rental")
 public class RentalController {
+
+    @Value("${rentals.page.size}")
+    private int pageSize;
 
     private final RentalService rentalService;
     private final OfferService offerService;
@@ -36,12 +40,26 @@ public class RentalController {
 
 
     @GetMapping("/owner/dashboard")
-    public String getOwnerDashboardPage(Model model) {
-        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner());
-        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner());
-        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner());
+    public String getOwnerDashboardPage(@RequestParam(value = "pendingPage", defaultValue = "0") int pendingPage,
+                                        @RequestParam(value = "activePage", defaultValue = "0") int activePage,
+                                        @RequestParam(value = "returnPage", defaultValue = "0") int returnPage,
+                                        @RequestParam(value = "tab", defaultValue = "pending") String tab,
+                                        Model model) {
+
+        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner(pendingPage, pageSize));
+        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner(activePage, pageSize));
+        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner(returnPage, pageSize));
+        model.addAttribute("currentTab", tab);
         return "rentals-owner-dashboard-page";
     }
+
+    @GetMapping("/my")
+    public String getMyRentalsPage(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   Model model) {
+        model.addAttribute("myRentals", rentalService.getMyRentals(page, pageSize));
+        return "rentals-my-page";
+    }
+
 
     @PostMapping("/owner/{id}/confirm")
     public String confirmRentalRequest(@PathVariable Long id,
@@ -65,12 +83,6 @@ public class RentalController {
         rentalService.confirmRentalReturn(id);
         redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/rental/owner/dashboard";
-    }
-
-    @GetMapping("/my")
-    public String getMyRentalsPage(Model model) {
-        model.addAttribute("myRentals", rentalService.getMyRentals());
-        return "rentals-my-page";
     }
 
     @PostMapping("/create")

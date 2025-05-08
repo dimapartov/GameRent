@@ -6,6 +6,19 @@
     <meta charset="UTF-8">
     <title>Мои аренды</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Force fixed layout so borders never shift */
+        .table-fixed {
+            table-layout: fixed;
+            width: 100%;
+        }
+        /* Make cells wrap their text but keep fixed column widths */
+        .table-fixed td,
+        .table-fixed th {
+            white-space: normal;
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,9 +34,16 @@
         У вас пока нет ни одной аренды.
     </div>
 
-    <!-- Таблица аренд -->
+    <!-- Таблица аренд и пагинация -->
     <div th:if="${!myRentals.isEmpty()}">
-        <table class="table table-striped align-middle">
+        <!-- Fixed-layout table with explicit column widths -->
+        <table class="table mb-0 table-fixed">
+            <colgroup>
+                <col style="width: 30%;">   <!-- Игра -->
+                <col style="width: 30%;">   <!-- Период -->
+                <col style="width: 25%;">   <!-- Статус -->
+                <col style="width: 15%;">   <!-- Действия -->
+            </colgroup>
             <thead>
             <tr>
                 <th>Игра</th>
@@ -34,26 +54,58 @@
             </thead>
             <tbody>
             <tr th:each="r : ${myRentals}">
-                <td th:text="${r.offerName}">Название игры</td>
-                <td th:text="|${r.startDate != null ? #temporals.format(r.startDate,'dd.MM.yyyy') : 'С момента подтверждения'} — ${r.endDate != null ? #temporals.format(r.endDate,'dd.MM.yyyy') : 'не указано'}|">
+                <td class="align-middle" th:text="${r.offerName}">Название игры</td>
+                <td class="align-middle"
+                    th:text="|${r.startDate != null
+                         ? #temporals.format(r.startDate,'dd.MM.yyyy')
+                         : 'С момента подтверждения'} —
+                         ${r.endDate != null
+                         ? #temporals.format(r.endDate,'dd.MM.yyyy')
+                         : 'не указано'}|">
                     период
                 </td>
-                <td th:text="${r.status}">Статус</td>
-                <td class="d-flex gap-2">
-                    <form th:if="${r.status} == 'Ожидает подтверждения владельцем'"
-                          th:action="@{/rental/{id}/cancel(id=${r.rentalId})}"
-                          method="post">
-                        <button class="btn btn-sm btn-warning">Отменить</button>
-                    </form>
-                    <form th:if="${r.status} == 'Активна'"
-                          th:action="@{/rental/{id}/return(id=${r.rentalId})}"
-                          method="post">
-                        <button class="btn btn-sm btn-primary">Вернуть</button>
-                    </form>
+                <td class="align-middle" th:text="${r.status}">Статус</td>
+                <td class="align-middle">
+                    <div class="d-flex flex-nowrap gap-2">
+                        <form th:if="${r.status == 'Ожидает подтверждения владельцем'}"
+                              th:action="@{/rental/{id}/cancel(id=${r.rentalId})}"
+                              method="post" class="m-0 p-0">
+                            <button class="btn btn-sm btn-warning">Отменить</button>
+                        </form>
+                        <form th:if="${r.status == 'Активна'}"
+                              th:action="@{/rental/{id}/return(id=${r.rentalId})}"
+                              method="post" class="m-0 p-0">
+                            <button class="btn btn-sm btn-primary">Вернуть</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
+
+        <!-- Пагинация -->
+        <nav aria-label="Пагинация" class="mt-3">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item" th:classappend="${!myRentals.hasPrevious()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/rental/my(page=${myRentals.number - 1})}">
+                        ‹ Назад
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Страница <span th:text="${myRentals.number + 1}">1</span>
+                        из <span th:text="${myRentals.totalPages}">1</span>
+                    </span>
+                </li>
+                <li class="page-item" th:classappend="${!myRentals.hasNext()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/rental/my(page=${myRentals.number + 1})}">
+                        Вперёд ›
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <!-- Уведомление об успехе -->

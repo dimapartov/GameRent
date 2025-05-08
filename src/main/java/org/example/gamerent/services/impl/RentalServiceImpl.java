@@ -15,6 +15,9 @@ import org.example.gamerent.web.viewmodels.RentalViewModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -129,55 +132,57 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<RentalViewModel> getPendingRequestsForOwner() {
+    public Page<RentalViewModel> getPendingRequestsForOwner(int pageNumber, int pageSize) {
         String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepository.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM)
-                .stream()
-                .map(rental -> {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM, pageable);
+
+        return rentals.map(rental -> {
                     RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
                     rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
                     Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
                     rentalViewModel.setDays((int) duration.toDays());
                     return rentalViewModel;
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     @Override
-    public List<RentalViewModel> getMyRentals() {
+    public Page<RentalViewModel> getMyRentals(int pageNumber, int pageSize) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepository.findByRenterUsername(currentUserUsername)
-                .stream()
-                .map(rental -> modelMapper.map(rental, RentalViewModel.class))
-                .collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByRenterUsername(currentUserUsername, pageable);
+
+        return rentals.map(rental -> modelMapper.map(rental, RentalViewModel.class));
     }
 
     @Override
-    public List<RentalViewModel> getActiveRentalsForOwner() {
+    public Page<RentalViewModel> getActiveRentalsForOwner(int pageNumber, int pageSize) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.ACTIVE)
-                .stream()
-                .map(rental -> {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.ACTIVE, pageable);
+
+        return rentals.map(rental -> {
                     RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
                     rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
                     rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
                     return rentalViewModel;
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     @Override
-    public List<RentalViewModel> getPendingReturnsForOwner() {
+    public Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize) {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.PENDING_FOR_RETURN)
-                .stream()
-                .map(rental -> {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(currentUserUsername, RentalStatus.PENDING_FOR_RETURN, pageable);
+        return rentals.map(rental -> {
                     RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
                     viewModel.setRenterUsername(rental.getRenter().getUsername());
                     viewModel.setOwnerContact(rental.getRenter().getEmail());
                     return viewModel;
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     @Override
