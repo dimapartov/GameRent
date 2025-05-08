@@ -9,10 +9,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, Long> {
+
+    //    Для инициализации данных
+    List<Offer> findAllByOwnerUsername(String username);
+
 
     @Query("SELECT o FROM Offer o " +
             "WHERE (:priceFrom IS NULL OR o.price >= :priceFrom) " +

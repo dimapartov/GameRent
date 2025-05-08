@@ -1,24 +1,33 @@
+/*
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
+import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.Review;
 import org.example.gamerent.models.User;
+import org.example.gamerent.models.consts.OfferStatus;
+import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.repos.ReviewRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
+import org.example.gamerent.services.RentalService;
 import org.example.gamerent.services.impl.security.RegistrationService;
 import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RegistrationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.ReviewInputModel;
+import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -32,20 +41,28 @@ public class DataInit implements CommandLineRunner {
     private final RegistrationService registrationService;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final OfferRepository offerRepository;
+    private final RentalService rentalService;
     private final Faker faker = new Faker();
     private final Random random = new Random();
     private final ModelMapper modelMapper = new ModelMapper();
 
-
     @Autowired
-    public DataInit(BrandService brandService, OfferService offerService, RegistrationService registrationService, UserRepository userRepository, ReviewRepository reviewRepository) {
+    public DataInit(BrandService brandService,
+                    OfferService offerService,
+                    RegistrationService registrationService,
+                    UserRepository userRepository,
+                    ReviewRepository reviewRepository,
+                    OfferRepository offerRepository,
+                    RentalService rentalService) {
         this.brandService = brandService;
         this.offerService = offerService;
         this.registrationService = registrationService;
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
+        this.offerRepository = offerRepository;
+        this.rentalService = rentalService;
     }
-
 
     @Override
     public void run(String... args) {
@@ -54,13 +71,12 @@ public class DataInit implements CommandLineRunner {
             seedBrands();
             seedOffers();
             seedReviews();
+            seedRentalRequests();
             System.out.println("Приложение готово к работе");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
     }
-
 
     private void seedUsers() {
         RegistrationInputModel user1 = new RegistrationInputModel();
@@ -79,7 +95,7 @@ public class DataInit implements CommandLineRunner {
         user2.setLastName("Kubarev");
         registrationService.registerUser(user2);
 
-        /*for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             RegistrationInputModel randomUser = new RegistrationInputModel();
             randomUser.setUsername("a" + i);
             randomUser.setEmail(faker.internet().emailAddress());
@@ -87,7 +103,7 @@ public class DataInit implements CommandLineRunner {
             randomUser.setFirstName(faker.name().firstName());
             randomUser.setLastName(faker.name().lastName());
             registrationService.registerUser(randomUser);
-        }*/
+        }
 
         System.out.println("Пользователи добавлены");
     }
@@ -108,17 +124,18 @@ public class DataInit implements CommandLineRunner {
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 100; i++) {
             OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
             offerService.seedOffer(offerCreationInputModel, "a");
         }
-        System.out.println("Офферы юзера 1 добавлены");
-        for (int i = 0; i < 2; i++) {
+        System.out.println("Офферы юзера a добавлены");
+        for (int i = 0; i < 100; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             offerService.seedOffer(model, "aa");
         }
-        System.out.println("Офферы юзера 2 добавлены");
+        System.out.println("Офферы юзера aa добавлены");
     }
+
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
         model.setDescription(faker.lorem().sentence());
@@ -132,23 +149,17 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedReviews() {
-        // Получаем список всех пользователей
         List<User> users = userRepository.findAll();
-        int userCount = users.size();
-        if (userCount < 2) {
+        if (users.size() < 2) {
             throw new IllegalStateException("Должно быть как минимум 2 пользователя для генерации отзывов");
         }
-
-        for (int i = 0; i < 50; i++) {
-            // Выбираем случайного автора
-            User reviewer = users.get(random.nextInt(userCount));
-            // Выбираем случайного получателя, гарантируя, что это не тот же самый
+        for (int i = 0; i < 500; i++) {
+            User reviewer = users.get(random.nextInt(users.size()));
             User reviewee;
             do {
-                reviewee = users.get(random.nextInt(userCount));
+                reviewee = users.get(random.nextInt(users.size()));
             } while (reviewee.getId().equals(reviewer.getId()));
 
-            // Формируем входную модель и мапим её в сущность
             ReviewInputModel in = new ReviewInputModel();
             in.setRevieweeUsername(reviewee.getUsername());
             in.setRating(random.nextInt(5) + 1);
@@ -158,10 +169,38 @@ public class DataInit implements CommandLineRunner {
             r.setReviewer(reviewer);
             r.setReviewee(reviewee);
             r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
-
             reviewRepository.save(r);
         }
         System.out.println("500 случайных отзывов добавлены");
     }
 
-}
+    private void seedRentalRequests() {
+        List<Offer> offersA = offerRepository.findAllByOwnerUsername("a");
+        List<Offer> offersAA = offerRepository.findAllByOwnerUsername("aa");
+
+        UsernamePasswordAuthenticationToken authA = new UsernamePasswordAuthenticationToken("a", null, Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(authA);
+        for (int i = 0; i < 50; i++) {
+            Offer offer = offersAA.get(random.nextInt(offersAA.size()));
+            int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
+            RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
+            rentalService.createRentalRequest(input);
+            offer.setStatus(OfferStatus.AVAILABLE);
+            offerRepository.save(offer);
+        }
+
+        UsernamePasswordAuthenticationToken authAA = new UsernamePasswordAuthenticationToken("aa", null, Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(authAA);
+        for (int i = 0; i < 50; i++) {
+            Offer offer = offersA.get(random.nextInt(offersA.size()));
+            int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
+            RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
+            rentalService.createRentalRequest(input);
+            offer.setStatus(OfferStatus.AVAILABLE);
+            offerRepository.save(offer);
+        }
+
+        System.out.println("100 запросов аренды добавлены");
+    }
+
+}*/
