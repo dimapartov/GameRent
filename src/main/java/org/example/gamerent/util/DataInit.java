@@ -1,30 +1,31 @@
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
+import jakarta.persistence.EntityManager;
 import org.example.gamerent.models.Offer;
+import org.example.gamerent.models.Rental;
 import org.example.gamerent.models.Review;
 import org.example.gamerent.models.User;
-import org.example.gamerent.models.consts.OfferStatus;
+import org.example.gamerent.models.consts.RentalStatus;
 import org.example.gamerent.repos.OfferRepository;
+import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.ReviewRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
-import org.example.gamerent.services.RentalService;
 import org.example.gamerent.services.impl.security.RegistrationService;
 import org.example.gamerent.web.viewmodels.user_input.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -37,10 +38,11 @@ public class DataInit implements CommandLineRunner {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final OfferRepository offerRepository;
-    private final RentalService rentalService;
+    private final RentalRepository rentalRepository;
     private final Faker faker = new Faker();
     private final Random random = new Random();
     private final ModelMapper modelMapper = new ModelMapper();
+    private final EntityManager entityManager;
 
     @Autowired
     public DataInit(BrandService brandService,
@@ -49,75 +51,74 @@ public class DataInit implements CommandLineRunner {
                     UserRepository userRepository,
                     ReviewRepository reviewRepository,
                     OfferRepository offerRepository,
-                    RentalService rentalService) {
+                    RentalRepository rentalRepository,
+                    EntityManager entityManager) {
         this.brandService = brandService;
         this.offerService = offerService;
         this.registrationService = registrationService;
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.offerRepository = offerRepository;
-        this.rentalService = rentalService;
+        this.rentalRepository = rentalRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
     public void run(String... args) {
         try {
             seedUsers();
+            System.out.println("Users seeded successfully.");
             seedBrands();
+            System.out.println("Brands seeded successfully.");
             seedOffers();
+            System.out.println("Offers seeded successfully.");
             seedReviews();
-            seedRentalRequests();
+            System.out.println("Reviews seeded successfully.");
+            seedRentals();
+            System.out.println("Rentals seeded successfully.");
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void seedUsers() {
-        RegistrationInputModel user1 = new RegistrationInputModel();
-        user1.setUsername("a");
-        user1.setEmail("dima@dima.ru");
-        user1.setPassword("a");
-        user1.setFirstName("Dima");
-        user1.setLastName("Partov");
-        registrationService.registerUser(user1);
-        RegistrationInputModel user2 = new RegistrationInputModel();
-        user2.setUsername("aa");
-        user2.setEmail("dima2@dima.ru");
-        user2.setPassword("aa");
-        user2.setFirstName("Dima");
-        user2.setLastName("Kubarev");
-        registrationService.registerUser(user2);
-//        for (int i = 0; i < 10; i++) {
-//            RegistrationInputModel randomUser = new RegistrationInputModel();
-//            randomUser.setUsername("a" + i);
-//            randomUser.setEmail(faker.internet().emailAddress());
-//            randomUser.setPassword("a" + i);
-//            randomUser.setFirstName(faker.name().firstName());
-//            randomUser.setLastName(faker.name().lastName());
-//            registrationService.registerUser(randomUser);
-//        }
+        for (int i = 0; i < 2; i++) {
+            RegistrationInputModel userModel = new RegistrationInputModel();
+            userModel.setUsername(String.valueOf(i));
+            userModel.setEmail("user" + i + "@example.com");
+            userModel.setPassword(String.valueOf(i));
+            userModel.setFirstName(faker.name().firstName());
+            userModel.setLastName(faker.name().lastName());
+            registrationService.registerUser(userModel);
+        }
     }
 
     private void seedBrands() {
-        for (int i = 0; i < 5; i++) {
-            BrandCreationInputModel brandModel = new BrandCreationInputModel();
-            brandModel.setName(faker.company().name());
-            brandModel.setDescription(faker.lorem().sentence());
-            brandModel.setPhoto("brand_logo.png");
-            brandService.createBrand(brandModel);
+        Set<String> usedNames = new HashSet<>();
+        int target = 500;
+        while (usedNames.size() < target) {
+            String name = faker.company().name();
+            if (usedNames.add(name)) {
+                BrandCreationInputModel brandModel = new BrandCreationInputModel();
+                brandModel.setName(name);
+                brandModel.setDescription(faker.lorem().sentence());
+                brandModel.setPhoto("brand_logo.png");
+                brandService.createBrand(brandModel);
+            }
         }
     }
 
     private void seedOffers() {
+        List<String> usernames = userRepository.findAll().stream()
+                .map(User::getUsername)
+                .collect(Collectors.toList());
         List<String> brandNames = brandService.getAllBrandsDTOs().stream()
                 .map(b -> b.getName())
                 .collect(Collectors.toList());
-        for (int i = 0; i < 2; i++) {
-            OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
-            offerService.seedOffer(offerCreationInputModel, "a");
-        }
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
-            offerService.seedOffer(model, "aa");
+            String owner = usernames.get(random.nextInt(usernames.size()));
+            offerService.seedOffer(model, owner);
         }
     }
 
@@ -156,28 +157,40 @@ public class DataInit implements CommandLineRunner {
         }
     }
 
-    private void seedRentalRequests() {
-        List<Offer> offersA = offerRepository.findAllByOwnerUsername("a");
-        List<Offer> offersAA = offerRepository.findAllByOwnerUsername("aa");
-        UsernamePasswordAuthenticationToken authA = new UsernamePasswordAuthenticationToken("a", null, Collections.emptyList());
-        SecurityContextHolder.getContext().setAuthentication(authA);
-        for (int i = 0; i < 2; i++) {
-            Offer offer = offersAA.get(random.nextInt(offersAA.size()));
-            int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
-            RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
-            rentalService.createRentalRequest(input);
-            offer.setStatus(OfferStatus.AVAILABLE);
-            offerRepository.save(offer);
-        }
-        UsernamePasswordAuthenticationToken authAA = new UsernamePasswordAuthenticationToken("aa", null, Collections.emptyList());
-        SecurityContextHolder.getContext().setAuthentication(authAA);
-        for (int i = 0; i < 2; i++) {
-            Offer offer = offersA.get(random.nextInt(offersA.size()));
-            int days = random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1) + offer.getMinRentalDays();
-            RentalRequestInputModel input = new RentalRequestInputModel(offer.getId(), days);
-            rentalService.createRentalRequest(input);
-            offer.setStatus(OfferStatus.AVAILABLE);
-            offerRepository.save(offer);
+    private void seedRentals() {
+        List<Offer> offers = offerRepository.findAll();
+        List<User> users = userRepository.findAll();
+        RentalStatus[] statuses = RentalStatus.values();
+        int total = 500;
+        int perStatus = total / statuses.length;
+        int extra = total % statuses.length;
+        for (int s = 0; s < statuses.length; s++) {
+            RentalStatus status = statuses[s];
+            int count = perStatus + (s < extra ? 1 : 0);
+            for (int i = 0; i < count; i++) {
+                User renter = users.get(random.nextInt(users.size()));
+                List<Offer> ownerOffers = offers.stream()
+                        .filter(o -> !o.getOwner().getId().equals(renter.getId()))
+                        .collect(Collectors.toList());
+                if (ownerOffers.isEmpty()) continue;
+                Offer offer = ownerOffers.get(random.nextInt(ownerOffers.size()));
+                RentalRequestInputModel in = new RentalRequestInputModel(
+                        offer.getId(),
+                        random.nextInt(offer.getMaxRentalDays() - offer.getMinRentalDays() + 1)
+                                + offer.getMinRentalDays()
+                );
+                Rental rental = modelMapper.map(in, Rental.class);
+                rental.setId(null);
+                LocalDateTime start = LocalDateTime.now().minusDays(random.nextInt(30));
+                LocalDateTime end = start.plusDays(in.getDays());
+                rental.setStartDate(start);
+                rental.setEndDate(end);
+                rental.setOffer(offer);
+                rental.setRenter(renter);
+                rental.setStatus(status);
+                rentalRepository.save(rental);
+                entityManager.detach(rental);
+            }
         }
     }
 
