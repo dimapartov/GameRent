@@ -14,17 +14,19 @@ public class RentalDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private RentalStatus status;
+    private Integer days;
 
 
     public RentalDTO() {
     }
 
-    public RentalDTO(Offer offer, User renter, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status) {
+    public RentalDTO(Offer offer, User renter, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status, Integer days) {
         this.offer = offer;
         this.renter = renter;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
+        this.days = days;
     }
 
 
@@ -66,6 +68,14 @@ public class RentalDTO {
 
     public void setStatus(RentalStatus status) {
         this.status = status;
+    }
+
+    public Integer getDays() {
+        return days;
+    }
+
+    public void setDays(Integer days) {
+        this.days = days;
     }
 
 }

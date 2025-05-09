@@ -61,7 +61,8 @@ public class RentalServiceImpl implements RentalService {
         rentalDTO.setRenter(renter);
         rentalDTO.setStatus(RentalStatus.PENDING_FOR_CONFIRM);
         rentalDTO.setStartDate(null);
-        rentalDTO.setEndDate(LocalDateTime.now().plusDays(rentalRequestInputModel.getDays()));
+        rentalDTO.setEndDate(null);
+        rentalDTO.setDays(rentalRequestInputModel.getDays());
         Rental rental = modelMapper.map(rentalDTO, Rental.class);
         rentalRepository.save(rental);
         offer.setStatus(OfferStatus.BOOKED);
@@ -101,7 +102,9 @@ public class RentalServiceImpl implements RentalService {
             throw new RuntimeException("Невозможно подтвердить запрос");
         }
         rental.setStatus(RentalStatus.ACTIVE);
-        rental.setStartDate(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        rental.setStartDate(now);
+        rental.setEndDate(now.plusDays(rental.getDays()));
         rentalRepository.save(rental);
         Offer offer = rental.getOffer();
         offer.setStatus(OfferStatus.RENTED);
@@ -141,8 +144,7 @@ public class RentalServiceImpl implements RentalService {
         return rentals.map(rental -> {
             RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
             rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
-            Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
-            rentalViewModel.setDays((int) duration.toDays());
+            rentalViewModel.setDays(rental.getDays());
             return rentalViewModel;
         });
     }
@@ -160,8 +162,7 @@ public class RentalServiceImpl implements RentalService {
             vm.setOwnerContact(rental.getOffer().getOwner().getEmail());
 
             if (rental.getStatus() == RentalStatus.PENDING_FOR_CONFIRM) {
-                Duration duration = Duration.between(rental.getCreated(), rental.getEndDate());
-                vm.setDays((int) duration.toDays());
+                vm.setDays(rental.getDays());
             }
             return vm;
         });

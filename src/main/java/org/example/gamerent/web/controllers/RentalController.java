@@ -94,6 +94,7 @@ public class RentalController {
     public String confirmRentalReturn(@PathVariable Long id,
                                       RedirectAttributes redirectAttributes) {
         rentalService.confirmRentalReturn(id);
+        redirectAttributes.addAttribute("tab", "returns");
         redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/rental/owner/dashboard";
     }

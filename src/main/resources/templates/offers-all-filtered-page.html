@@ -124,17 +124,6 @@
                        class="btn btn-outline-primary mb-2 text-nowrap">
                         Подробнее
                     </a>
-                    <form th:if="${o.status == 'Доступно'}"
-                          th:action="@{/rentals}"
-                          th:object="${rentalInput}"
-                          method="post">
-                        <input type="hidden" th:field="*{offerId}" th:value="${o.id}"/>
-                        <input type="hidden" th:field="*{days}" th:value="${o.minRentalDays}"/>
-                        <button type="submit"
-                                class="btn btn-success w-100 text-nowrap">
-                            Арендовать
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -145,15 +134,7 @@
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${!offersPage.hasPrevious()}? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/offer/all(
-               page=${offersPage.number-1},
-               priceFrom=${filters.priceFrom},
-               priceTo=${filters.priceTo},
-               brand=${filters.brand},
-               myOffers=${filters.myOffers},
-               sortBy=${filters.sortBy},
-               searchTerm=${filters.searchTerm}
-             )}">
+                   th:href="@{/offer/all(page=${offersPage.number - 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
                     ‹ Назад
                 </a>
             </li>
@@ -165,15 +146,7 @@
             </li>
             <li class="page-item" th:classappend="${!offersPage.hasNext()}? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/offer/all(
-               page=${offersPage.number+1},
-               priceFrom=${filters.priceFrom},
-               priceTo=${filters.priceTo},
-               brand=${filters.brand},
-               myOffers=${filters.myOffers},
-               sortBy=${filters.sortBy},
-               searchTerm=${filters.searchTerm}
-             )}">
+                   th:href="@{/offer/all(page=${offersPage.number + 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
                     Вперед ›
                 </a>
             </li>
