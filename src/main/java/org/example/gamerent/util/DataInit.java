@@ -142,7 +142,7 @@ public class DataInit implements CommandLineRunner {
                 .collect(Collectors.toList());
         for (int i = 0; i < 250; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
-            String owner = usernames.get(1);
+            String owner = usernames.get(0);
             offerService.seedOffer(model, owner);
         }
         for (int i = 0; i < 250; i++) {

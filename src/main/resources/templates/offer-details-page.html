@@ -48,20 +48,20 @@
             <!-- Действия владельца -->
             <div sec:authorize="isAuthenticated()">
                 <div th:if="${offer.ownerUsername == #authentication.name}">
-                    <div th:if="${offer.status == 'Доступно'}" class="mb-3">
+                    <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}" class="mb-3">
                         <button id="editBtn" class="btn btn-outline-secondary me-2">Редактировать</button>
                         <form th:action="@{'/offer/' + ${offer.id} + '/delete'}" method="post" class="d-inline">
                             <button class="btn btn-outline-danger">Удалить</button>
                         </form>
                     </div>
-                    <div th:if="${offer.status != 'Доступно'}" class="alert alert-warning p-2">
+                    <div th:if="${offer.status != T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}" class="alert alert-warning p-2">
                         Оффер в аренде — изменение и удаление невозможно
                     </div>
                 </div>
             </div>
 
             <!-- Форма аренды для не-владельцев -->
-            <div th:if="${offer.status == 'Доступно'}">
+            <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}">
                 <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername != #authentication.name}" class="mb-3">
                     <form th:action="@{/rental/create}" th:object="${rentalInput}" method="post">
                         <input type="hidden" th:field="*{offerId}"/>

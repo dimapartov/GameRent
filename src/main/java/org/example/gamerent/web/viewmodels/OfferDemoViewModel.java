@@ -23,7 +23,16 @@ public class OfferDemoViewModel {
     public OfferDemoViewModel() {
     }
 
-    public OfferDemoViewModel(Long id, String photo, String gameName, Brand brand, String description, String owner, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, OfferStatus status) {
+    public OfferDemoViewModel(Long id,
+                              String photo,
+                              String gameName,
+                              Brand brand,
+                              String description,
+                              String owner,
+                              BigDecimal price,
+                              Integer minRentalDays,
+                              Integer maxRentalDays,
+                              OfferStatus status) {
         this.id = id;
         this.photo = photo;
         this.gameName = gameName;
