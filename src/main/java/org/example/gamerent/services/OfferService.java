@@ -21,20 +21,20 @@ public interface OfferService {
     Page<OfferDemoViewModel> getAllOffersFiltered(
             BigDecimal priceFrom,
             BigDecimal priceTo,
-            String brand,
+            String brandName,
             Boolean myOffers,
-            int page,
-            int size,
+            int pageNumber,
+            int pageSize,
             String sortBy,
             String searchTerm
     );
 
-    OfferViewModel getOfferById(Long id);
+    OfferViewModel getOfferById(Long offerId);
 
-    void updateOffer(Long id, OfferUpdateInputModel offerUpdateInputModel);
+    void updateOffer(Long offerId, OfferUpdateInputModel offerUpdateInputModel);
 
-    void deleteOfferById(Long id);
+    void deleteOfferById(Long offerId);
 
-    OfferUpdateInputModel getOfferUpdateInputModel(Long id);
+    OfferUpdateInputModel getOfferUpdateInputModel(Long offerId);
 
 }

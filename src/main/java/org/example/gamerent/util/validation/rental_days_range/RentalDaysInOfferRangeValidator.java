@@ -26,12 +26,12 @@ public class RentalDaysInOfferRangeValidator implements ConstraintValidator<Rent
         if (input.getOfferId() == null || input.getDays() == null) {
             return true;
         }
-        OfferViewModel offer = offerService.getOfferById(input.getOfferId());
-        Integer min = offer.getMinRentalDays();
-        Integer max = offer.getMaxRentalDays();
-        if (input.getDays() < min || input.getDays() > max) {
+        OfferViewModel offerViewModel = offerService.getOfferById(input.getOfferId());
+        Integer minRentalDays = offerViewModel.getMinRentalDays();
+        Integer maxRentalDays = offerViewModel.getMaxRentalDays();
+        if (input.getDays() < minRentalDays || input.getDays() > maxRentalDays) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Количество дней должно быть между " + min + " и " + max)
+            context.buildConstraintViolationWithTemplate("Количество дней должно быть между " + minRentalDays + " и " + maxRentalDays)
                     .addPropertyNode("days")
                     .addConstraintViolation();
             return false;

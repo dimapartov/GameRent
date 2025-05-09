@@ -69,7 +69,7 @@ public class OfferController {
 
     @GetMapping("/all")
     public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters,
-                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                            Model model) {
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
@@ -77,7 +77,7 @@ public class OfferController {
                 filters.getPriceTo(),
                 filters.getBrand(),
                 filters.getMyOffers(),
-                page,
+                pageNumber,
                 pageSize,
                 filters.getSortBy(),
                 filters.getSearchTerm());
@@ -97,8 +97,8 @@ public class OfferController {
 
         if (!model.containsAttribute("offerUpdateInputModel")) {
             try {
-                OfferUpdateInputModel updateModel = offerService.getOfferUpdateInputModel(id);
-                model.addAttribute("offerUpdateInputModel", updateModel);
+                OfferUpdateInputModel offerUpdateInputModel = offerService.getOfferUpdateInputModel(id);
+                model.addAttribute("offerUpdateInputModel", offerUpdateInputModel);
             } catch (RuntimeException ignored) {
                 model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
             }

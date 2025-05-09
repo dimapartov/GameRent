@@ -54,7 +54,7 @@ public class AuthenticationController {
                                RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("newUser", newUser);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.newUser", bindingResult);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "newUser", bindingResult);
             return "redirect:/user/register";
         }
         registrationService.registerUser(newUser);

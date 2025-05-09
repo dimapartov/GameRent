@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 
 public interface ReviewService {
 
-    ReviewViewModel createReview(ReviewInputModel reviewInputModel);
+    ReviewViewModel createReview(ReviewInputModel newReviewInputModel);
 
-    void deleteReviewById(Long id);
+    void deleteReviewById(Long reviewId);
 
     Page<ReviewViewModel> getReviewsAboutUser(String revieweeUsername, String sortBy, int pageNumber, int pageSize);
 

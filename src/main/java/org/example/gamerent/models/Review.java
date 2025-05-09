@@ -10,8 +10,8 @@ public class Review extends IdCreatedModified {
 
     private String text;
     private Integer rating;
-    private User reviewer;
-    private User reviewee;
+    private User reviewer; // Пользователь, который оставил отзыв
+    private User reviewee; // Пользователь, на которого оставили отзыв
 
 
     protected Review() {

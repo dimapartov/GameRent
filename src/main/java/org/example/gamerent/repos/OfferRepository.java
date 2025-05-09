@@ -15,10 +15,6 @@ import java.util.List;
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, Long> {
 
-    //    Для инициализации данных
-    List<Offer> findAllByOwnerUsername(String username);
-
-
     @Query("SELECT o FROM Offer o " +
             "WHERE (:priceFrom IS NULL OR o.price >= :priceFrom) " +
             "  AND (:priceTo   IS NULL OR o.price <= :priceTo) " +

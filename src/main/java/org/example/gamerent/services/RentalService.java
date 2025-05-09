@@ -12,15 +12,15 @@ public interface RentalService {
 
     void createRentalRequest(RentalRequestInputModel rentalRequestInputModel);
 
-    void cancelRentalRequest(Long id);
+    void cancelRentalRequest(Long rentalId);
 
-    void rejectRentalRequest(Long id);
+    void rejectRentalRequest(Long rentalId);
 
-    void confirmRentalRequest(Long id);
+    void confirmRentalRequest(Long rentalId);
 
-    void initiateRentalReturn(Long id);
+    void initiateRentalReturn(Long rentalId);
 
-    void confirmRentalReturn(Long id);
+    void confirmRentalReturn(Long rentalId);
 
     void autoDeclineRentalRequest();
 
@@ -30,6 +30,6 @@ public interface RentalService {
 
     Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize);
 
-    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus status, int pageNumber, int pageSize);
+    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus rentalStatus, int pageNumber, int pageSize);
 
 }

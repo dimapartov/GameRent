@@ -22,7 +22,6 @@ public class RentalController {
 
     @Value("${rentals.page.size}")
     private int pageSize;
-
     private final RentalService rentalService;
     private final OfferService offerService;
 
@@ -39,20 +38,6 @@ public class RentalController {
         return new RentalRequestInputModel();
     }
 
-
-    @GetMapping("/owner/dashboard")
-    public String getOwnerDashboardPage(@RequestParam(value = "pendingPage", defaultValue = "0") int pendingPage,
-                                        @RequestParam(value = "activePage", defaultValue = "0") int activePage,
-                                        @RequestParam(value = "returnPage", defaultValue = "0") int returnPage,
-                                        @RequestParam(value = "tab", defaultValue = "pending") String tab,
-                                        Model model) {
-
-        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner(pendingPage, pageSize));
-        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner(activePage, pageSize));
-        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner(returnPage, pageSize));
-        model.addAttribute("currentTab", tab);
-        return "rentals-owner-dashboard-page";
-    }
 
     @GetMapping("/my")
     public String getMyRentalsPage(@RequestParam(value = "activePage", defaultValue = "0") int activePage,
@@ -73,6 +58,57 @@ public class RentalController {
         return "rentals-my-page";
     }
 
+    @PostMapping("/create")
+    public String createRentalRequest(@Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
+                                      BindingResult bindingResult,
+                                      Model model,
+                                      RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            OfferViewModel offer = offerService.getOfferById(rentalInput.getOfferId());
+            model.addAttribute("offer", offer);
+            try {
+                model.addAttribute("offerUpdateInputModel", offerService.getOfferUpdateInputModel(offer.getId()));
+            } catch (RuntimeException ignored) {
+                model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
+            }
+            return "offer-details-page";
+        }
+        rentalService.createRentalRequest(rentalInput);
+        redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
+        return "redirect:/offer/" + rentalInput.getOfferId();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public String cancelRentalRequest(@PathVariable Long id,
+                                      @RequestParam(value = "tab", defaultValue = "PENDING_FOR_CONFIRM") String tab,
+                                      RedirectAttributes redirectAttributes) {
+        rentalService.cancelRentalRequest(id);
+        redirectAttributes.addFlashAttribute("success", "Заявка отменена");
+        return "redirect:/rental/my?tab=" + tab;
+    }
+
+    @PostMapping("/{id}/return")
+    public String initiateRentalReturn(@PathVariable Long id,
+                                       @RequestParam(value = "tab", defaultValue = "ACTIVE") String tab,
+                                       RedirectAttributes redirectAttributes) {
+        rentalService.initiateRentalReturn(id);
+        redirectAttributes.addFlashAttribute("success", "Запрос на возврат отправлен");
+        return "redirect:/rental/my?tab=" + tab;
+    }
+
+
+    @GetMapping("/owner/dashboard")
+    public String getOwnerDashboardPage(@RequestParam(value = "pendingPage", defaultValue = "0") int pendingPage,
+                                        @RequestParam(value = "activePage", defaultValue = "0") int activePage,
+                                        @RequestParam(value = "returnPage", defaultValue = "0") int returnPage,
+                                        @RequestParam(value = "tab", defaultValue = "pending") String tab,
+                                        Model model) {
+        model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner(pendingPage, pageSize));
+        model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner(activePage, pageSize));
+        model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner(returnPage, pageSize));
+        model.addAttribute("currentTab", tab);
+        return "rentals-owner-dashboard-page";
+    }
 
     @PostMapping("/owner/{id}/confirm")
     public String confirmRentalRequest(@PathVariable Long id,
@@ -98,47 +134,5 @@ public class RentalController {
         redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
         return "redirect:/rental/owner/dashboard";
     }
-
-    @PostMapping("/create")
-    public String createRentalRequest(@Valid @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
-                                      BindingResult bindingResult,
-                                      Model model,
-                                      RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            OfferViewModel offer = offerService.getOfferById(rentalInput.getOfferId());
-            model.addAttribute("offer", offer);
-            try {
-                model.addAttribute("offerUpdateInputModel", offerService.getOfferUpdateInputModel(offer.getId()));
-            } catch (RuntimeException ignored) {
-                model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
-            }
-            return "offer-details-page";
-        }
-
-        rentalService.createRentalRequest(rentalInput);
-        redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
-
-        return "redirect:/offer/" + rentalInput.getOfferId();
-    }
-
-    @PostMapping("/{id}/cancel")
-    public String cancelRentalRequest(@PathVariable Long id,
-                                      @RequestParam(value = "tab", defaultValue = "PENDING_FOR_CONFIRM") String tab,
-                                      RedirectAttributes redirectAttributes) {
-        rentalService.cancelRentalRequest(id);
-        redirectAttributes.addFlashAttribute("success", "Заявка отменена");
-        // остаёмся на том же табе
-        return "redirect:/rental/my?tab=" + tab;
-    }
-
-    @PostMapping("/{id}/return")
-    public String initiateRentalReturn(@PathVariable Long id,
-                                       @RequestParam(value = "tab", defaultValue = "ACTIVE") String tab,
-                                       RedirectAttributes redirectAttributes) {
-        rentalService.initiateRentalReturn(id);
-        redirectAttributes.addFlashAttribute("success", "Запрос на возврат отправлен");
-        return "redirect:/rental/my?tab=" + tab;
-    }
-
 
 }

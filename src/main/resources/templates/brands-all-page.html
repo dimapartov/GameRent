@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head}">
     <title>Бренды</title>
 </head>
@@ -22,8 +20,7 @@
                         <strong>Описание:</strong>
                         <span th:text="${brand.description}">Описание бренда</span>
                     </p>
-                    <a th:href="@{/offer/all(brand=${brand.name})}"
-                       class="btn btn-primary btn-sm text-nowrap mt-auto align-self-center">
+                    <a th:href="@{/offer/all(brand=${brand.name})}" class="btn btn-primary btn-sm text-nowrap mt-auto align-self-center">
                         Предложения по бренду
                     </a>
                 </div>

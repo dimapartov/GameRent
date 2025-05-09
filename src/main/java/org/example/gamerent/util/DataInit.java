@@ -20,13 +20,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -67,24 +65,20 @@ public class DataInit implements CommandLineRunner {
         this.rentalService = rentalService;
     }
 
+    @Transactional
     @Override
     public void run(String... args) {
         try {
             seedUsers();
             System.out.println("Users seeded successfully.");
-
             seedBrands();
             System.out.println("Brands seeded successfully.");
-
             seedOffers();
             System.out.println("Offers seeded successfully.");
-//
-//            seedReviews();
-//            System.out.println("Reviews seeded successfully.");
-//
-//            seedRentals();
-//            System.out.println("Rentals seeded successfully.");
-
+            seedReviews();
+            System.out.println("Reviews seeded successfully.");
+            seedRentals();
+            System.out.println("Rentals seeded successfully.");
             System.out.println("Приложение готово к работе");
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,15 +86,6 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedUsers() {
-/*        for (int i = 0; i < 2; i++) {
-            RegistrationInputModel userModel = new RegistrationInputModel();
-            userModel.setUsername("u" + i);
-            userModel.setEmail("user" + i + "@example.com");
-            userModel.setPassword("u" + i);
-            userModel.setFirstName(faker.name().firstName());
-            userModel.setLastName(faker.name().lastName());
-            registrationService.registerUser(userModel);
-        }*/
         RegistrationInputModel firstUser = new RegistrationInputModel();
         firstUser.setUsername("anton");
         firstUser.setPassword("anton");
@@ -108,7 +93,6 @@ public class DataInit implements CommandLineRunner {
         firstUser.setFirstName("Антон");
         firstUser.setLastName("Партов");
         registrationService.registerUser(firstUser);
-
         RegistrationInputModel secondUser = new RegistrationInputModel();
         secondUser.setUsername("gena");
         secondUser.setPassword("gena");
@@ -187,19 +171,23 @@ public class DataInit implements CommandLineRunner {
         }
     }
 
-    private void seedRentals() {
+    @Transactional
+    public void seedRentals() {
         List<String> usernames = userRepository.findAll().stream()
                 .map(User::getUsername)
                 .collect(Collectors.toList());
-        List<Offer> offers = offerRepository.findAll();
+        List<Offer> allOffers = offerRepository.findAll();
         final int perUser = 250;
-        for (int userIndex = 0; userIndex < usernames.size(); userIndex++) {
-            String username = usernames.get(userIndex);
+        for (String username : usernames) {
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(username, null);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            List<Offer> otherOffers = allOffers.stream()
+                    .filter(o -> !o.getOwner().getUsername().equals(username))
+                    .collect(Collectors.toList());
+            Collections.shuffle(otherOffers, random);
             for (int i = 0; i < perUser; i++) {
-                Offer offer = offers.get(userIndex * perUser + i);
+                Offer offer = otherOffers.get(i % otherOffers.size());
                 int min = offer.getMinRentalDays();
                 int max = offer.getMaxRentalDays();
                 int days = random.nextInt(max - min + 1) + min;
