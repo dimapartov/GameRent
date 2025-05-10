@@ -20,12 +20,4 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     Page<Rental> findByRenterUsernameAndStatus(String renterUsername, RentalStatus status, Pageable pageable);
 
-//    boolean existsByRenterUsernameAndOfferOwnerIdAndEndDateBefore(
-//            String renterUsername,
-//            Long ownerId,
-//            LocalDateTime now
-//    );
-
-    Rental findTopByRenterUsernameOrderByCreatedDesc(String renterUsername);
-
 }

@@ -17,11 +17,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/user")
 public class AuthenticationController {
 
-    private RegistrationService registrationService;
+    private final RegistrationService registrationService;
 
 
     @Autowired
-    public void setRegistrationService(RegistrationService registrationService) {
+    public AuthenticationController(RegistrationService registrationService) {
         this.registrationService = registrationService;
     }
 
