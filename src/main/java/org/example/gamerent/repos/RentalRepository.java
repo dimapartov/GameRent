@@ -26,4 +26,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 //            LocalDateTime now
 //    );
 
+    Rental findTopByRenterUsernameOrderByCreatedDesc(String renterUsername);
+
 }

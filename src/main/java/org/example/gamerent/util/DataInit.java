@@ -1,10 +1,13 @@
+/*
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
 import jakarta.persistence.EntityManager;
 import org.example.gamerent.models.Offer;
+import org.example.gamerent.models.Rental;
 import org.example.gamerent.models.Review;
 import org.example.gamerent.models.User;
+import org.example.gamerent.models.consts.RentalStatus;
 import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.ReviewRepository;
@@ -17,8 +20,6 @@ import org.example.gamerent.web.viewmodels.user_input.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +80,7 @@ public class DataInit implements CommandLineRunner {
             System.out.println("Reviews seeded successfully.");
             seedRentals();
             System.out.println("Rentals seeded successfully.");
-            System.out.println("Приложение готово к работе");
+            System.out.println("Тестовые данные загружены");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +105,7 @@ public class DataInit implements CommandLineRunner {
 
     private void seedBrands() {
         Set<String> usedNames = new HashSet<>();
-        int uniqueBrandsAmount = 10;
+        int uniqueBrandsAmount = 100;
         while (usedNames.size() < uniqueBrandsAmount) {
             String brandName = faker.company().name();
             if (usedNames.add(brandName)) {
@@ -118,18 +119,14 @@ public class DataInit implements CommandLineRunner {
     }
 
     private void seedOffers() {
-        List<String> usernames = userRepository.findAll().stream()
-                .map(User::getUsername)
-                .collect(Collectors.toList());
-        List<String> brandNames = brandService.getAllBrandsDTOs().stream()
-                .map(b -> b.getName())
-                .collect(Collectors.toList());
-        for (int i = 0; i < 250; i++) {
+        List<String> usernames = userRepository.findAll().stream().map(User::getUsername).collect(Collectors.toList());
+        List<String> brandNames = brandService.getAllBrandsDTOs().stream().map(b -> b.getName()).collect(Collectors.toList());
+        for (int i = 0; i < 5000; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             String owner = usernames.get(0);
             offerService.seedOffer(model, owner);
         }
-        for (int i = 0; i < 250; i++) {
+        for (int i = 0; i < 5000; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             String owner = usernames.get(1);
             offerService.seedOffer(model, owner);
@@ -153,7 +150,7 @@ public class DataInit implements CommandLineRunner {
         if (users.size() < 2) {
             throw new IllegalStateException("Должно быть как минимум 2 пользователя для генерации отзывов");
         }
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1000; i++) {
             User reviewer = users.get(random.nextInt(users.size()));
             User reviewee;
             do {
@@ -173,31 +170,56 @@ public class DataInit implements CommandLineRunner {
 
     @Transactional
     public void seedRentals() {
-        List<String> usernames = userRepository.findAll().stream()
-                .map(User::getUsername)
-                .collect(Collectors.toList());
+        List<User> users = userRepository.findAll();
         List<Offer> allOffers = offerRepository.findAll();
-        final int perUser = 250;
-        for (String username : usernames) {
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(username, null);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            List<Offer> otherOffers = allOffers.stream()
-                    .filter(o -> !o.getOwner().getUsername().equals(username))
-                    .collect(Collectors.toList());
-            Collections.shuffle(otherOffers, random);
-            for (int i = 0; i < perUser; i++) {
-                Offer offer = otherOffers.get(i % otherOffers.size());
-                int min = offer.getMinRentalDays();
-                int max = offer.getMaxRentalDays();
-                int days = random.nextInt(max - min + 1) + min;
-                RentalRequestInputModel req = new RentalRequestInputModel();
-                req.setOfferId(offer.getId());
-                req.setDays(days);
-                rentalService.createRentalRequest(req);
+        List<RentalStatus> statuses = Arrays.asList(RentalStatus.values());
+        int perStatus = 250;  // по 250 заявок каждого статуса
+
+        for (User user : users) {
+            // собираем только чужие офферы и копируем в изменяемый список
+            List<Offer> availableOffers = allOffers.stream()
+                    .filter(o -> !o.getOwner().getUsername().equals(user.getUsername()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            // если нужно рандомизировать порядок офферов разом
+            Collections.shuffle(availableOffers);
+
+            for (RentalStatus status : statuses) {
+                for (int i = 0; i < perStatus; i++) {
+                    // если офферы закончились — прерываем цикл
+                    if (availableOffers.isEmpty()) {
+                        break;
+                    }
+
+                    // берём последний оффер из списка (или любой другой способ)
+                    Offer offer = availableOffers.remove(availableOffers.size() - 1);
+
+                    // случайная длительность в рамках min/max
+                    int days = random.nextInt(offer.getMinRentalDays(), offer.getMaxRentalDays() + 1);
+
+                    // создаём даты начала и конца
+                    LocalDateTime start = LocalDateTime.now();
+                    LocalDateTime end = start.plusDays(days);
+
+                    // DTO → сущность через ModelMapper
+                    RentalRequestInputModel req = new RentalRequestInputModel();
+                    req.setOfferId(offer.getId());
+                    req.setDays(days);
+                    Rental rental = modelMapper.map(req, Rental.class);
+                    rental.setId(null);
+                    // дополняем остальные поля
+                    rental.setOffer(offer);
+                    rental.setRenter(user);
+                    rental.setStartDate(start);
+                    rental.setEndDate(end);
+                    rental.setStatus(status);
+
+                    rentalRepository.save(rental);
+                }
+                // после каждого статуса можно, при желании, заново перемешать оставшиеся офферы
+                Collections.shuffle(availableOffers);
             }
         }
-        SecurityContextHolder.clearContext();
     }
 
-}
+}*/

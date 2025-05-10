@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:inline="text">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +11,7 @@
             table-layout: fixed;
             width: 100%;
         }
+
         .table-fixed th,
         .table-fixed td {
             white-space: nowrap;
@@ -24,11 +24,9 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container my-5">
     <h1 class="mb-4">Мои аренды</h1>
-
-    <!-- Навигация по статусам -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='PENDING_FOR_CONFIRM'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='pendingForConfirm'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -36,13 +34,13 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='PENDING_FOR_CONFIRM'
+                   tab='pendingForConfirm'
                )}">
                 Ожидает подтверждения
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='ACTIVE'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='active'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -50,13 +48,13 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='ACTIVE'
+                   tab='active'
                )}">
                 Активна
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='RETURNED'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='returned'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -64,13 +62,13 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='RETURNED'
+                   tab='returned'
                )}">
                 Возвращена
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='PENDING_FOR_RETURN'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='pendingForReturn'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -78,13 +76,13 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='PENDING_FOR_RETURN'
+                   tab='pendingForReturn'
                )}">
                 Ожидает возврата
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='CANCELED_BY_RENTER'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='canceledByRenter'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -92,13 +90,13 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='CANCELED_BY_RENTER'
+                   tab='canceledByRenter'
                )}">
                 Отменена арендатором
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${currentTab=='CANCELED_BY_OWNER'}?' active':''"
+            <a class="nav-link" th:classappend="${currentTab=='canceledByOwner'}?' active':''"
                th:href="@{/rental/my(
                    pendingPage=${pendingRentals.number},
                    activePage=${activeRentals.number},
@@ -106,16 +104,14 @@
                    pendingReturnPage=${pendingReturnRentals.number},
                    canceledByRenterPage=${canceledByRenter.number},
                    canceledByOwnerPage=${canceledByOwner.number},
-                   tab='CANCELED_BY_OWNER'
+                   tab='canceledByOwner'
                )}">
                 Отклонена владельцем
             </a>
         </li>
     </ul>
-
     <div class="tab-content">
-        <!-- PENDING_FOR_CONFIRM -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='PENDING_FOR_CONFIRM'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='pendingForConfirm'}?' show active':''">
             <div th:if="${pendingRentals.content.empty}" class="alert alert-light">Нет заявок.</div>
             <div th:if="${!pendingRentals.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -154,26 +150,25 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!pendingRentals.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                pendingPage=${pendingRentals.number-1}, tab='PENDING_FOR_CONFIRM'
+                                pendingPage=${pendingRentals.number-1}, tab='pendingForConfirm'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${pendingRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${pendingRentals.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${pendingRentals.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${pendingRentals.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!pendingRentals.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                pendingPage=${pendingRentals.number+1}, tab='PENDING_FOR_CONFIRM'
+                                pendingPage=${pendingRentals.number+1}, tab='pendingForConfirm'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
-        <!-- ACTIVE -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='ACTIVE'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='active'}?' show active':''">
             <div th:if="${activeRentals.content.empty}" class="alert alert-light">Нет активных.</div>
             <div th:if="${!activeRentals.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -214,26 +209,25 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!activeRentals.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                activePage=${activeRentals.number-1}, tab='ACTIVE'
+                                activePage=${activeRentals.number-1}, tab='active'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${activeRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${activeRentals.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${activeRentals.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${activeRentals.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!activeRentals.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                activePage=${activeRentals.number+1}, tab='ACTIVE'
+                                activePage=${activeRentals.number+1}, tab='active'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
-        <!-- RETURNED -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='RETURNED'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='returned'}?' show active':''">
             <div th:if="${returnedRentals.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
             <div th:if="${!returnedRentals.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -245,7 +239,10 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                        <th>Игра</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Контакт</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -263,26 +260,25 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!returnedRentals.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                returnedPage=${returnedRentals.number-1}, tab='RETURNED'
+                                returnedPage=${returnedRentals.number-1}, tab='returned'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${returnedRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${returnedRentals.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${returnedRentals.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${returnedRentals.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!returnedRentals.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                returnedPage=${returnedRentals.number+1}, tab='RETURNED'
+                                returnedPage=${returnedRentals.number+1}, tab='returned'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
-        <!-- PENDING_FOR_RETURN -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='PENDING_FOR_RETURN'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='pendingForReturn'}?' show active':''">
             <div th:if="${pendingReturnRentals.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
             <div th:if="${!pendingReturnRentals.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -294,7 +290,10 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                        <th>Игра</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Контакт</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -312,26 +311,25 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!pendingReturnRentals.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                pendingReturnPage=${pendingReturnRentals.number-1}, tab='PENDING_FOR_RETURN'
+                                pendingReturnPage=${pendingReturnRentals.number-1}, tab='pendingForReturn'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${pendingReturnRentals.number+1}"></span>&nbsp;из&nbsp;<span th:text="${pendingReturnRentals.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${pendingReturnRentals.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${pendingReturnRentals.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!pendingReturnRentals.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                pendingReturnPage=${pendingReturnRentals.number+1}, tab='PENDING_FOR_RETURN'
+                                pendingReturnPage=${pendingReturnRentals.number+1}, tab='pendingForReturn'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
-        <!-- CANCELED_BY_RENTER -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='CANCELED_BY_RENTER'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='canceledByRenter'}?' show active':''">
             <div th:if="${canceledByRenter.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
             <div th:if="${!canceledByRenter.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -343,7 +341,10 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                        <th>Игра</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Контакт</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -361,26 +362,25 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!canceledByRenter.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                canceledByRenterPage=${canceledByRenter.number-1}, tab='CANCELED_BY_RENTER'
+                                canceledByRenterPage=${canceledByRenter.number-1}, tab='canceledByRenter'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${canceledByRenter.number+1}"></span>&nbsp;из&nbsp;<span th:text="${canceledByRenter.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${canceledByRenter.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${canceledByRenter.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!canceledByRenter.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                canceledByRenterPage=${canceledByRenter.number+1}, tab='CANCELED_BY_RENTER'
+                                canceledByRenterPage=${canceledByRenter.number+1}, tab='canceledByRenter'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
-        <!-- CANCELED_BY_OWNER -->
-        <div class="tab-pane fade" th:classappend="${currentTab=='CANCELED_BY_OWNER'}?' show active':''">
+        <div class="tab-pane fade" th:classappend="${currentTab=='canceledByOwner'}?' show active':''">
             <div th:if="${canceledByOwner.content.empty}" class="alert alert-light">Нет в этом статусе.</div>
             <div th:if="${!canceledByOwner.content.empty}" class="table-responsive">
                 <table class="table table-fixed mb-0">
@@ -392,7 +392,10 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>Игра</th><th>Начало</th><th>Конец</th><th>Контакт</th>
+                        <th>Игра</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Контакт</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -410,24 +413,24 @@
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item" th:classappend="${!canceledByOwner.hasPrevious()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                canceledByOwnerPage=${canceledByOwner.number-1}, tab='CANCELED_BY_OWNER'
+                                canceledByOwnerPage=${canceledByOwner.number-1}, tab='canceledByOwner'
                             )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Стр&nbsp;<span th:text="${canceledByOwner.number+1}"></span>&nbsp;из&nbsp;<span th:text="${canceledByOwner.totalPages}"></span>
+                                Стр&nbsp;<span th:text="${canceledByOwner.number+1}"></span>&nbsp;из&nbsp;<span
+                                    th:text="${canceledByOwner.totalPages}"></span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!canceledByOwner.hasNext()}?' disabled':''">
                             <a class="page-link" th:href="@{/rental/my(
-                                canceledByOwnerPage=${canceledByOwner.number+1}, tab='CANCELED_BY_OWNER'
+                                canceledByOwnerPage=${canceledByOwner.number+1}, tab='canceledByOwner'
                             )}">Вперёд ›</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

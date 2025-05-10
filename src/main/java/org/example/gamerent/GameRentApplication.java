@@ -9,6 +9,7 @@ public class GameRentApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(GameRentApplication.class, args);
+        System.out.println("Приложение готово к работе");
     }
 
 }

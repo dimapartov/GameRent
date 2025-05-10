@@ -46,7 +46,7 @@ public class RentalController {
                                    @RequestParam(value = "pendingReturnPage", defaultValue = "0") int pendingReturnPage,
                                    @RequestParam(value = "canceledByRenterPage", defaultValue = "0") int canceledByRenterPage,
                                    @RequestParam(value = "canceledByOwnerPage", defaultValue = "0") int canceledByOwnerPage,
-                                   @RequestParam(value = "tab", defaultValue = "PENDING_FOR_CONFIRM") String tab,
+                                   @RequestParam(value = "tab", defaultValue = "pendingForConfirm") String tab,
                                    Model model) {
         model.addAttribute("pendingRentals", rentalService.getMyRentalsByStatus(RentalStatus.PENDING_FOR_CONFIRM, pendingPage, pageSize));
         model.addAttribute("activeRentals", rentalService.getMyRentalsByStatus(RentalStatus.ACTIVE, activePage, pageSize));
@@ -80,7 +80,7 @@ public class RentalController {
 
     @PostMapping("/{id}/cancel")
     public String cancelRentalRequest(@PathVariable Long id,
-                                      @RequestParam(value = "tab", defaultValue = "PENDING_FOR_CONFIRM") String tab,
+                                      @RequestParam(value = "tab", defaultValue = "pendingForConfirm") String tab,
                                       RedirectAttributes redirectAttributes) {
         rentalService.cancelRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Заявка отменена");
@@ -89,7 +89,7 @@ public class RentalController {
 
     @PostMapping("/{id}/return")
     public String initiateRentalReturn(@PathVariable Long id,
-                                       @RequestParam(value = "tab", defaultValue = "ACTIVE") String tab,
+                                       @RequestParam(value = "tab", defaultValue = "active") String tab,
                                        RedirectAttributes redirectAttributes) {
         rentalService.initiateRentalReturn(id);
         redirectAttributes.addFlashAttribute("success", "Запрос на возврат отправлен");
