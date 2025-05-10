@@ -36,6 +36,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 @Service
@@ -77,7 +79,12 @@ public class OfferServiceImpl implements OfferService {
         offerModel.setId(null);
         Brand brandModel = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
         offerModel.setBrand(brandModel);
-        offerModel.setPhoto("brand_logo.png");
+        // Выбираем случайный номер от 1 до 8 включительно
+        Random random = new Random();
+        int randomNum = random.nextInt(1, 9);
+        // Формируем имя файла, соответствующее image_1.png … image_8.png
+        String randomPhoto = "image_" + randomNum + ".png";
+        offerModel.setPhoto(randomPhoto);
         offerModel.setMinRentalDays(newOfferInputModel.getMinRentalDays());
         offerModel.setMaxRentalDays(newOfferInputModel.getMaxRentalDays());
         offerModel.setStatus(OfferStatus.AVAILABLE);

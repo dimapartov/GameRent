@@ -132,7 +132,6 @@ public class DataInit implements CommandLineRunner {
             offerService.seedOffer(model, owner);
         }
     }
-
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
         model.setDescription(faker.lorem().sentence());

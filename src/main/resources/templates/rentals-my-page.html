@@ -25,7 +25,7 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container my-5">
     <h1 class="mb-4">Мои аренды</h1>
-    <ul class="nav nav-tabs mb-4">
+    <ul class="nav nav-tabs mb-0">
         <li class="nav-item">
             <a class="nav-link" th:classappend="${currentTab=='pendingForConfirm'}?' active':''"
                th:href="@{/rental/my(
