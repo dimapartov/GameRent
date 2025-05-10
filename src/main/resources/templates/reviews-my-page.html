@@ -52,7 +52,7 @@
                 <p class="mb-0" th:text="${rev.text}">Текст отзыва…</p>
             </div>
         </div>
-        <nav>
+        <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!byPage.hasPrevious()} ? 'disabled'">
                     <a class="page-link"
