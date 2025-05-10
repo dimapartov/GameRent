@@ -85,10 +85,19 @@ public class ReviewController {
 
     @PostMapping("/{id}/delete")
     public String deleteReview(@PathVariable Long id,
-                               @RequestParam(value = "page", defaultValue = "0") int page,
-                               @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
+                               @RequestParam(value="revieweeUsername", required=false) String revieweeUsername,
+                               @RequestParam(value="page", defaultValue="0") int page,
+                               @RequestParam(value="sortBy", defaultValue="") String sortBy) {
         reviewService.deleteReviewById(id);
+
+        if (revieweeUsername != null && !revieweeUsername.isBlank()) {
+            // back to the “about user” page we came from
+            return "redirect:/reviews/about/" + revieweeUsername + "?page=" + page + "&sortBy=" + sortBy;
+        }
+
+        // otherwise, default to your own reviews
         return "redirect:/reviews/my?page=" + page + "&sortBy=" + sortBy;
     }
+
 
 }
