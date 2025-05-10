@@ -8,6 +8,9 @@ import org.example.gamerent.web.viewmodels.BrandViewModel;
 import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,11 +47,10 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandViewModel> getAllBrandsForView() {
-        return brandRepository.findAll()
-                .stream()
-                .map(brand -> modelMapper.map(brand, BrandViewModel.class))
-                .collect(Collectors.toList());
+    public Page<BrandViewModel> getAllBrandsForView(int pageNumber, int pageSize) {
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Brand> brandsPage = brandRepository.findAll(pageSettings);
+        return brandsPage.map(brand -> modelMapper.map(brand, BrandViewModel.class));
     }
 
 }
