@@ -1,6 +1,5 @@
 package org.example.gamerent.services.impl;
 
-import jakarta.transaction.Transactional;
 import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.Rental;
 import org.example.gamerent.models.User;
@@ -15,212 +14,216 @@ import org.example.gamerent.web.viewmodels.RentalViewModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
 public class RentalServiceImpl implements RentalService {
 
-    private final RentalRepository rentalRepo;
-    private final OfferRepository offerRepo;
-    private final UserRepository userRepo;
+    private final RentalRepository rentalRepository;
+    private final OfferRepository offerRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
 
     @Autowired
-    public RentalServiceImpl(RentalRepository rentalRepo,
-                             OfferRepository offerRepo,
-                             UserRepository userRepo,
+    public RentalServiceImpl(RentalRepository rentalRepository,
+                             OfferRepository offerRepository,
+                             UserRepository userRepository,
                              ModelMapper modelMapper) {
-        this.rentalRepo = rentalRepo;
-        this.offerRepo = offerRepo;
-        this.userRepo = userRepo;
+        this.rentalRepository = rentalRepository;
+        this.offerRepository = offerRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
-    @Transactional
-    public void createRentalRequest(RentalRequestInputModel input) {
-        Offer offer = offerRepo.findById(input.getOfferId())
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-        if (offer.getStatus() != OfferStatus.AVAILABLE) {
-            throw new RuntimeException("Offer not available");
+    public void createRentalRequest(RentalRequestInputModel rentalRequestInputModel) {
+        Offer offerModel = offerRepository.findById(rentalRequestInputModel.getOfferId()).orElseThrow(() -> new RuntimeException("Оффер не найден"));
+        if (offerModel.getStatus() != OfferStatus.AVAILABLE) {
+            throw new RuntimeException("Оффер недоступен");
         }
-        if (input.getDays() < offer.getMinRentalDays() || input.getDays() > offer.getMaxRentalDays()) {
-            throw new RuntimeException("Invalid rental days range");
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User offerRenter = userRepository.findUserByUsername(currentUserUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        if (offerModel.getOwner().getUsername().equals(currentUserUsername)) {
+            throw new RuntimeException("Нельзя арендовать собственный оффер");
         }
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User renter = userRepo.findUserByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         RentalDTO rentalDTO = new RentalDTO();
-        rentalDTO.setOffer(offer);
-        rentalDTO.setRenter(renter);
+        rentalDTO.setOffer(offerModel);
+        rentalDTO.setRenter(offerRenter);
         rentalDTO.setStatus(RentalStatus.PENDING_FOR_CONFIRM);
         rentalDTO.setStartDate(null);
-        rentalDTO.setEndDate(LocalDateTime.now().plusDays(input.getDays()));
-
-        Rental rental = modelMapper.map(rentalDTO, Rental.class);
-        rental = rentalRepo.save(rental);
-
-        offer.setStatus(OfferStatus.BOOKED);
-        offerRepo.save(offer);
-
-        modelMapper.map(rental, RentalViewModel.class);
+        rentalDTO.setEndDate(null);
+        rentalDTO.setDays(rentalRequestInputModel.getDays());
+        Rental rentalModel = modelMapper.map(rentalDTO, Rental.class);
+        rentalRepository.save(rentalModel);
+        offerModel.setStatus(OfferStatus.BOOKED);
+        offerRepository.save(offerModel);
     }
 
     @Override
-    @Transactional
     public void cancelRentalRequest(Long rentalId) {
-        Rental rental = rentalRepo.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
-            throw new RuntimeException("Cannot cancel");
+        Rental rentalModel = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
+        if (rentalModel.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
+            throw new RuntimeException("Невозможно отменить запрос");
         }
-        rental.setStatus(RentalStatus.CANCELED_BY_RENTER);
-        rentalRepo.save(rental);
-
-        Offer offer = rental.getOffer();
-        offer.setStatus(OfferStatus.AVAILABLE);
-        offerRepo.save(offer);
+        rentalModel.setStatus(RentalStatus.CANCELED_BY_RENTER);
+        rentalRepository.save(rentalModel);
+        Offer offerModel = rentalModel.getOffer();
+        offerModel.setStatus(OfferStatus.AVAILABLE);
+        offerRepository.save(offerModel);
     }
 
     @Override
-    @Transactional
     public void rejectRentalRequest(Long rentalId) {
-        Rental rental = rentalRepo.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
-            throw new RuntimeException("Cannot reject");
+        Rental rentalModel = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
+        if (rentalModel.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
+            throw new RuntimeException("Невозможно отклонить запрос");
         }
-        rental.setStatus(RentalStatus.CANCELED_BY_OWNER);
-        rentalRepo.save(rental);
-
-        Offer offer = rental.getOffer();
-        offer.setStatus(OfferStatus.AVAILABLE);
-        offerRepo.save(offer);
+        rentalModel.setStatus(RentalStatus.CANCELED_BY_OWNER);
+        rentalRepository.save(rentalModel);
+        Offer offerModel = rentalModel.getOffer();
+        offerModel.setStatus(OfferStatus.AVAILABLE);
+        offerRepository.save(offerModel);
     }
 
     @Override
-    @Transactional
     public void confirmRentalRequest(Long rentalId) {
-        Rental rental = rentalRepo.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
-            throw new RuntimeException("Cannot confirm");
+        Rental rentalModel = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
+        if (rentalModel.getStatus() != RentalStatus.PENDING_FOR_CONFIRM) {
+            throw new RuntimeException("Невозможно подтвердить запрос");
         }
-        rental.setStatus(RentalStatus.ACTIVE);
-        rental.setStartDate(LocalDateTime.now());
-        rentalRepo.save(rental);
-
-        Offer offer = rental.getOffer();
-        offer.setStatus(OfferStatus.RENTED);
-        offerRepo.save(offer);
-
-        modelMapper.map(rental, RentalViewModel.class);
+        rentalModel.setStatus(RentalStatus.ACTIVE);
+        LocalDateTime now = LocalDateTime.now();
+        rentalModel.setStartDate(now);
+        rentalModel.setEndDate(now.plusDays(rentalModel.getDays()));
+        rentalRepository.save(rentalModel);
+        Offer offerModel = rentalModel.getOffer();
+        offerModel.setStatus(OfferStatus.RENTED);
+        offerRepository.save(offerModel);
     }
 
     @Override
-    @Transactional
-    public void initiateReturn(Long rentalId) {
-        Rental rental = rentalRepo.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.ACTIVE) {
-            throw new RuntimeException("Cannot return");
+    public void initiateRentalReturn(Long rentalId) {
+        Rental rentalModel = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
+        if (rentalModel.getStatus() != RentalStatus.ACTIVE) {
+            throw new RuntimeException("Невозможно вернуть");
         }
-        rental.setStatus(RentalStatus.PENDING_FOR_RETURN);
-        rentalRepo.save(rental);
+        rentalModel.setStatus(RentalStatus.PENDING_FOR_RETURN);
+        rentalRepository.save(rentalModel);
     }
 
     @Override
-    @Transactional
-    public void confirmReturn(Long rentalId) {
-        Rental rental = rentalRepo.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
-        if (rental.getStatus() != RentalStatus.PENDING_FOR_RETURN) {
-            throw new RuntimeException("Cannot confirm return");
+    public void confirmRentalReturn(Long rentalId) {
+        Rental rentalModel = rentalRepository.findById(rentalId).orElseThrow(() -> new RuntimeException("Аренда не найдена"));
+        if (rentalModel.getStatus() != RentalStatus.PENDING_FOR_RETURN) {
+            throw new RuntimeException("Невозможно подтвердить возврат");
         }
-        rental.setStatus(RentalStatus.RETURNED);
-        rentalRepo.save(rental);
-        Offer offer = rental.getOffer();
-        offer.setStatus(OfferStatus.AVAILABLE);
-        offerRepo.save(offer);
+        rentalModel.setStatus(RentalStatus.RETURNED);
+        rentalRepository.save(rentalModel);
+        Offer offerModel = rentalModel.getOffer();
+        offerModel.setStatus(OfferStatus.AVAILABLE);
+        offerRepository.save(offerModel);
     }
 
     @Override
-    @Transactional
-    public List<RentalViewModel> getOwnerPendingRequests() {
-        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_CONFIRM)
-                .stream()
-                .map(rental -> {
-                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
-                    viewModel.setOwnerContact(rental.getRenter().getEmail());
-                    Duration dur = Duration.between(rental.getCreated(), rental.getEndDate());
-                    viewModel.setDays((int) dur.toDays());
-                    return viewModel;
-                })
-                .collect(Collectors.toList());
+    public Page<RentalViewModel> getPendingRequestsForOwner(int pageNumber, int pageSize) {
+        String rentalOwner = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(rentalOwner, RentalStatus.PENDING_FOR_CONFIRM, pageSettings);
+
+        return rentals.map(rental -> {
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            rentalViewModel.setDays(rental.getDays());
+            return rentalViewModel;
+        });
     }
 
     @Override
-    @Transactional
-    public List<RentalViewModel> getMyRentals() {
-        String renter = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepo.findByRenterUsername(renter)
-                .stream()
-                .map(rental -> modelMapper.map(rental, RentalViewModel.class))
-                .collect(Collectors.toList());
+    public Page<RentalViewModel> getMyRentalsByStatus(RentalStatus rentalStatus, int pageNumber, int pageSize) {
+        String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByRenterUsernameAndStatus(currentUserUsername, rentalStatus, pageSettings);
+
+        return rentals.map(rental -> {
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setOwnerContact(rental.getOffer().getOwner().getEmail());
+            if (rental.getStatus() == RentalStatus.PENDING_FOR_CONFIRM) {
+                rentalViewModel.setDays(rental.getDays());
+            }
+            return rentalViewModel;
+        });
     }
 
     @Override
-    @Transactional
-    public List<RentalViewModel> getOwnerActiveRentals() {
-        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.ACTIVE)
-                .stream()
-                .map(rental -> {
-                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
-                    viewModel.setRenterUsername(rental.getRenter().getUsername());
-                    viewModel.setOwnerContact(rental.getRenter().getEmail());
-                    return viewModel;
-                })
-                .collect(Collectors.toList());
+    public Page<RentalViewModel> getActiveRentalsForOwner(int pageNumber, int pageSize) {
+        String rentalOwnerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(rentalOwnerUsername, RentalStatus.ACTIVE, pageSettings);
+
+        return rentals.map(rental -> {
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            return rentalViewModel;
+        });
     }
 
     @Override
-    @Transactional
-    public List<RentalViewModel> getOwnerPendingReturns() {
-        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepo.findByOfferOwnerUsernameAndStatus(owner, RentalStatus.PENDING_FOR_RETURN)
-                .stream()
-                .map(rental -> {
-                    RentalViewModel viewModel = modelMapper.map(rental, RentalViewModel.class);
-                    viewModel.setRenterUsername(rental.getRenter().getUsername());
-                    viewModel.setOwnerContact(rental.getRenter().getEmail());
-                    return viewModel;
-                })
-                .collect(Collectors.toList());
+    public Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize) {
+        String rentalOwnerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(rentalOwnerUsername, RentalStatus.PENDING_FOR_RETURN, pageSettings);
+
+        return rentals.map(rental -> {
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            return rentalViewModel;
+        });
     }
 
     @Override
-    @Transactional
-    public void autoDecline() {
+    public Page<RentalViewModel> getCompletedRentalsForOwner(int pageNumber, int pageSize) {
+        String rentalOwnerUsername = SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository
+                .findByOfferOwnerUsernameAndStatus(
+                        rentalOwnerUsername,
+                        RentalStatus.RETURNED,
+                        pageSettings
+                );
+        return rentals.map(rental -> {
+            RentalViewModel vm = modelMapper.map(rental, RentalViewModel.class);
+            vm.setRenterUsername(rental.getRenter().getUsername());
+            vm.setOwnerContact(rental.getRenter().getEmail());
+            return vm;
+        });
+    }
+
+    @Override
+    public void autoDeclineRentalRequest() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
-        rentalRepo.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
+        rentalRepository.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
                 .forEach(rental -> {
                     rental.setStatus(RentalStatus.CANCELED_BY_SCHEDULER);
-                    rentalRepo.save(rental);
-                    Offer offer = rental.getOffer();
-                    offer.setStatus(OfferStatus.AVAILABLE);
-                    offerRepo.save(offer);
+                    rentalRepository.save(rental);
+                    Offer offerModel = rental.getOffer();
+                    offerModel.setStatus(OfferStatus.AVAILABLE);
+                    offerRepository.save(offerModel);
                 });
     }
 

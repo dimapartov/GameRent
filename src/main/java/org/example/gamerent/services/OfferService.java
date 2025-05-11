@@ -13,28 +13,28 @@ import java.math.BigDecimal;
 public interface OfferService {
 
     //    Для инициализации данных
-    void seedOffer(OfferCreationInputModel newOffer, String username);
+    void seedOffer(OfferCreationInputModel newOfferInputModel, String offerOwnerUsername);
 
 
-    Long createOffer(OfferCreationInputModel newOffer, MultipartFile photo);
+    Long createOffer(OfferCreationInputModel newOfferInputModel);
 
     Page<OfferDemoViewModel> getAllOffersFiltered(
             BigDecimal priceFrom,
             BigDecimal priceTo,
-            String brand,
+            String brandName,
             Boolean myOffers,
-            int page,
-            int size,
+            int pageNumber,
+            int pageSize,
             String sortBy,
             String searchTerm
     );
 
-    OfferViewModel getById(Long id);
+    OfferViewModel getOfferById(Long offerId);
 
-    void updateOffer(Long id, OfferUpdateInputModel input);
+    void updateOffer(Long offerId, OfferUpdateInputModel offerUpdateInputModel);
 
-    void deleteOffer(Long id);
+    void deleteOfferById(Long offerId);
 
-    OfferUpdateInputModel getOfferUpdateModel(Long id);
+    OfferUpdateInputModel getOfferUpdateInputModel(Long offerId);
 
 }

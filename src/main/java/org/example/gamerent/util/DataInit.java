@@ -1,26 +1,30 @@
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
+import jakarta.persistence.EntityManager;
+import org.example.gamerent.models.Offer;
+import org.example.gamerent.models.Rental;
 import org.example.gamerent.models.Review;
 import org.example.gamerent.models.User;
+import org.example.gamerent.models.consts.RentalStatus;
+import org.example.gamerent.repos.OfferRepository;
+import org.example.gamerent.repos.RentalRepository;
 import org.example.gamerent.repos.ReviewRepository;
 import org.example.gamerent.repos.UserRepository;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
+import org.example.gamerent.services.RentalService;
 import org.example.gamerent.services.impl.security.RegistrationService;
-import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.RegistrationInputModel;
-import org.example.gamerent.web.viewmodels.user_input.ReviewInputModel;
+import org.example.gamerent.web.viewmodels.user_input.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,99 +33,104 @@ public class DataInit implements CommandLineRunner {
 
     private final BrandService brandService;
     private final OfferService offerService;
+    private final RentalService rentalService;
     private final RegistrationService registrationService;
-    private final UserRepository userRepo;
-    private final ReviewRepository reviewRepo;
+    private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
+    private final OfferRepository offerRepository;
+    private final RentalRepository rentalRepository;
     private final Faker faker = new Faker();
     private final Random random = new Random();
-    private final ModelMapper mapper = new ModelMapper();
-
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final EntityManager entityManager;
 
     @Autowired
-    public DataInit(BrandService brandService, OfferService offerService, RegistrationService registrationService, UserRepository userRepo, ReviewRepository reviewRepo) {
+    public DataInit(BrandService brandService,
+                    OfferService offerService,
+                    RegistrationService registrationService,
+                    UserRepository userRepository,
+                    ReviewRepository reviewRepository,
+                    OfferRepository offerRepository,
+                    RentalRepository rentalRepository,
+                    EntityManager entityManager,
+                    RentalService rentalService) {
         this.brandService = brandService;
         this.offerService = offerService;
         this.registrationService = registrationService;
-        this.userRepo = userRepo;
-        this.reviewRepo = reviewRepo;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
+        this.offerRepository = offerRepository;
+        this.rentalRepository = rentalRepository;
+        this.entityManager = entityManager;
+        this.rentalService = rentalService;
     }
 
-
+    @Transactional
     @Override
     public void run(String... args) {
         try {
             seedUsers();
+            System.out.println("Users seeded successfully.");
             seedBrands();
+            System.out.println("Brands seeded successfully.");
             seedOffers();
+            System.out.println("Offers seeded successfully.");
             seedReviews();
-            System.out.println("Приложение готово к работе");
+            System.out.println("Reviews seeded successfully.");
+            seedRentals();
+            System.out.println("Rentals seeded successfully.");
+            System.out.println("Тестовые данные загружены");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-
     }
 
-
     private void seedUsers() {
-        RegistrationInputModel user1 = new RegistrationInputModel();
-        user1.setUsername("d");
-        user1.setEmail("dima@dima.ru");
-        user1.setPassword("d");
-        user1.setFirstName("Dima");
-        user1.setLastName("Partov");
-        registrationService.registerUser(user1);
-
-        RegistrationInputModel user2 = new RegistrationInputModel();
-        user2.setUsername("dd");
-        user2.setEmail("dima2@dima.ru");
-        user2.setPassword("dd");
-        user2.setFirstName("Dima");
-        user2.setLastName("Kubarev");
-        registrationService.registerUser(user2);
-
-/*        for (int i = 0; i < 4; i++) {
-            RegistrationInputModel randomUser = new RegistrationInputModel();
-            randomUser.setUsername(faker.name().username());
-            randomUser.setEmail(faker.internet().emailAddress());
-            randomUser.setPassword(faker.internet().password());
-            randomUser.setFirstName(faker.name().firstName());
-            randomUser.setLastName(faker.name().lastName());
-            registrationService.registerUser(randomUser);
-        }*/
-
-        System.out.println("Пользователи добавлены");
+        RegistrationInputModel firstUser = new RegistrationInputModel();
+        firstUser.setUsername("anton");
+        firstUser.setPassword("anton");
+        firstUser.setEmail("anton@example.com");
+        firstUser.setFirstName("Антон");
+        firstUser.setLastName("Партов");
+        registrationService.registerUser(firstUser);
+        RegistrationInputModel secondUser = new RegistrationInputModel();
+        secondUser.setUsername("gena");
+        secondUser.setPassword("gena");
+        secondUser.setEmail("gena@example.com");
+        secondUser.setFirstName("Гена");
+        secondUser.setLastName("Горин");
+        registrationService.registerUser(secondUser);
     }
 
     private void seedBrands() {
-        for (int i = 0; i < 5; i++) {
-            BrandCreationInputModel brandModel = new BrandCreationInputModel();
-            brandModel.setName(faker.company().name());
-            brandModel.setDescription(faker.lorem().sentence());
-            brandModel.setPhoto("brand_logo.png");
-            brandService.createBrand(brandModel);
+        Set<String> usedNames = new HashSet<>();
+        int uniqueBrandsAmount = 24;
+        while (usedNames.size() < uniqueBrandsAmount) {
+            String brandName = faker.company().name();
+            if (usedNames.add(brandName)) {
+                BrandCreationInputModel brandModel = new BrandCreationInputModel();
+                brandModel.setName(brandName);
+                brandModel.setDescription(faker.lorem().sentence());
+                brandModel.setPhoto("brand_logo.png");
+                brandService.createBrand(brandModel);
+            }
         }
-        System.out.println("Бренды добавлены");
     }
 
     private void seedOffers() {
-        List<String> brandNames = brandService.getAllBrandsDTOs().stream()
-                .map(b -> b.getName())
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < 50; i++) {
-            OfferCreationInputModel offerCreationInputModel = createRandomOfferModel(brandNames);
-            offerCreationInputModel.setPhoto("brand_logo.png");
-            offerService.seedOffer(offerCreationInputModel, "d");
-        }
-        System.out.println("Офферы юзера 1 добавлены");
-        for (int i = 0; i < 50; i++) {
+        List<String> usernames = userRepository.findAll().stream().map(User::getUsername).collect(Collectors.toList());
+        List<String> brandNames = brandService.getAllBrandsDTOs().stream().map(b -> b.getName()).collect(Collectors.toList());
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
-            model.setPhoto("brand_logo.png");
-            offerService.seedOffer(model, "dd");
+            String owner = usernames.get(0);
+            offerService.seedOffer(model, owner);
         }
-        System.out.println("Офферы юзера 2 добавлены");
+        for (int i = 0; i < 500; i++) {
+            OfferCreationInputModel model = createRandomOfferModel(brandNames);
+            String owner = usernames.get(1);
+            offerService.seedOffer(model, owner);
+        }
     }
-
     private OfferCreationInputModel createRandomOfferModel(List<String> brandNames) {
         OfferCreationInputModel model = new OfferCreationInputModel();
         model.setDescription(faker.lorem().sentence());
@@ -134,34 +143,81 @@ public class DataInit implements CommandLineRunner {
         return model;
     }
 
-
     private void seedReviews() {
-        User u1 = userRepo.findUserByUsername("d").orElseThrow(() -> new IllegalStateException("d не найден"));
-        User u2 = userRepo.findUserByUsername("dd").orElseThrow(() -> new IllegalStateException("dd не найден"));
-        for (int i = 0; i < 10; i++) {
+        List<User> users = userRepository.findAll();
+        if (users.size() < 2) {
+            throw new IllegalStateException("Должно быть как минимум 2 пользователя для генерации отзывов");
+        }
+        for (int i = 0; i < 500; i++) {
+            User reviewer = users.get(random.nextInt(users.size()));
+            User reviewee;
+            do {
+                reviewee = users.get(random.nextInt(users.size()));
+            } while (reviewee.getId().equals(reviewer.getId()));
             ReviewInputModel in = new ReviewInputModel();
-            in.setRevieweeUsername("dd");
+            in.setRevieweeUsername(reviewee.getUsername());
             in.setRating(random.nextInt(5) + 1);
             in.setText(faker.lorem().sentence());
-            Review r = mapper.map(in, Review.class);
-            r.setReviewer(u1);
-            r.setReviewee(u2);
+            Review r = modelMapper.map(in, Review.class);
+            r.setReviewer(reviewer);
+            r.setReviewee(reviewee);
             r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
-            reviewRepo.save(r);
+            reviewRepository.save(r);
         }
-        System.out.println("10 отзывов от d на dd добавлены");
-        for (int i = 0; i < 10; i++) {
-            ReviewInputModel in = new ReviewInputModel();
-            in.setRevieweeUsername("d");
-            in.setRating(random.nextInt(5) + 1);
-            in.setText(faker.lorem().sentence());
-            Review r = mapper.map(in, Review.class);
-            r.setReviewer(u2);
-            r.setReviewee(u1);
-            r.setCreated(LocalDateTime.now().minusDays(random.nextInt(30)));
-            reviewRepo.save(r);
+    }
+
+    @Transactional
+    public void seedRentals() {
+        List<User> users = userRepository.findAll();
+        List<Offer> allOffers = offerRepository.findAll();
+        List<RentalStatus> statuses = Arrays.asList(RentalStatus.values());
+        int perStatus = 20;  // по 250 заявок каждого статуса
+
+        for (User user : users) {
+            // собираем только чужие офферы и копируем в изменяемый список
+            List<Offer> availableOffers = allOffers.stream()
+                    .filter(o -> !o.getOwner().getUsername().equals(user.getUsername()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            // если нужно рандомизировать порядок офферов разом
+            Collections.shuffle(availableOffers);
+
+            for (RentalStatus status : statuses) {
+                for (int i = 0; i < perStatus; i++) {
+                    // если офферы закончились — прерываем цикл
+                    if (availableOffers.isEmpty()) {
+                        break;
+                    }
+
+                    // берём последний оффер из списка (или любой другой способ)
+                    Offer offer = availableOffers.remove(availableOffers.size() - 1);
+
+                    // случайная длительность в рамках min/max
+                    int days = random.nextInt(offer.getMinRentalDays(), offer.getMaxRentalDays() + 1);
+
+                    // создаём даты начала и конца
+                    LocalDateTime start = LocalDateTime.now();
+                    LocalDateTime end = start.plusDays(days);
+
+                    // DTO → сущность через ModelMapper
+                    RentalRequestInputModel req = new RentalRequestInputModel();
+                    req.setOfferId(offer.getId());
+                    req.setDays(days);
+                    Rental rental = modelMapper.map(req, Rental.class);
+                    rental.setId(null);
+                    // дополняем остальные поля
+                    rental.setOffer(offer);
+                    rental.setRenter(user);
+                    rental.setStartDate(start);
+                    rental.setEndDate(end);
+                    rental.setStatus(status);
+
+                    rentalRepository.save(rental);
+                }
+                // после каждого статуса можно, при желании, заново перемешать оставшиеся офферы
+                Collections.shuffle(availableOffers);
+            }
         }
-        System.out.println("10 отзывов от dd на d добавлены");
     }
 
 }

@@ -19,10 +19,20 @@ public class OfferDemoViewModel {
     private Integer maxRentalDays;
     private OfferStatus status;
 
+
     public OfferDemoViewModel() {
     }
 
-    public OfferDemoViewModel(Long id, String photo, String gameName, Brand brand, String description, String owner, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, OfferStatus status) {
+    public OfferDemoViewModel(Long id,
+                              String photo,
+                              String gameName,
+                              Brand brand,
+                              String description,
+                              String owner,
+                              BigDecimal price,
+                              Integer minRentalDays,
+                              Integer maxRentalDays,
+                              OfferStatus status) {
         this.id = id;
         this.photo = photo;
         this.gameName = gameName;
@@ -34,6 +44,7 @@ public class OfferDemoViewModel {
         this.maxRentalDays = maxRentalDays;
         this.status = status;
     }
+
 
     public Long getId() {
         return id;
@@ -113,22 +124,6 @@ public class OfferDemoViewModel {
 
     public void setStatus(OfferStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "OfferDemoViewModel{" +
-                "id=" + id +
-                ", photo='" + photo + '\'' +
-                ", gameName='" + gameName + '\'' +
-                ", brand=" + brand +
-                ", description='" + description + '\'' +
-                ", owner='" + owner + '\'' +
-                ", price=" + price +
-                ", minRentalDays=" + minRentalDays +
-                ", maxRentalDays=" + maxRentalDays +
-                ", status=" + status +
-                '}';
     }
 
 }

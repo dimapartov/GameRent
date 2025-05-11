@@ -1,14 +1,16 @@
 package org.example.gamerent.services;
 
+import org.example.gamerent.models.consts.RentalStatus;
 import org.example.gamerent.web.viewmodels.RentalViewModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 
 public interface RentalService {
 
-    void createRentalRequest(RentalRequestInputModel input);
+    void createRentalRequest(RentalRequestInputModel rentalRequestInputModel);
 
     void cancelRentalRequest(Long rentalId);
 
@@ -16,18 +18,20 @@ public interface RentalService {
 
     void confirmRentalRequest(Long rentalId);
 
-    void initiateReturn(Long rentalId);
+    void initiateRentalReturn(Long rentalId);
 
-    void confirmReturn(Long rentalId);
+    void confirmRentalReturn(Long rentalId);
 
-    void autoDecline();
+    void autoDeclineRentalRequest();
 
-    List<RentalViewModel> getOwnerPendingRequests();
+    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus rentalStatus, int pageNumber, int pageSize);
 
-    List<RentalViewModel> getMyRentals();
+    Page<RentalViewModel> getPendingRequestsForOwner(int pageNumber, int pageSize);
 
-    List<RentalViewModel> getOwnerActiveRentals();
+    Page<RentalViewModel> getActiveRentalsForOwner(int pageNumber, int pageSize);
 
-    List<RentalViewModel> getOwnerPendingReturns();
+    Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize);
+
+    Page<RentalViewModel> getCompletedRentalsForOwner(int pageNumber, int pageSize);
 
 }

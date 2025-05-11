@@ -16,6 +16,7 @@ public class Rental extends IdCreatedModified {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private RentalStatus status;
+    private Integer days;
 
 
     protected Rental() {
@@ -34,12 +35,12 @@ public class Rental extends IdCreatedModified {
         return renter;
     }
 
-    @Column(name = "start_date", nullable = true)
+    @Column(name = "start_date")
     public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date")
     public LocalDateTime getEndDate() {
         return endDate;
     }
@@ -48,6 +49,11 @@ public class Rental extends IdCreatedModified {
     @Column(name = "status", nullable = false)
     public RentalStatus getStatus() {
         return status;
+    }
+
+    @Column(name = "days", nullable = false)
+    public Integer getDays() {
+        return days;
     }
 
 
@@ -69,6 +75,10 @@ public class Rental extends IdCreatedModified {
 
     public void setStatus(RentalStatus status) {
         this.status = status;
+    }
+
+    public void setDays(Integer days) {
+        this.days = days;
     }
 
 }

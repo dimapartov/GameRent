@@ -103,25 +103,23 @@
             <version>1.0.2</version>
         </dependency>
 
-        <!--new-->
-
         <dependency>
             <groupId>org.hibernate.search</groupId>
             <artifactId>hibernate-search-mapper-orm</artifactId>
             <version>7.0.1.Final</version>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate.search</groupId>
             <artifactId>hibernate-search-backend-elasticsearch</artifactId>
             <version>7.0.1.Final</version>
         </dependency>
-        <!-- Elasticsearch HTTP client -->
+
         <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
             <version>8.17.5</version>
         </dependency>
-
     </dependencies>
 
     <build>

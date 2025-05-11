@@ -1,48 +1,132 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Create Offer</title>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head}">
+    <title>Создание объявления</title>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<h1>Создать объявление</h1>
-<form th:action="@{/offer/create}" th:object="${newOfferInputModel}"
-      method="post" enctype="multipart/form-data">
-    <div>
-        <label>Описание:</label>
-        <textarea th:field="*{description}" required></textarea>
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 class="text-center mb-4">Создать объявление</h1>
+            <form th:action="@{/offer/create}"
+                  th:object="${newOfferInputModel}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="row g-3 needs-validation"
+                  novalidate>
+                <div class="col-12">
+                    <label for="description" class="form-label">Описание</label>
+                    <textarea id="description"
+                              th:field="*{description}"
+                              class="form-control"
+                              rows="3"
+                              required
+                              th:classappend="${#fields.hasErrors('description')}? 'is-invalid'">
+                    </textarea>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('description')}"
+                         th:errors="*{description}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Цена (₽/день)</label>
+                    <input type="number"
+                           id="price"
+                           th:field="*{price}"
+                           class="form-control"
+                           step="0.01"
+                           required
+                           th:classappend="${#fields.hasErrors('price')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('price')}"
+                         th:errors="*{price}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="brand" class="form-label">Бренд</label>
+                    <select id="brand"
+                            th:field="*{brand}"
+                            class="form-select"
+                            required
+                            th:classappend="${#fields.hasErrors('brand')}? 'is-invalid'">
+                        <option value="" disabled>Выберите бренд</option>
+                        <option th:each="b : ${allBrands}"
+                                th:value="${b.name}"
+                                th:text="${b.name}">
+                        </option>
+                    </select>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('brand')}"
+                         th:errors="*{brand}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="gameName" class="form-label">Название игры</label>
+                    <input type="text"
+                           id="gameName"
+                           th:field="*{gameName}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('gameName')}? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('gameName')}"
+                         th:errors="*{gameName}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="minRentalDays" class="form-label">Мин. дней</label>
+                    <input type="number"
+                           id="minRentalDays"
+                           th:field="*{minRentalDays}"
+                           class="form-control"
+                           required
+                           th:classappend="${(#fields.hasErrors('minRentalDays') or #fields.hasErrors('validRentalDaysRange')) ? ' is-invalid' : ''}"/>
+                    <div class="invalid-feedback">
+                        <span th:if="${#fields.hasErrors('minRentalDays')}"
+                              th:errors="*{minRentalDays}">
+                        </span>
+                        <span th:if="${#fields.hasErrors('validRentalDaysRange')}"
+                              th:text="${#fields.errors('validRentalDaysRange')[0]}">
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="maxRentalDays" class="form-label">Макс. дней</label>
+                    <input type="number"
+                           id="maxRentalDays"
+                           th:field="*{maxRentalDays}"
+                           class="form-control"
+                           required
+                           th:classappend="${#fields.hasErrors('maxRentalDays')} ? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('maxRentalDays')}"
+                         th:errors="*{maxRentalDays}">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="offerPhoto" class="form-label">Фото</label>
+                    <input class="form-control"
+                           type="file"
+                           id="offerPhoto"
+                           th:field="*{offerPhoto}"
+                           required
+                           th:classappend="${#fields.hasErrors('photoProvided')} ? 'is-invalid'">
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('photoProvided')}"
+                         th:errors="*{photoProvided}">
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-success px-5">
+                        Создать
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <label>Цена:</label>
-        <input type="number" step="0.01" th:field="*{price}" required/>
-    </div>
-    <div>
-        <label>Бренд:</label>
-        <select th:field="*{brand}">
-            <option th:each="brand : ${allBrands}"
-                    th:value="${brand.name}"
-                    th:text="${brand.name}"></option>
-        </select>
-    </div>
-    <div>
-        <label>Название игры:</label>
-        <input type="text" th:field="*{gameName}" required/>
-    </div>
-    <div>
-        <label>Мин. дней аренды:</label>
-        <input type="number" th:field="*{minRentalDays}" min="1" required/>
-    </div>
-    <div>
-        <label>Макс. дней аренды:</label>
-        <input type="number" th:field="*{maxRentalDays}" min="1" required/>
-    </div>
-    <div>
-        <label>Загрузите фото:</label>
-        <input type="file" name="file" required/>
-    </div>
-    <button type="submit">Создать</button>
-    <div th:if="${error}" style="color:green;" th:text="${error}"></div>
-</form>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

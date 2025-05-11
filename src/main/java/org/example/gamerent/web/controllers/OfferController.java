@@ -16,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -24,7 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/offer")
 public class OfferController {
 
-    @Value("${offer.page.size}")
+    @Value("${offers.page.size}")
     private int pageSize;
 
     private final OfferService offerService;
@@ -43,11 +42,6 @@ public class OfferController {
         return new OfferFiltersDTO();
     }
 
-    @ModelAttribute("rentalInput")
-    public RentalRequestInputModel initRentalRequestInputModel() {
-        return new RentalRequestInputModel();
-    }
-
     @ModelAttribute("newOfferInputModel")
     public OfferCreationInputModel initOfferCreationInputModel() {
         return new OfferCreationInputModel();
@@ -63,86 +57,74 @@ public class OfferController {
     @PostMapping("/create")
     public String createOffer(@Valid @ModelAttribute("newOfferInputModel") OfferCreationInputModel newOfferInputModel,
                               BindingResult bindingResult,
-                              @RequestParam("file") MultipartFile file,
                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            redirectAttributes.addFlashAttribute("newOfferInputModel", newOfferInputModel);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "newOfferInputModel", bindingResult);
             return "redirect:/offer/create";
         }
-        Long newId = offerService.createOffer(newOfferInputModel, file);
+        Long newId = offerService.createOffer(newOfferInputModel);
         return "redirect:/offer/" + newId;
     }
 
     @GetMapping("/all")
     public String getAllOffersFilteredPage(@ModelAttribute("filters") OfferFiltersDTO filters,
-                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                            @RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                            Model model) {
-        System.out.println("Вызван метод контроллера /all");
         Page<OfferDemoViewModel> offersPage = offerService.getAllOffersFiltered(
                 filters.getPriceFrom(),
                 filters.getPriceTo(),
                 filters.getBrand(),
                 filters.getMyOffers(),
-                page,
+                pageNumber,
                 pageSize,
                 filters.getSortBy(),
-                filters.getSearchTerm()
-        );
+                filters.getSearchTerm());
+
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
-        System.out.println("Контроллер отработал, возврат страницы");
-        return "offer-all-filtered-page";
+        return "offers-all-filtered-page";
     }
 
     @GetMapping("/{id}")
     public String getOfferDetailsPage(@PathVariable Long id,
                                       @ModelAttribute("rentalInput") RentalRequestInputModel rentalInput,
                                       Model model) {
-        OfferViewModel offer = offerService.getById(id);
+        OfferViewModel offer = offerService.getOfferById(id);
         model.addAttribute("offer", offer);
         rentalInput.setOfferId(id);
 
-        try {
-            OfferUpdateInputModel updateModel = offerService.getOfferUpdateModel(id);
-            model.addAttribute("offerUpdateInputModel", updateModel);
-        } catch (RuntimeException ignored) {
-
+        if (!model.containsAttribute("offerUpdateInputModel")) {
+            try {
+                OfferUpdateInputModel offerUpdateInputModel = offerService.getOfferUpdateInputModel(id);
+                model.addAttribute("offerUpdateInputModel", offerUpdateInputModel);
+            } catch (RuntimeException ignored) {
+                model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
+            }
         }
-
         return "offer-details-page";
     }
 
     @PostMapping("/{id}/edit")
     public String editOffer(@PathVariable Long id,
-                            @Valid @ModelAttribute("offerUpdateInputModel") OfferUpdateInputModel input,
+                            @Valid @ModelAttribute("offerUpdateInputModel") OfferUpdateInputModel offerUpdateInputModel,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Некорректные данные");
+            redirectAttributes.addFlashAttribute("offerUpdateInputModel", offerUpdateInputModel);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "offerUpdateInputModel", bindingResult);
             return "redirect:/offer/" + id;
         }
-        try {
-            offerService.updateOffer(id, input);
-            redirectAttributes.addFlashAttribute("success", "Оффер успешно обновлён");
-        } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
-        }
+        offerService.updateOffer(id, offerUpdateInputModel);
+        redirectAttributes.addFlashAttribute("success", "Оффер успешно обновлён");
         return "redirect:/offer/" + id;
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteOffer(@PathVariable Long id,
-                              RedirectAttributes redirectAttributes) {
-        try {
-            offerService.deleteOffer(id);
-            redirectAttributes.addFlashAttribute("success", "Оффер удалён");
-            return "redirect:/offer/all";
-        } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
-            return "redirect:/offer/" + id;
-        }
+    public String deleteOffer(@PathVariable Long id) {
+        offerService.deleteOfferById(id);
+        return "redirect:/offer/all";
     }
-
 
 }

@@ -19,8 +19,8 @@ public class User extends IdCreatedModified {
     private boolean isActive;
     private Set<Offer> offers;
     private Set<Rental> rentals;
-    private Set<Review> reviewsGiven;      // Отзывы, оставленные пользователем
-    private Set<Review> reviewsReceived;   // Отзывы, полученные пользователем
+    private Set<Review> reviewsGiven; // Отзывы, оставленные пользователем
+    private Set<Review> reviewsReceived; // Отзывы, полученные пользователем
 
 
     protected User() {

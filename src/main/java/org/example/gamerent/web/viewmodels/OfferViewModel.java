@@ -1,5 +1,7 @@
 package org.example.gamerent.web.viewmodels;
 
+import org.example.gamerent.models.consts.OfferStatus;
+
 import java.math.BigDecimal;
 
 
@@ -12,7 +14,7 @@ public class OfferViewModel {
     private BigDecimal price;
     private Integer minRentalDays;
     private Integer maxRentalDays;
-    private String status;
+    private OfferStatus status;
     private String photo;
     private String ownerFirstName;
     private String ownerLastName;
@@ -23,7 +25,19 @@ public class OfferViewModel {
     public OfferViewModel() {
     }
 
-    public OfferViewModel(Long id, String brandName, String gameName, String description, BigDecimal price, Integer minRentalDays, Integer maxRentalDays, String status, String photo, String ownerFirstName, String ownerLastName, String ownerEmail, String ownerUsername) {
+    public OfferViewModel(Long id,
+                          String brandName,
+                          String gameName,
+                          String description,
+                          BigDecimal price,
+                          Integer minRentalDays,
+                          Integer maxRentalDays,
+                          OfferStatus status,
+                          String photo,
+                          String ownerFirstName,
+                          String ownerLastName,
+                          String ownerEmail,
+                          String ownerUsername) {
         this.id = id;
         this.brandName = brandName;
         this.gameName = gameName;
@@ -96,11 +110,11 @@ public class OfferViewModel {
         this.maxRentalDays = maxRentalDays;
     }
 
-    public String getStatus() {
+    public OfferStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OfferStatus status) {
         this.status = status;
     }
 

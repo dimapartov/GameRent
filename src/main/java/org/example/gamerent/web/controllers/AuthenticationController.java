@@ -5,7 +5,6 @@ import org.example.gamerent.services.impl.security.RegistrationService;
 import org.example.gamerent.web.viewmodels.user_input.RegistrationInputModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,46 +17,47 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/user")
 public class AuthenticationController {
 
-    private RegistrationService registrationService;
+    private final RegistrationService registrationService;
 
 
     @Autowired
-    public void setRegistrationService(RegistrationService registrationService) {
+    public AuthenticationController(RegistrationService registrationService) {
         this.registrationService = registrationService;
     }
+
+
+    @ModelAttribute("newUser")
+    public RegistrationInputModel initRegistrationInputModel() {
+        return new RegistrationInputModel();
+    }
+
 
     @GetMapping("/login")
     public String getLoginPage() {
         return "user-login-page";
     }
 
-
     @PostMapping("/login-error")
-    public String redirectOnFailedLogin(@ModelAttribute("username") String username, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("username", username);
+    public String redirectOnFailedLogin(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("badCredentials", true);
         return "redirect:/user/login";
     }
 
     @GetMapping("/register")
-    public String getRegistrationPage(Model model) {
-        if (!model.containsAttribute("newUser")) {
-            model.addAttribute("newUser", new RegistrationInputModel());
-        }
+    public String getRegistrationPage() {
         return "user-registration-page";
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("newUser") RegistrationInputModel newUser, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-
+    public String registerUser(@Valid @ModelAttribute("newUser") RegistrationInputModel newUser,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("newUser", newUser);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.newUser", bindingResult);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "newUser", bindingResult);
             return "redirect:/user/register";
         }
-
         registrationService.registerUser(newUser);
-
         return "redirect:/user/login";
     }
 

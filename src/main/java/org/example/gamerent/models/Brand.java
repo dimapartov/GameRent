@@ -2,7 +2,7 @@ package org.example.gamerent.models;
 
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import java.util.Set;
 
@@ -21,7 +21,7 @@ public class Brand extends IdCreatedModified {
     }
 
 
-    @GenericField
+    @FullTextField
     @Column(name = "name", nullable = false)
     public String getName() {
         return name;

@@ -29,6 +29,7 @@ public class RentalViewModel {
         this.ownerContact = ownerContact;
     }
 
+
     public Long getRentalId() {
         return rentalId;
     }

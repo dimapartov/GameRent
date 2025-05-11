@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои отзывы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container my-5">
+    <h1 class="mb-4">Мои отзывы</h1>
+    <form th:action="@{/reviews/my}"
+          th:object="${filters}"
+          method="get"
+          class="row g-2 align-items-end mb-5">
+        <div class="col-auto">
+            <label for="sortBy" class="form-label">Сортировать:</label>
+            <select id="sortBy" class="form-select" th:field="*{sortBy}">
+                <option value="">Без сортировки</option>
+                <option value="ratingDesc">Рейтинг ↓</option>
+                <option value="ratingAsc">Рейтинг ↑</option>
+                <option value="dateDesc">Дата ↓</option>
+                <option value="dateAsc">Дата ↑</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a th:href="@{/reviews/my}" class="btn btn-secondary">Сбросить</a>
+        </div>
+    </form>
+    <section>
+        <h2 class="h4 mb-3">Список отзывов</h2>
+        <div th:each="rev : ${byPage.content}" class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong th:text="${rev.username}">user</strong>
+                        <small class="text-muted">—
+                            <span th:text="${rev.rating}">0</span>/5,
+                            <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">01.01.2025</span>
+                        </small>
+                    </div>
+                    <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
+                          method="post"
+                          class="d-inline">
+                        <input type="hidden" name="page" th:value="${byPage.number}"/>
+                        <input type="hidden" name="sortBy" th:value="${filters.sortBy}"/>
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    </form>
+                </div>
+                <p class="mb-0" th:text="${rev.text}">Текст отзыва…</p>
+            </div>
+        </div>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!byPage.hasPrevious()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/reviews/my(
+                           page=${byPage.number - 1},
+                           sortBy=${filters.sortBy}
+                       )}">
+                        ‹ Назад
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Страница <span th:text="${byPage.number + 1}">1</span>
+                        из <span th:text="${byPage.totalPages}">1</span>
+                    </span>
+                </li>
+                <li class="page-item" th:classappend="${!byPage.hasNext()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/reviews/my(
+                           page=${byPage.number + 1},
+                           sortBy=${filters.sortBy}
+                       )}">
+                        Вперёд ›
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

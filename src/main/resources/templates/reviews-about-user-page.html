@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Отзывы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container my-5">
+    <h1 th:if="${revieweeUsername == #authentication.name}">
+        Отзывы обо мне
+    </h1>
+    <h1 th:unless="${revieweeUsername == #authentication.name}" th:text="${'Отзывы о ' + revieweeUsername}">Отзывы о
+        …</h1>
+    <p class="fs-5 mb-4">
+        Средний рейтинг:
+        <strong th:text="${#numbers.formatDecimal(avgRating,1,1)}">—</strong>
+    </p>
+    <div sec:authorize="isAuthenticated()"
+         th:if="${revieweeUsername != #authentication.name}"
+         class="card mb-5">
+        <div class="card-body">
+            <form th:action="@{/reviews/about/{username}(username=${revieweeUsername})}"
+                  th:object="${newReview}"
+                  method="post"
+                  class="row g-3">
+                <input type="hidden" th:field="*{revieweeUsername}"/>
+                <div class="col-md-2">
+                    <label for="rating" class="form-label">Оценка</label>
+                    <select id="rating" th:field="*{rating}" class="form-select">
+                        <option th:value="1">1</option>
+                        <option th:value="2">2</option>
+                        <option th:value="3">3</option>
+                        <option th:value="4">4</option>
+                        <option th:value="5">5</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('rating')}"
+                         th:errors="*{rating}"
+                         class="invalid-feedback d-block"></div>
+                </div>
+                <div class="col-12">
+                    <label for="text" class="form-label">Текст</label>
+                    <textarea id="text" th:field="*{text}" rows="3"
+                              class="form-control"></textarea>
+                    <div th:if="${#fields.hasErrors('text')}"
+                         th:errors="*{text}"
+                         class="invalid-feedback d-block"></div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Оставить отзыв</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <form th:action="@{/reviews/about/{username}(username=${revieweeUsername})}"
+          th:object="${filters}"
+          method="get"
+          class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label for="sortBy" class="form-label">Сортировать</label>
+            <select id="sortBy" th:field="*{sortBy}" class="form-select">
+                <option value="">Без сортировки</option>
+                <option value="ratingDesc">Рейтинг ↓</option>
+                <option value="ratingAsc">Рейтинг ↑</option>
+                <option value="dateDesc">Дата ↓</option>
+                <option value="dateAsc">Дата ↑</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a th:href="@{/reviews/about/{username}(username=${revieweeUsername})}"
+               class="btn btn-secondary">Сбросить</a>
+        </div>
+    </form>
+    <section>
+        <div th:each="rev : ${reviewsPage.content}" class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        <strong th:text="${rev.fullName}">Имя Фамилия</strong>
+                        <small class="text-muted">
+                            (<span th:text="${rev.username}">username</span>) —
+                            <span th:text="${rev.rating}">0</span>/5,
+                            <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">
+                                    01.01.2025
+                                </span>
+                        </small>
+                    </div>
+                    <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
+                          method="post"
+                          sec:authorize="isAuthenticated()"
+                          th:if="${revieweeUsername != #authentication.name
+                                      and rev.username == #authentication.name}"
+                          class="d-inline">
+                        <input type="hidden" name="revieweeUsername"
+                               th:value="${revieweeUsername}"/>
+                        <input type="hidden" name="page"
+                               th:value="${reviewsPage.number}"/>
+                        <input type="hidden" name="sortBy"
+                               th:value="${filters.sortBy}"/>
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+                <p class="mb-0" th:text="${rev.text}">Текст отзыва…</p>
+            </div>
+        </div>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${!reviewsPage.hasPrevious()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/reviews/about/{username}(
+                               username=${revieweeUsername},
+                               page=${reviewsPage.number - 1},
+                               sortBy=${filters.sortBy}
+                           )}">
+                        ‹ Назад
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                        <span class="page-link">
+                            Страница <span th:text="${reviewsPage.number + 1}">1</span>
+                            из <span th:text="${reviewsPage.totalPages}">1</span>
+                        </span>
+                </li>
+                <li class="page-item"
+                    th:classappend="${!reviewsPage.hasNext()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/reviews/about/{username}(
+                               username=${revieweeUsername},
+                               page=${reviewsPage.number + 1},
+                               sortBy=${filters.sortBy}
+                           )}">
+                        Вперёд ›
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -3,16 +3,17 @@ package org.example.gamerent.services;
 import org.example.gamerent.services.dto.BrandDTO;
 import org.example.gamerent.web.viewmodels.BrandViewModel;
 import org.example.gamerent.web.viewmodels.user_input.BrandCreationInputModel;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 
 public interface BrandService {
 
-    BrandCreationInputModel createBrand(BrandCreationInputModel newBrand);
+    void createBrand(BrandCreationInputModel newBrandInputModel);
 
     List<BrandDTO> getAllBrandsDTOs();
 
-    List<BrandViewModel> getAllBrandsForView();
+    Page<BrandViewModel> getAllBrandsForView(int pageNumber, int pageSize);
 
 }

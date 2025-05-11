@@ -11,13 +11,23 @@ public class ReviewInputModel {
     @NotBlank
     private String revieweeUsername;
 
-    @NotNull
-    @Min(1)
-    @Max(5)
+    @NotNull(message = "Введите рейтинг")
+    @Min(value = 1, message = "Минимальная оценка - 1")
+    @Max(value = 5, message = "Максимальная оценка - 5")
     private Integer rating;
 
-    @NotBlank
+    @NotBlank(message = "Введите текст отзыва")
     private String text;
+
+
+    public ReviewInputModel() {
+    }
+
+    public ReviewInputModel(String revieweeUsername, Integer rating, String text) {
+        this.revieweeUsername = revieweeUsername;
+        this.rating = rating;
+        this.text = text;
+    }
 
 
     public String getRevieweeUsername() {

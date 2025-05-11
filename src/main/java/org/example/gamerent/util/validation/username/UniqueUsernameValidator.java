@@ -11,10 +11,12 @@ public class UniqueUsernameValidator implements ConstraintValidator<UniqueUserna
 
     private UserRepository userRepository;
 
+
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext context) {

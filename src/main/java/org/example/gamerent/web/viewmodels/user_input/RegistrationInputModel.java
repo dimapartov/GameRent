@@ -16,8 +16,8 @@ public class RegistrationInputModel {
     private String password;
 
     @UniqueEmail
-    @NotBlank(message = "Введите почту")
-    @Email(message = "Введите верную почту")
+    @NotBlank(message = "Введите email")
+    @Email(message = "Введите корректный email")
     private String email;
 
     @NotBlank(message = "Введите имя")
@@ -28,6 +28,14 @@ public class RegistrationInputModel {
 
 
     public RegistrationInputModel() {
+    }
+
+    public RegistrationInputModel(String username, String password, String email, String firstName, String lastName) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
 

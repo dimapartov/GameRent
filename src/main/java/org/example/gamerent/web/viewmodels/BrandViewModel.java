@@ -6,6 +6,7 @@ public class BrandViewModel {
     private String description;
     private String photo;
 
+
     public BrandViewModel() {
     }
 
@@ -14,6 +15,7 @@ public class BrandViewModel {
         this.description = description;
         this.photo = photo;
     }
+
 
     public String getName() {
         return name;
@@ -37,15 +39,6 @@ public class BrandViewModel {
 
     public void setPhoto(String photo) {
         this.photo = photo;
-    }
-
-    @Override
-    public String toString() {
-        return "BrandViewModel{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", photo='" + photo + '\'' +
-                '}';
     }
 
 }
