@@ -82,18 +82,18 @@ services:
     depends_on:
       - prometheus
 
-  gamerent:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: gamerent
-    depends_on:
-      elasticsearch:
-          condition: service_healthy
-      postgres:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
+#  gamerent:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: gamerent
+#    depends_on:
+#      elasticsearch:
+#          condition: service_healthy
+#      postgres:
+#        condition: service_healthy
+#    ports:
+#      - "8080:8080"
 
 volumes:
   postgres_data:

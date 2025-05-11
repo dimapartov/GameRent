@@ -1,3 +1,4 @@
+/*
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
@@ -220,4 +221,4 @@ public class DataInit implements CommandLineRunner {
         }
     }
 
-}
+}*/
