@@ -30,17 +30,20 @@ public class RentalServiceImpl implements RentalService {
     private final OfferRepository offerRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final MailSenderService mailSenderService;
 
 
     @Autowired
     public RentalServiceImpl(RentalRepository rentalRepository,
                              OfferRepository offerRepository,
                              UserRepository userRepository,
-                             ModelMapper modelMapper) {
+                             ModelMapper modelMapper,
+                             MailSenderService mailSenderService) {
         this.rentalRepository = rentalRepository;
         this.offerRepository = offerRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.mailSenderService = mailSenderService;
     }
 
 
@@ -66,6 +69,18 @@ public class RentalServiceImpl implements RentalService {
         rentalRepository.save(rentalModel);
         offerModel.setStatus(OfferStatus.BOOKED);
         offerRepository.save(offerModel);
+
+        String ownerEmail = offerModel.getOwner().getEmail();
+        String subject = "Новый запрос на аренду вашего оффера";
+        String body = String.format(
+                "Здравствуйте, %s!\n\nПользователь %s отправил запрос на аренду вашей игры \"%s\" " +
+                        "на %d дней.\n\nПерейдите в личный кабинет, чтобы подтвердить или отклонить запрос.",
+                offerModel.getOwner().getUsername(),
+                SecurityContextHolder.getContext().getAuthentication().getName(),
+                offerModel.getGameName(),
+                rentalRequestInputModel.getDays()
+        );
+        mailSenderService.sendSimpleMail(ownerEmail, subject, body);
     }
 
     @Override

@@ -12,10 +12,9 @@
 
     <groupId>org.example</groupId>
     <artifactId>GameRent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>GameRent</name>
     <description>GameRent</description>
-    <url/>
 
     <licenses>
         <license/>
@@ -72,12 +71,6 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.1.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
@@ -103,12 +96,12 @@
             <version>1.0.2</version>
         </dependency>
 
+        <!-- Полнотекст. поиск -->
         <dependency>
             <groupId>org.hibernate.search</groupId>
             <artifactId>hibernate-search-mapper-orm</artifactId>
             <version>7.0.1.Final</version>
         </dependency>
-
         <dependency>
             <groupId>org.hibernate.search</groupId>
             <artifactId>hibernate-search-backend-elasticsearch</artifactId>
@@ -119,6 +112,23 @@
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
             <version>8.17.5</version>
+        </dependency>
+
+        <!-- Логирование в формате JSON для Logstash -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
     </dependencies>
 

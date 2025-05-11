@@ -1,6 +1,3 @@
-/* ----------------- ГЛОБАЛЬНЫЕ СТИЛИ ----------------- */
-
-/* фон и типографика */
 body {
     background: url('../images/background_image.png') no-repeat center center fixed;
     background-size: cover;
@@ -9,13 +6,10 @@ body {
     margin: 0;
 }
 
-/* контейнеры для единых отступов */
 .main-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
 }
-
-/* ----------------- NAVBAR ----------------- */
 
 .navbar {
     background-color: rgba(255, 255, 255, 0.85);
@@ -26,8 +20,6 @@ body {
 .navbar:hover {
     background-color: rgba(255, 255, 255, 0.95);
 }
-
-/* ----------------- ТАБЫ ----------------- */
 
 .nav-tabs {
     border-bottom: none;
@@ -53,9 +45,6 @@ body {
     border-bottom-color: transparent;
 }
 
-/* ----------------- ТАБЛИЦЫ ----------------- */
-
-/* карточка вокруг таблицы */
 .table-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 0.5rem;
@@ -64,7 +53,6 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* hover-эффект строк */
 .table-hover tbody tr {
     transition: background-color 0.2s;
 }
@@ -72,8 +60,6 @@ body {
 .table-hover tbody tr:hover {
     background-color: rgba(0, 123, 255, 0.05);
 }
-
-/* ----------------- КНОПКИ ----------------- */
 
 .btn {
     transition: transform 0.1s, box-shadow 0.1s;
@@ -83,8 +69,6 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
-/* ----------------- КАРТОЧКИ БРЕНДОВ ----------------- */
 
 .card-accent {
     border: none;
@@ -112,8 +96,6 @@ body {
     padding: 0.5rem 0;
 }
 
-
-/* сброс фокуса в формах */
 .form-control:focus {
     box-shadow: none;
     border-color: #007bff;
