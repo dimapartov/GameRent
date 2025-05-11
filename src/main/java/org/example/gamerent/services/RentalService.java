@@ -24,12 +24,14 @@ public interface RentalService {
 
     void autoDeclineRentalRequest();
 
+    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus rentalStatus, int pageNumber, int pageSize);
+
     Page<RentalViewModel> getPendingRequestsForOwner(int pageNumber, int pageSize);
 
     Page<RentalViewModel> getActiveRentalsForOwner(int pageNumber, int pageSize);
 
     Page<RentalViewModel> getPendingReturnsForOwner(int pageNumber, int pageSize);
 
-    Page<RentalViewModel> getMyRentalsByStatus(RentalStatus rentalStatus, int pageNumber, int pageSize);
+    Page<RentalViewModel> getCompletedRentalsForOwner(int pageNumber, int pageSize);
 
 }

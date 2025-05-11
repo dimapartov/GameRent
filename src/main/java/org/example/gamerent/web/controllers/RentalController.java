@@ -101,11 +101,13 @@ public class RentalController {
     public String getOwnerDashboardPage(@RequestParam(value = "pendingPage", defaultValue = "0") int pendingPage,
                                         @RequestParam(value = "activePage", defaultValue = "0") int activePage,
                                         @RequestParam(value = "returnPage", defaultValue = "0") int returnPage,
+                                        @RequestParam(value = "completedPage", defaultValue = "0") int completedPage,
                                         @RequestParam(value = "tab", defaultValue = "pending") String tab,
                                         Model model) {
         model.addAttribute("pendingRequests", rentalService.getPendingRequestsForOwner(pendingPage, pageSize));
         model.addAttribute("activeRentals", rentalService.getActiveRentalsForOwner(activePage, pageSize));
         model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner(returnPage, pageSize));
+        model.addAttribute("completedRentals", rentalService.getCompletedRentalsForOwner(completedPage, pageSize));
         model.addAttribute("currentTab", tab);
         return "rentals-owner-dashboard-page";
     }

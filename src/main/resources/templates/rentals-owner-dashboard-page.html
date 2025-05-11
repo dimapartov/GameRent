@@ -18,6 +18,7 @@
     <h1 class="mb-4">Кабинет владельца</h1>
 
     <ul class="nav nav-tabs">
+        <!-- Pending Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='pending'} ? ' active' : ''"
@@ -25,11 +26,13 @@
                    pendingPage=${pendingRequests.number},
                    activePage=${activeRentals.number},
                    returnPage=${pendingReturns.number},
+                   completedPage=${completedRentals.number},
                    tab='pending'
                )}">
                 Новые запросы
             </a>
         </li>
+        <!-- Active Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='active'} ? ' active' : ''"
@@ -37,11 +40,13 @@
                    pendingPage=${pendingRequests.number},
                    activePage=${activeRentals.number},
                    returnPage=${pendingReturns.number},
+                   completedPage=${completedRentals.number},
                    tab='active'
                )}">
                 Активные
             </a>
         </li>
+        <!-- Returns Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='returns'} ? ' active' : ''"
@@ -49,9 +54,24 @@
                    pendingPage=${pendingRequests.number},
                    activePage=${activeRentals.number},
                    returnPage=${pendingReturns.number},
+                   completedPage=${completedRentals.number},
                    tab='returns'
                )}">
                 Запросы на возврат
+            </a>
+        </li>
+        <!-- Completed Tab -->
+        <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${currentTab=='completed'} ? ' active' : ''"
+               th:href="@{/rental/owner/dashboard(
+                   pendingPage=${pendingRequests.number},
+                   activePage=${activeRentals.number},
+                   returnPage=${pendingReturns.number},
+                   completedPage=${completedRentals.number},
+                   tab='completed'
+               )}">
+                Завершённые
             </a>
         </li>
     </ul>
@@ -107,6 +127,7 @@
                                    pendingPage=${pendingRequests.number-1},
                                    activePage=${activeRentals.number},
                                    returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number},
                                    tab='pending'
                                )}">
                                 ‹ Назад
@@ -114,7 +135,8 @@
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Страница <span th:text="${pendingRequests.number+1}">1</span> из <span th:text="${pendingRequests.totalPages}">1</span>
+                                Страница <span th:text="${pendingRequests.number+1}">1</span>
+                                из <span th:text="${pendingRequests.totalPages}">1</span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!pendingRequests.hasNext()} ? ' disabled' : ''">
@@ -123,6 +145,7 @@
                                    pendingPage=${pendingRequests.number+1},
                                    activePage=${activeRentals.number},
                                    returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number},
                                    tab='pending'
                                )}">
                                 Вперёд ›
@@ -173,6 +196,7 @@
                                    pendingPage=${pendingRequests.number},
                                    activePage=${activeRentals.number-1},
                                    returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number},
                                    tab='active'
                                )}">
                                 ‹ Назад
@@ -180,7 +204,8 @@
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Страница <span th:text="${activeRentals.number+1}">1</span> из <span th:text="${activeRentals.totalPages}">1</span>
+                                Страница <span th:text="${activeRentals.number+1}">1</span>
+                                из <span th:text="${activeRentals.totalPages}">1</span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!activeRentals.hasNext()} ? ' disabled' : ''">
@@ -189,6 +214,7 @@
                                    pendingPage=${pendingRequests.number},
                                    activePage=${activeRentals.number+1},
                                    returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number},
                                    tab='active'
                                )}">
                                 Вперёд ›
@@ -244,6 +270,7 @@
                                    pendingPage=${pendingRequests.number},
                                    activePage=${activeRentals.number},
                                    returnPage=${pendingReturns.number-1},
+                                   completedPage=${completedRentals.number},
                                    tab='returns'
                                )}">
                                 ‹ Назад
@@ -251,7 +278,8 @@
                         </li>
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Страница <span th:text="${pendingReturns.number+1}">1</span> из <span th:text="${pendingReturns.totalPages}">1</span>
+                                Страница <span th:text="${pendingReturns.number+1}">1</span>
+                                из <span th:text="${pendingReturns.totalPages}">1</span>
                             </span>
                         </li>
                         <li class="page-item" th:classappend="${!pendingReturns.hasNext()} ? ' disabled' : ''">
@@ -260,7 +288,77 @@
                                    pendingPage=${pendingRequests.number},
                                    activePage=${activeRentals.number},
                                    returnPage=${pendingReturns.number+1},
+                                   completedPage=${completedRentals.number},
                                    tab='returns'
+                               )}">
+                                Вперёд ›
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="tab-pane fade"
+             th:classappend="${currentTab=='completed'} ? ' show active' : ''">
+            <div th:if="${completedRentals.content.empty}" class="alert alert-light">
+                Нет завершённых аренд.
+            </div>
+            <div th:if="${!completedRentals.content.empty}" class="table-card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Игра</th>
+                            <th>Арендатор</th>
+                            <th>Период</th>
+                            <th>Контакт</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="r : ${completedRentals.content}">
+                            <td th:text="${r.offerName}">Game</td>
+                            <td th:text="${r.renterUsername}">user</td>
+                            <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} — ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
+                                01.01.2025 — 05.01.2025
+                            </td>
+                            <td>
+                                <a th:href="'mailto:' + ${r.ownerContact}"
+                                   th:text="${r.ownerContact}">email</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${!completedRentals.hasPrevious()} ? ' disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number-1},
+                                   tab='completed'
+                               )}">
+                                ‹ Назад
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Страница <span th:text="${completedRentals.number+1}">1</span>
+                                из <span th:text="${completedRentals.totalPages}">1</span>
+                            </span>
+                        </li>
+                        <li class="page-item" th:classappend="${!completedRentals.hasNext()} ? ' disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/rental/owner/dashboard(
+                                   pendingPage=${pendingRequests.number},
+                                   activePage=${activeRentals.number},
+                                   returnPage=${pendingReturns.number},
+                                   completedPage=${completedRentals.number+1},
+                                   tab='completed'
                                )}">
                                 Вперёд ›
                             </a>

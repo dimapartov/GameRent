@@ -196,6 +196,25 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
+    public Page<RentalViewModel> getCompletedRentalsForOwner(int pageNumber, int pageSize) {
+        String rentalOwnerUsername = SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
+        Page<Rental> rentals = rentalRepository
+                .findByOfferOwnerUsernameAndStatus(
+                        rentalOwnerUsername,
+                        RentalStatus.RETURNED,
+                        pageSettings
+                );
+        return rentals.map(rental -> {
+            RentalViewModel vm = modelMapper.map(rental, RentalViewModel.class);
+            vm.setRenterUsername(rental.getRenter().getUsername());
+            vm.setOwnerContact(rental.getRenter().getEmail());
+            return vm;
+        });
+    }
+
+    @Override
     public void autoDeclineRentalRequest() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
         rentalRepository.findAllByStatusAndCreatedBefore(RentalStatus.PENDING_FOR_CONFIRM, cutoff)
