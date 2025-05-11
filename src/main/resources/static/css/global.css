@@ -1,4 +1,120 @@
+/* ----------------- ГЛОБАЛЬНЫЕ СТИЛИ ----------------- */
+
+/* фон и типографика */
 body {
     background: url('../images/background_image.png') no-repeat center center fixed;
     background-size: cover;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    color: #333;
+    margin: 0;
+}
+
+/* контейнеры для единых отступов */
+.main-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* ----------------- NAVBAR ----------------- */
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.navbar:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* ----------------- ТАБЫ ----------------- */
+
+.nav-tabs {
+    border-bottom: none;
+    margin-bottom: 0.5rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #fff;
+    color: #007bff;
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom-color: transparent;
+}
+
+/* ----------------- ТАБЛИЦЫ ----------------- */
+
+/* карточка вокруг таблицы */
+.table-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* hover-эффект строк */
+.table-hover tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* ----------------- КНОПКИ ----------------- */
+
+.btn {
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ----------------- КАРТОЧКИ БРЕНДОВ ----------------- */
+
+.card-accent {
+    border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.card-hover {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.brand-overlay {
+    position: absolute;
+    top: 0;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 0;
+}
+
+
+/* сброс фокуса в формах */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #007bff;
 }

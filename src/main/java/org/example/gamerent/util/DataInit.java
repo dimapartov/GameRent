@@ -1,4 +1,3 @@
-/*
 package org.example.gamerent.util;
 
 import com.github.javafaker.Faker;
@@ -105,7 +104,7 @@ public class DataInit implements CommandLineRunner {
 
     private void seedBrands() {
         Set<String> usedNames = new HashSet<>();
-        int uniqueBrandsAmount = 100;
+        int uniqueBrandsAmount = 24;
         while (usedNames.size() < uniqueBrandsAmount) {
             String brandName = faker.company().name();
             if (usedNames.add(brandName)) {
@@ -121,12 +120,12 @@ public class DataInit implements CommandLineRunner {
     private void seedOffers() {
         List<String> usernames = userRepository.findAll().stream().map(User::getUsername).collect(Collectors.toList());
         List<String> brandNames = brandService.getAllBrandsDTOs().stream().map(b -> b.getName()).collect(Collectors.toList());
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             String owner = usernames.get(0);
             offerService.seedOffer(model, owner);
         }
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 500; i++) {
             OfferCreationInputModel model = createRandomOfferModel(brandNames);
             String owner = usernames.get(1);
             offerService.seedOffer(model, owner);
@@ -149,7 +148,7 @@ public class DataInit implements CommandLineRunner {
         if (users.size() < 2) {
             throw new IllegalStateException("Должно быть как минимум 2 пользователя для генерации отзывов");
         }
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
             User reviewer = users.get(random.nextInt(users.size()));
             User reviewee;
             do {
@@ -172,7 +171,7 @@ public class DataInit implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         List<Offer> allOffers = offerRepository.findAll();
         List<RentalStatus> statuses = Arrays.asList(RentalStatus.values());
-        int perStatus = 250;  // по 250 заявок каждого статуса
+        int perStatus = 20;  // по 250 заявок каждого статуса
 
         for (User user : users) {
             // собираем только чужие офферы и копируем в изменяемый список
@@ -221,4 +220,4 @@ public class DataInit implements CommandLineRunner {
         }
     }
 
-}*/
+}

@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 
+@Indexed
 @Entity
 @Table(name = "offers")
-@Indexed
 public class Offer extends IdCreatedModified {
 
     private User owner;
@@ -41,7 +41,7 @@ public class Offer extends IdCreatedModified {
         return owner;
     }
 
-    @IndexedEmbedded
+    @IndexedEmbedded(includePaths = {"name"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
     public Brand getBrand() {

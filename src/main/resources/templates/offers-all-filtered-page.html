@@ -134,7 +134,7 @@
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${!offersPage.hasPrevious()}? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/offer/all(page=${offersPage.number - 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
+                   th:href="@{/offer/all(pageNumber=${offersPage.number - 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
                     ‹ Назад
                 </a>
             </li>
@@ -146,7 +146,7 @@
             </li>
             <li class="page-item" th:classappend="${!offersPage.hasNext()}? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/offer/all(page=${offersPage.number + 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
+                   th:href="@{/offer/all(pageNumber=${offersPage.number + 1},priceFrom=${filters.priceFrom},priceTo=${filters.priceTo},brand=${filters.brand},myOffers=${filters.myOffers},sortBy=${filters.sortBy},searchTerm=${filters.searchTerm})}">
                     Вперед ›
                 </a>
             </li>

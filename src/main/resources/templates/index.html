@@ -24,11 +24,7 @@
     <section class="py-5">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
             <div class="col" th:each="num : ${#numbers.sequence(1,8)}">
-                <img
-                        th:src="@{/images/image_{n}.png(n=${num})}"
-                        th:alt="'Изображение ' + ${num}"
-                        class="img-fluid rounded"
-                />
+                <img th:src="@{/images/image_{n}.png(n=${num})}" th:alt="'Изображение ' + ${num}" class="img-fluid rounded-4"/>
             </div>
         </div>
     </section>
