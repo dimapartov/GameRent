@@ -146,6 +146,18 @@ public class RentalServiceImpl implements RentalService {
         }
         rentalModel.setStatus(RentalStatus.PENDING_FOR_RETURN);
         rentalRepository.save(rentalModel);
+        String ownerEmail = rentalModel.getOffer().getOwner().getEmail();
+        String ownerUsername = rentalModel.getOffer().getOwner().getUsername();
+        String renterUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String subject = "Новый запрос на возврат вашей игры";
+        String body = String.format(
+                "Здравствуйте, %s!\n\nПользователь " +
+                        "%s отправил запрос на возврат вашей игры " +
+                        "\"%s\".\n\nПерейдите в личный кабинет, чтобы подтвердить или отклонить запрос.",
+                ownerUsername, renterUsername, rentalModel.getOffer().getGameName()
+        );
+        mailSenderService.sendSimpleMail(ownerEmail, subject, body);
+
     }
 
     @Override
@@ -159,6 +171,18 @@ public class RentalServiceImpl implements RentalService {
         Offer offerModel = rentalModel.getOffer();
         offerModel.setStatus(OfferStatus.AVAILABLE);
         offerRepository.save(offerModel);
+
+        String renterEmail = rentalModel.getRenter().getEmail();
+        String ownerUsername = rentalModel.getOffer().getOwner().getUsername();
+        String renterUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String subject = "Ваш запрос на возврат игры подтвержден";
+        String body = String.format(
+                "Здравствуйте, %s!\n\nПользователь " +
+                        "%s подтвердил ваш запрос на возврат игры " +
+                        "\"%s\".",
+                renterUsername, ownerUsername, rentalModel.getOffer().getGameName()
+        );
+        mailSenderService.sendSimpleMail(renterEmail, subject, body);
     }
 
     @Override
