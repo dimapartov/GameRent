@@ -130,6 +130,12 @@ public class RentalServiceImpl implements RentalService {
         Offer offerModel = rentalModel.getOffer();
         offerModel.setStatus(OfferStatus.RENTED);
         offerRepository.save(offerModel);
+        String subject = "Ваш запрос на аренду игры подтвержден";
+        String body = String.format(
+                "Здравствуйте, %s!\n\nПользователь %s подтвердил ваш запрос на аренду игры \"%s\" на %d дней.",
+                rentalModel.getRenter().getUsername(), offerModel.getOwner().getUsername(), offerModel.getGameName(), rentalModel.getDays()
+        );
+        mailSenderService.sendSimpleMail(rentalModel.getRenter().getEmail(), subject, body);
     }
 
     @Override
