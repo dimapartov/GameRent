@@ -71,7 +71,7 @@ public class RentalServiceImpl implements RentalService {
         offerRepository.save(offerModel);
 
         String ownerEmail = offerModel.getOwner().getEmail();
-        String subject = "Новый запрос на аренду вашего оффера";
+        String subject = "Новый запрос на аренду вашей игры";
         String body = String.format(
                 "Здравствуйте, %s!\n\nПользователь %s отправил запрос на аренду вашей игры \"%s\" " +
                         "на %d дней.\n\nПерейдите в личный кабинет, чтобы подтвердить или отклонить запрос.",
@@ -107,6 +107,13 @@ public class RentalServiceImpl implements RentalService {
         Offer offerModel = rentalModel.getOffer();
         offerModel.setStatus(OfferStatus.AVAILABLE);
         offerRepository.save(offerModel);
+
+        String subject = "Ваш запрос на аренду игры отклонен";
+        String body = String.format(
+                "Здравствуйте, %s!\n\nПользователь %s отклонил ваш запрос на аренду игры \"%s\" на %d дней.",
+                rentalModel.getRenter().getUsername(), offerModel.getOwner().getUsername(), offerModel.getGameName(), rentalModel.getDays()
+        );
+        mailSenderService.sendSimpleMail(rentalModel.getRenter().getEmail(), subject, body);
     }
 
     @Override
