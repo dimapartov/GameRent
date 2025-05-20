@@ -45,7 +45,7 @@
                 </li>
                 <li class="nav-item px-2" sec:authorize="isAuthenticated()">
                     <form th:action="@{/user/logout}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-outline-secondary nav-link text-nowrap">Выйти</button>
+                        <button type="submit" class="btn btn-link nav-link text-nowrap">Выйти</button>
                     </form>
                 </li>
             </ul>

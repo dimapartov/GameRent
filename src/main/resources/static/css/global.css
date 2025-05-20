@@ -99,3 +99,32 @@ body {
     box-shadow: none;
     border-color: #007bff;
 }
+
+/* 1. Задаём базовые стили и плавный переход цвета */
+.navbar-nav .nav-link {
+    color: #333;                     /* исходный цвет текста */
+    position: relative;              /* для псевдоэлементов, если понадобятся */
+    transition: color 0.3s ease;     /* плавность изменения цвета */
+}
+
+/* 2. Смена цвета текста при ховере */
+.navbar-nav .nav-link:hover {
+    color: #007bff;                  /* синий цвет Bootstrap */
+}
+
+/* 3. (опционально) Добавим снизу анимированную линию */
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -4px;                    /* отступ под текстом */
+    width: 0;
+    height: 2px;
+    background: #007bff;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+    left: 0;
+    width: 100%;
+}

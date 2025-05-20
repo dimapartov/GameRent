@@ -8,12 +8,6 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<section sec:authorize="isAuthenticated()"
-         class="alert alert-info mb-0 text-center"
-         role="alert">
-    Добро пожаловать, <span sec:authentication="name"></span>!
-</section>
-
 <main class="container main-container">
     <h1 class="mb-4">Кабинет владельца</h1>
 
