@@ -111,7 +111,11 @@ public class DataInit implements CommandLineRunner {
                 BrandCreationInputModel brandModel = new BrandCreationInputModel();
                 brandModel.setName(brandName);
                 brandModel.setDescription(faker.lorem().sentence());
-                brandModel.setPhoto("brand_logo.png");
+                Random random = new Random();
+                int randomNum = random.nextInt(1, 9);
+                // Формируем имя файла, соответствующее image_1.png … image_8.png
+                String randomPhoto = "image_" + randomNum + ".png";
+                brandModel.setPhoto(randomPhoto);
                 brandService.createBrand(brandModel);
             }
         }

@@ -1,3 +1,5 @@
+/* Global Styles */
+
 body {
     background: url('../images/background_image.png') no-repeat center center fixed;
     background-size: cover;
@@ -11,6 +13,8 @@ body {
     padding-bottom: 2rem;
 }
 
+/* Navbar */
+
 .navbar {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -20,6 +24,36 @@ body {
 .navbar:hover {
     background-color: rgba(255, 255, 255, 0.95);
 }
+
+/* Nav-link hover underline animation */
+
+.navbar-nav .nav-link {
+    color: #333;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff;
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: #007bff;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+    left: 0;
+    width: 100%;
+}
+
+/* Tabs */
 
 .nav-tabs {
     border-bottom: none;
@@ -44,6 +78,8 @@ body {
     border-bottom-color: transparent;
 }
 
+/* Table Cards */
+
 .table-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 0.5rem;
@@ -60,14 +96,30 @@ body {
     background-color: rgba(0, 123, 255, 0.05);
 }
 
+/* Buttons */
+
+/* Default btn transition */
 .btn {
     transition: transform 0.1s, box-shadow 0.1s;
 }
 
-.btn:hover {
+/* Apply lift-and-shadow effect only to non-`btn-link` buttons */
+.btn:not(.btn-link):hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* Override `btn-link.nav-link` hover/focus to remove background, border, shadow */
+.btn-link.nav-link:hover,
+.btn-link.nav-link:focus {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+    text-decoration: underline;
+}
+
+/* Cards */
 
 .card-accent {
     border: none;
@@ -85,46 +137,48 @@ body {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
+/* Brand Overlay (gradient on image) */
+
 .brand-overlay {
     position: absolute;
     top: 0;
-    bottom: auto;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 0.5rem 0;
+    height: 200px;                /* match <img style="height:200px"> */
+    display: flex;
+    align-items: flex-end;        /* place text at bottom */
+    padding: 0.75rem 1rem;
+    background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.7),
+            rgba(0, 0, 0, 0)
+    );
+    transition: background 0.3s ease;
+    pointer-events: none;         /* allow clicks through overlay */
 }
+
+.brand-overlay h6 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.5px;
+    pointer-events: auto;         /* if you ever need to make the title clickable */
+}
+
+/* Darken overlay further on card hover */
+.card-hover:hover .brand-overlay {
+    background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.85),
+            rgba(0, 0, 0, 0)
+    );
+}
+
+/* Form Controls */
 
 .form-control:focus {
     box-shadow: none;
     border-color: #007bff;
-}
-
-/* 1. Задаём базовые стили и плавный переход цвета */
-.navbar-nav .nav-link {
-    color: #333;                     /* исходный цвет текста */
-    position: relative;              /* для псевдоэлементов, если понадобятся */
-    transition: color 0.3s ease;     /* плавность изменения цвета */
-}
-
-/* 2. Смена цвета текста при ховере */
-.navbar-nav .nav-link:hover {
-    color: #007bff;                  /* синий цвет Bootstrap */
-}
-
-/* 3. (опционально) Добавим снизу анимированную линию */
-.navbar-nav .nav-link::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -4px;                    /* отступ под текстом */
-    width: 0;
-    height: 2px;
-    background: #007bff;
-    transition: width 0.3s ease, left 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover::after {
-    left: 0;
-    width: 100%;
 }
