@@ -112,10 +112,11 @@
                            id="offerPhoto"
                            th:field="*{offerPhoto}"
                            required
-                           th:classappend="${#fields.hasErrors('photoProvided')} ? 'is-invalid'">
+                           accept=".jpg,.jpeg,.png"
+                           th:classappend="${#fields.hasErrors('offerPhoto')} ? 'is-invalid'">
                     <div class="invalid-feedback"
-                         th:if="${#fields.hasErrors('photoProvided')}"
-                         th:errors="*{photoProvided}">
+                         th:if="${#fields.hasErrors('offerPhoto')}"
+                         th:errors="*{offerPhoto}">
                     </div>
                 </div>
                 <div class="col-12 text-center">
