@@ -8,16 +8,9 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<section sec:authorize="isAuthenticated()"
-         class="alert alert-info mb-0 text-center"
-         role="alert">
-    Добро пожаловать, <span sec:authentication="name"></span>!
-</section>
-
-<main class="container main-container">
+<main class="container my-5">
     <h1 class="mb-4">Мои аренды</h1>
 
-    <!-- Навигационные табы -->
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link"
@@ -112,16 +105,13 @@
     </ul>
 
     <div class="tab-content">
-
-        <!-- Pending for confirm -->
+        <!-- 1. Ожидают подтверждения -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='pendingForConfirm'} ? ' show active' : ''">
-            <div th:if="${pendingRentals.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${pendingRentals.content.empty}" class="alert alert-light">
                 Нет заявок.
             </div>
-            <div th:if="${!pendingRentals.content.empty}"
-                 class="table-card">
+            <div th:if="${!pendingRentals.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -141,14 +131,9 @@
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
                                 <form th:action="@{/rental/{id}/cancel(id=${r.rentalId})}"
-                                      method="post"
-                                      class="d-inline">
-                                    <input type="hidden"
-                                           name="tab"
-                                           th:value="${currentTab}"/>
-                                    <button class="btn btn-sm btn-warning">
-                                        Отменить
-                                    </button>
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="tab" th:value="${currentTab}"/>
+                                    <button class="btn btn-sm btn-warning">Отменить</button>
                                 </form>
                             </td>
                         </tr>
@@ -172,8 +157,8 @@
                         </li>
                         <li class="page-item disabled">
                                 <span class="page-link">
-                                    Стр. <span th:text="${pendingRentals.number+1}"></span> из <span
-                                        th:text="${pendingRentals.totalPages}"></span>
+                                    Стр. <span th:text="${pendingRentals.number+1}"></span> из
+                                    <span th:text="${pendingRentals.totalPages}"></span>
                                 </span>
                         </li>
                         <li class="page-item"
@@ -194,15 +179,13 @@
             </div>
         </div>
 
-        <!-- Active -->
+        <!-- 2. Активные -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='active'} ? ' show active' : ''">
-            <div th:if="${activeRentals.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${activeRentals.content.empty}" class="alert alert-light">
                 Нет активных.
             </div>
-            <div th:if="${!activeRentals.content.empty}"
-                 class="table-card">
+            <div th:if="${!activeRentals.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -220,18 +203,14 @@
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
-                                <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                                <a th:href="'mailto:' + ${r.ownerContact}"
+                                   th:text="${r.ownerContact}"></a>
                             </td>
                             <td>
                                 <form th:action="@{/rental/{id}/return(id=${r.rentalId})}"
-                                      method="post"
-                                      class="d-inline">
-                                    <input type="hidden"
-                                           name="tab"
-                                           th:value="${currentTab}"/>
-                                    <button class="btn btn-sm btn-primary">
-                                        Вернуть
-                                    </button>
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="tab" th:value="${currentTab}"/>
+                                    <button class="btn btn-sm btn-primary">Вернуть</button>
                                 </form>
                             </td>
                         </tr>
@@ -255,8 +234,8 @@
                         </li>
                         <li class="page-item disabled">
                                 <span class="page-link">
-                                    Стр. <span th:text="${activeRentals.number+1}"></span> из <span
-                                        th:text="${activeRentals.totalPages}"></span>
+                                    Стр. <span th:text="${activeRentals.number+1}"></span> из
+                                    <span th:text="${activeRentals.totalPages}"></span>
                                 </span>
                         </li>
                         <li class="page-item"
@@ -277,15 +256,13 @@
             </div>
         </div>
 
-        <!-- Returned -->
+        <!-- 3. Возвращённые -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='returned'} ? ' show active' : ''">
-            <div th:if="${returnedRentals.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${returnedRentals.content.empty}" class="alert alert-light">
                 Нет возвращённых.
             </div>
-            <div th:if="${!returnedRentals.content.empty}"
-                 class="table-card">
+            <div th:if="${!returnedRentals.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -302,7 +279,8 @@
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
-                                <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                                <a th:href="'mailto:' + ${r.ownerContact}"
+                                   th:text="${r.ownerContact}"></a>
                             </td>
                         </tr>
                         </tbody>
@@ -325,8 +303,8 @@
                         </li>
                         <li class="page-item disabled">
                                 <span class="page-link">
-                                    Стр. <span th:text="${returnedRentals.number+1}"></span> из <span
-                                        th:text="${returnedRentals.totalPages}"></span>
+                                    Стр. <span th:text="${returnedRentals.number+1}"></span> из
+                                    <span th:text="${returnedRentals.totalPages}"></span>
                                 </span>
                         </li>
                         <li class="page-item"
@@ -347,15 +325,13 @@
             </div>
         </div>
 
-        <!-- Pending for return -->
+        <!-- 4. Ожидают возврата -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='pendingForReturn'} ? ' show active' : ''">
-            <div th:if="${pendingReturnRentals.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${pendingReturnRentals.content.empty}" class="alert alert-light">
                 Нет ожидающих возврата.
             </div>
-            <div th:if="${!pendingReturnRentals.content.empty}"
-                 class="table-card">
+            <div th:if="${!pendingReturnRentals.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -395,10 +371,10 @@
                                    )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
-                            <span class="page-link">
-                                Стр. <span th:text="${pendingReturnRentals.number+1}"></span> из <span
-                                    th:text="${pendingReturnRentals.totalPages}"></span>
-                            </span>
+                                <span class="page-link">
+                                    Стр. <span th:text="${pendingReturnRentals.number+1}"></span> из
+                                    <span th:text="${pendingReturnRentals.totalPages}"></span>
+                                </span>
                         </li>
                         <li class="page-item"
                             th:classappend="${!pendingReturnRentals.hasNext()} ? ' disabled' : ''">
@@ -418,15 +394,13 @@
             </div>
         </div>
 
-        <!-- Canceled by renter -->
+        <!-- 5. Отменённые арендатором -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='canceledByRenter'} ? ' show active' : ''">
-            <div th:if="${canceledByRenter.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${canceledByRenter.content.empty}" class="alert alert-light">
                 Нет отменённых арендатором.
             </div>
-            <div th:if="${!canceledByRenter.content.empty}"
-                 class="table-card">
+            <div th:if="${!canceledByRenter.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -466,10 +440,10 @@
                                    )}">‹ Назад</a>
                         </li>
                         <li class="page-item disabled">
-                            <span class="page-link">
-                                Стр. <span th:text="${canceledByRenter.number+1}"></span> из <span
-                                    th:text="${canceledByRenter.totalPages}"></span>
-                            </span>
+                                <span class="page-link">
+                                    Стр. <span th:text="${canceledByRenter.number+1}"></span> из
+                                    <span th:text="${canceledByRenter.totalPages}"></span>
+                                </span>
                         </li>
                         <li class="page-item"
                             th:classappend="${!canceledByRenter.hasNext()} ? ' disabled' : ''">
@@ -489,15 +463,13 @@
             </div>
         </div>
 
-        <!-- Canceled by owner -->
+        <!-- 6. Отклонённые владельцем -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='canceledByOwner'} ? ' show active' : ''">
-            <div th:if="${canceledByOwner.content.empty}"
-                 class="alert alert-light">
+            <div th:if="${canceledByOwner.content.empty}" class="alert alert-light">
                 Нет отклонённых владельцем.
             </div>
-            <div th:if="${!canceledByOwner.content.empty}"
-                 class="table-card">
+            <div th:if="${!canceledByOwner.content.empty}" class="table-card">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -514,7 +486,8 @@
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
-                                <a th:href="'mailto:' + ${r.ownerContact}" th:text="${r.ownerContact}"></a>
+                                <a th:href="'mailto:' + ${r.ownerContact}"
+                                   th:text="${r.ownerContact}"></a>
                             </td>
                         </tr>
                         </tbody>
@@ -537,8 +510,8 @@
                         </li>
                         <li class="page-item disabled">
                                 <span class="page-link">
-                                    Стр. <span th:text="${canceledByOwner.number+1}"></span> из <span
-                                        th:text="${canceledByOwner.totalPages}"></span>
+                                    Стр. <span th:text="${canceledByOwner.number+1}"></span> из
+                                    <span th:text="${canceledByOwner.totalPages}"></span>
                                 </span>
                         </li>
                         <li class="page-item"
@@ -558,7 +531,6 @@
                 </nav>
             </div>
         </div>
-
     </div>
 </main>
 

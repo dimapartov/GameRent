@@ -8,7 +8,7 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-8 col-lg-6 offer-form">
             <h1 class="text-center mb-4">Создать объявление</h1>
             <form th:action="@{/offer/create}"
                   th:object="${newOfferInputModel}"
@@ -112,10 +112,11 @@
                            id="offerPhoto"
                            th:field="*{offerPhoto}"
                            required
-                           th:classappend="${#fields.hasErrors('photoProvided')} ? 'is-invalid'">
+                           accept=".jpg,.jpeg,.png"
+                           th:classappend="${#fields.hasErrors('offerPhoto')} ? 'is-invalid'">
                     <div class="invalid-feedback"
-                         th:if="${#fields.hasErrors('photoProvided')}"
-                         th:errors="*{photoProvided}">
+                         th:if="${#fields.hasErrors('offerPhoto')}"
+                         th:errors="*{offerPhoto}">
                     </div>
                 </div>
                 <div class="col-12 text-center">

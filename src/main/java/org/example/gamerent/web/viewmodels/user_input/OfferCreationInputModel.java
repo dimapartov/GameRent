@@ -1,6 +1,7 @@
 package org.example.gamerent.web.viewmodels.user_input;
 
 import jakarta.validation.constraints.*;
+import org.example.gamerent.util.validation.offer_image_file.ImageFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 
 public class OfferCreationInputModel {
 
+    @ImageFile(message = "Пожалуйста, загрузите фото настольной игры в формате JPEG или PNG")
     private MultipartFile offerPhoto;
 
     @NotBlank(message = "Введите описание. Постарайтесь как можно детальнее описать игру")
@@ -30,11 +32,6 @@ public class OfferCreationInputModel {
     @NotNull(message = "Введите максимальное количество дней аренды")
     @Min(value = 1, message = "Количество дней аренды должно быть больше или равно 1")
     private Integer maxRentalDays;
-
-    @AssertTrue(message = "Пожалуйста, загрузите фото настольной игры")
-    public boolean isPhotoProvided() {
-        return offerPhoto != null && !offerPhoto.isEmpty();
-    }
 
     @AssertTrue(message = "Минимальное количество дней аренды не может быть больше или равно максимальному")
     public boolean isValidRentalDaysRange() {

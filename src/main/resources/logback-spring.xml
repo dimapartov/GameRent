@@ -22,7 +22,7 @@
                 </stackTrace>
             </providers>
         </encoder>
-        <destination>logstash:5044</destination>
+        <destination>localhost:5044</destination>
     </appender>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

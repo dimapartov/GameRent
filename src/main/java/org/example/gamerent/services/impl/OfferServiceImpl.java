@@ -71,18 +71,15 @@ public class OfferServiceImpl implements OfferService {
         this.brandRepository = brandRepository;
     }
 
-
-    //    Для инициализации данных
+    // Для инициализации
     @Override
     public void seedOffer(OfferCreationInputModel newOfferInputModel, String offerOwnerUsername) {
         Offer offerModel = modelMapper.map(newOfferInputModel, Offer.class);
         offerModel.setId(null);
         Brand brandModel = brandRepository.findBrandByName(newOfferInputModel.getBrand()).orElseThrow(() -> new RuntimeException("Бренд не найден"));
         offerModel.setBrand(brandModel);
-        // Выбираем случайный номер от 1 до 8 включительно
         Random random = new Random();
         int randomNum = random.nextInt(1, 9);
-        // Формируем имя файла, соответствующее image_1.png … image_8.png
         String randomPhoto = "image_" + randomNum + ".png";
         offerModel.setPhoto(randomPhoto);
         offerModel.setMinRentalDays(newOfferInputModel.getMinRentalDays());

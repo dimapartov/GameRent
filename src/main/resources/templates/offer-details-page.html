@@ -1,87 +1,73 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Детали оффера</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<head th:replace="~{fragments/head :: head}">
+    <title>Информация об объявлении</title>
 </head>
 <body>
-
-<!-- Navbar -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-
 <main class="container my-5">
-
-    <!-- Заголовок -->
     <h1 class="mb-4" th:text="${offer.brandName + ' ' + offer.gameName}">Название игры</h1>
-
     <div class="row">
-        <!-- Изображение -->
         <div class="col-md-4 mb-4">
             <img th:src="@{'/images/' + ${offer.photo}}"
                  alt="Фото оффера"
                  class="img-fluid rounded">
         </div>
-
-        <!-- Детали -->
         <div class="col-md-8">
-
             <dl class="row">
                 <dt class="col-sm-4">Описание</dt>
                 <dd class="col-sm-8" th:text="${offer.description}"></dd>
-
                 <dt class="col-sm-4">Цена в день</dt>
                 <dd class="col-sm-8">
                     <span th:text="${offer.price}"></span> ₽
                 </dd>
-
                 <dt class="col-sm-4">Срок аренды</dt>
                 <dd class="col-sm-8">
-                    от <span th:text="${offer.minRentalDays}"></span> до <span th:text="${offer.maxRentalDays}"></span> дней
+                    от <span th:text="${offer.minRentalDays}"></span> до <span th:text="${offer.maxRentalDays}"></span>
+                    дней
                 </dd>
-
                 <dt class="col-sm-4">Статус</dt>
                 <dd class="col-sm-8" th:text="${offer.status}"></dd>
             </dl>
-
-            <!-- Действия владельца -->
             <div sec:authorize="isAuthenticated()">
                 <div th:if="${offer.ownerUsername == #authentication.name}">
-                    <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}" class="mb-3">
+                    <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}"
+                         class="mb-3">
                         <button id="editBtn" class="btn btn-outline-secondary me-2">Редактировать</button>
                         <form th:action="@{'/offer/' + ${offer.id} + '/delete'}" method="post" class="d-inline">
                             <button class="btn btn-outline-danger">Удалить</button>
                         </form>
                     </div>
-                    <div th:if="${offer.status != T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}" class="alert alert-warning p-2">
+                    <div th:if="${offer.status != T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}"
+                         class="alert alert-warning p-2">
                         Оффер в аренде — изменение и удаление невозможно
                     </div>
                 </div>
             </div>
-
-            <!-- Форма аренды для не-владельцев -->
             <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}">
-                <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername != #authentication.name}" class="mb-3">
+                <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername != #authentication.name}"
+                     class="mb-3">
                     <form th:action="@{/rental/create}" th:object="${rentalInput}" method="post">
                         <input type="hidden" th:field="*{offerId}"/>
                         <div class="mb-2">
                             <label class="form-label">Дней аренды</label>
                             <input type="number" th:field="*{days}" class="form-control">
-                            <div th:if="${#fields.hasErrors('days')}" th:errors="*{days}" class="invalid-feedback d-block"></div>
+                            <div th:if="${#fields.hasErrors('days')}" th:errors="*{days}"
+                                 class="invalid-feedback d-block"></div>
                         </div>
                         <button type="submit" class="btn btn-success">Арендовать</button>
                     </form>
                 </div>
-                <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername == #authentication.name}" class="text-muted">
+                <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername == #authentication.name}"
+                     class="text-muted">
                     Вы не можете арендовать свой оффер.
                 </div>
                 <div sec:authorize="!isAuthenticated()">
                     <a th:href="@{/login}">Войдите</a>, чтобы арендовать оффер.
                 </div>
             </div>
-
-            <!-- Инфо о владельце -->
             <p class="mt-4">
                 <strong>Владелец:</strong>
                 <span th:text="${offer.ownerFirstName + ' ' + offer.ownerLastName}">Имя Фамилия</span>
@@ -91,16 +77,11 @@
                     Смотреть отзывы
                 </a>
             </p>
-
-            <!-- Уведомления -->
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
         </div>
     </div>
 </main>
-
-<!-- Модальное окно -->
 <div id="editModal"
      th:object="${offerUpdateInputModel}"
      th:attr="style=
@@ -110,48 +91,45 @@
            'display:none;position:fixed;top:20%;left:30%;width:40%;background:#fff;padding:1.5rem;box-shadow:0 0 10px rgba(0,0,0,0.5);z-index:1000;'">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <form th:action="@{'/offer/' + ${offer.id} + '/edit'}" method="post" class="p-4">
-
                 <div class="mb-3">
                     <label class="form-label">Описание</label>
                     <textarea th:field="*{description}" rows="3" class="form-control"></textarea>
-                    <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="invalid-feedback d-block"></div>
+                    <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
+                         class="invalid-feedback d-block"></div>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Цена в день</label>
                     <input type="number" step="0.01" th:field="*{price}" class="form-control">
-                    <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="invalid-feedback d-block"></div>
+                    <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}"
+                         class="invalid-feedback d-block"></div>
                 </div>
-
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">Мин. дней</label>
                         <input type="number" th:field="*{minRentalDays}" class="form-control">
-                        <div th:if="${#fields.hasErrors('minRentalDays')}" th:errors="*{minRentalDays}" class="invalid-feedback d-block"></div>
+                        <div th:if="${#fields.hasErrors('minRentalDays')}" th:errors="*{minRentalDays}"
+                             class="invalid-feedback d-block"></div>
                     </div>
                     <div class="col">
                         <label class="form-label">Макс. дней</label>
                         <input type="number" th:field="*{maxRentalDays}" class="form-control">
-                        <div th:if="${#fields.hasErrors('maxRentalDays')}" th:errors="*{maxRentalDays}" class="invalid-feedback d-block"></div>
+                        <div th:if="${#fields.hasErrors('maxRentalDays')}" th:errors="*{maxRentalDays}"
+                             class="invalid-feedback d-block"></div>
                     </div>
                 </div>
-                <div th:if="${#fields.hasErrors('validRentalDaysRange')}" th:errors="*{validRentalDaysRange}" class="invalid-feedback d-block mb-3"></div>
-
+                <div th:if="${#fields.hasErrors('validRentalDaysRange')}" th:errors="*{validRentalDaysRange}"
+                     class="invalid-feedback d-block mb-3"></div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2">Сохранить</button>
                     <button type="button" id="cancelEdit" class="btn btn-secondary">Отмена</button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-    // Открытие/закрытие модалки
     document.getElementById('editBtn')?.addEventListener('click', () => {
         document.getElementById('editModal').style.display = 'block';
     });

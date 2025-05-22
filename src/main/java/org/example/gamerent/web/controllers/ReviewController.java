@@ -91,11 +91,9 @@ public class ReviewController {
         reviewService.deleteReviewById(id);
 
         if (revieweeUsername != null && !revieweeUsername.isBlank()) {
-            // back to the “about user” page we came from
             return "redirect:/reviews/about/" + revieweeUsername + "?page=" + page + "&sortBy=" + sortBy;
         }
 
-        // otherwise, default to your own reviews
         return "redirect:/reviews/my?page=" + page + "&sortBy=" + sortBy;
     }
 
