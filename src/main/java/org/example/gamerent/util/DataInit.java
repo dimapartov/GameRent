@@ -114,7 +114,6 @@ public class DataInit implements CommandLineRunner {
                 brandModel.setDescription(faker.lorem().sentence());
                 Random random = new Random();
                 int randomNum = random.nextInt(1, 9);
-                // Формируем имя файла, соответствующее image_1.png … image_8.png
                 String randomPhoto = "image_" + randomNum + ".png";
                 brandModel.setPhoto(randomPhoto);
                 brandService.createBrand(brandModel);
@@ -176,41 +175,33 @@ public class DataInit implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         List<Offer> allOffers = offerRepository.findAll();
         List<RentalStatus> statuses = Arrays.asList(RentalStatus.values());
-        int perStatus = 20;  // по 250 заявок каждого статуса
+        int perStatus = 20;
 
         for (User user : users) {
-            // собираем только чужие офферы и копируем в изменяемый список
             List<Offer> availableOffers = allOffers.stream()
                     .filter(o -> !o.getOwner().getUsername().equals(user.getUsername()))
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            // если нужно рандомизировать порядок офферов разом
             Collections.shuffle(availableOffers);
 
             for (RentalStatus status : statuses) {
                 for (int i = 0; i < perStatus; i++) {
-                    // если офферы закончились — прерываем цикл
                     if (availableOffers.isEmpty()) {
                         break;
                     }
 
-                    // берём последний оффер из списка (или любой другой способ)
                     Offer offer = availableOffers.remove(availableOffers.size() - 1);
 
-                    // случайная длительность в рамках min/max
                     int days = random.nextInt(offer.getMinRentalDays(), offer.getMaxRentalDays() + 1);
 
-                    // создаём даты начала и конца
                     LocalDateTime start = LocalDateTime.now();
                     LocalDateTime end = start.plusDays(days);
 
-                    // DTO → сущность через ModelMapper
                     RentalRequestInputModel req = new RentalRequestInputModel();
                     req.setOfferId(offer.getId());
                     req.setDays(days);
                     Rental rental = modelMapper.map(req, Rental.class);
                     rental.setId(null);
-                    // дополняем остальные поля
                     rental.setOffer(offer);
                     rental.setRenter(user);
                     rental.setStartDate(start);
@@ -219,7 +210,6 @@ public class DataInit implements CommandLineRunner {
 
                     rentalRepository.save(rental);
                 }
-                // после каждого статуса можно, при желании, заново перемешать оставшиеся офферы
                 Collections.shuffle(availableOffers);
             }
         }

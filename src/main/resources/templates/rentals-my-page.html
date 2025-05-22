@@ -7,11 +7,8 @@
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-
 <main class="container main-container">
     <h1 class="mb-4">Мои аренды</h1>
-
-    <!-- Навигационные табы -->
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link"
@@ -104,10 +101,7 @@
             </a>
         </li>
     </ul>
-
     <div class="tab-content">
-
-        <!-- Pending for confirm -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='pendingForConfirm'} ? ' show active' : ''">
             <div th:if="${pendingRentals.content.empty}"
@@ -187,8 +181,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Active -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='active'} ? ' show active' : ''">
             <div th:if="${activeRentals.content.empty}"
@@ -270,8 +262,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Returned -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='returned'} ? ' show active' : ''">
             <div th:if="${returnedRentals.content.empty}"
@@ -340,8 +330,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Pending for return -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='pendingForReturn'} ? ' show active' : ''">
             <div th:if="${pendingReturnRentals.content.empty}"
@@ -411,8 +399,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Canceled by renter -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='canceledByRenter'} ? ' show active' : ''">
             <div th:if="${canceledByRenter.content.empty}"
@@ -482,8 +468,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Canceled by owner -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='canceledByOwner'} ? ' show active' : ''">
             <div th:if="${canceledByOwner.content.empty}"
@@ -552,10 +536,8 @@
                 </nav>
             </div>
         </div>
-
     </div>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

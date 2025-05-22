@@ -7,12 +7,9 @@
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-
 <main class="container main-container">
     <h1 class="mb-4">Кабинет владельца</h1>
-
     <ul class="nav nav-tabs">
-        <!-- Pending Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='pending'} ? ' active' : ''"
@@ -26,7 +23,6 @@
                 Новые запросы
             </a>
         </li>
-        <!-- Active Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='active'} ? ' active' : ''"
@@ -40,7 +36,6 @@
                 Активные
             </a>
         </li>
-        <!-- Returns Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='returns'} ? ' active' : ''"
@@ -54,7 +49,6 @@
                 Запросы на возврат
             </a>
         </li>
-        <!-- Completed Tab -->
         <li class="nav-item">
             <a class="nav-link"
                th:classappend="${currentTab=='completed'} ? ' active' : ''"
@@ -69,10 +63,7 @@
             </a>
         </li>
     </ul>
-
     <div class="tab-content">
-
-        <!-- Pending -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='pending'} ? ' show active' : ''">
             <div th:if="${pendingRequests.content.empty}" class="alert alert-light">
@@ -149,8 +140,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Active -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='active'} ? ' show active' : ''">
             <div th:if="${activeRentals.content.empty}" class="alert alert-light">
@@ -218,8 +207,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Returns -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='returns'} ? ' show active' : ''">
             <div th:if="${pendingReturns.content.empty}" class="alert alert-light">
@@ -292,8 +279,6 @@
                 </nav>
             </div>
         </div>
-
-        <!-- Completed -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='completed'} ? ' show active' : ''">
             <div th:if="${completedRentals.content.empty}" class="alert alert-light">
@@ -361,10 +346,8 @@
                 </nav>
             </div>
         </div>
-
     </div>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
