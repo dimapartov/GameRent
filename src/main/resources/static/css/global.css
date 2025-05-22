@@ -5,26 +5,32 @@ body {
     color: #333;
     margin: 0;
 }
+
 .main-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
 }
+
 .navbar {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 }
+
 .navbar:hover {
     background-color: rgba(255, 255, 255, 0.95);
 }
+
 .navbar-nav .nav-link {
     color: #333;
     position: relative;
     transition: color 0.3s ease;
 }
+
 .navbar-nav .nav-link:hover {
     color: #007bff;
 }
+
 .navbar-nav .nav-link::after {
     content: "";
     position: absolute;
@@ -35,22 +41,27 @@ body {
     background: #007bff;
     transition: width 0.3s ease, left 0.3s ease;
 }
+
 .navbar-nav .nav-link:hover::after {
     left: 0;
     width: 100%;
 }
+
 .nav-tabs {
     border-bottom: none;
 }
+
 .nav-tabs .nav-link {
     border: none;
     border-radius: 0.5rem 0.5rem 0 0;
     padding: 0.75rem 1.25rem;
     transition: background-color 0.3s, color 0.3s;
 }
+
 .nav-tabs .nav-link:hover {
     background-color: rgba(0, 123, 255, 0.1);
 }
+
 .nav-tabs .nav-link.active {
     background-color: #fff;
     color: #007bff;
@@ -58,6 +69,7 @@ body {
     border: 1px solid #dee2e6;
     border-bottom-color: transparent;
 }
+
 .table-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 0.5rem;
@@ -65,19 +77,24 @@ body {
     padding: 1rem;
     margin-bottom: 1.5rem;
 }
+
 .table-hover tbody tr {
     transition: background-color 0.2s;
 }
+
 .table-hover tbody tr:hover {
     background-color: rgba(0, 123, 255, 0.05);
 }
+
 .btn {
     transition: transform 0.1s, box-shadow 0.1s;
 }
+
 .btn:not(.btn-link):hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 .btn-link.nav-link:hover,
 .btn-link.nav-link:focus {
     background-color: transparent !important;
@@ -86,19 +103,23 @@ body {
     transform: none !important;
     text-decoration: underline;
 }
+
 .card-accent {
-    border: none;
+    border: 1px solid #dee2e6;
     border-radius: 0.75rem;
     overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
+
 .card-hover {
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .card-hover:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
+
 .brand-overlay {
     position: absolute;
     top: 0;
@@ -116,6 +137,7 @@ body {
     transition: background 0.3s ease;
     pointer-events: none;
 }
+
 .brand-overlay h6 {
     margin: 0;
     color: #fff;
@@ -125,32 +147,30 @@ body {
     letter-spacing: 0.5px;
     pointer-events: auto;
 }
-.card-hover:hover .brand-overlay {
-    background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 0.85),
-            rgba(0, 0, 0, 0)
-    );
-}
+
 .form-control:focus {
     box-shadow: none;
     border-color: #007bff;
 }
+
 form.row.g-3.mb-4 {
     background-color: #ffffff;
     border-radius: 0.5rem;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.row.g-4.justify-content-center .card {
+
+.row.g-4 .card {
     border-radius: 0.75rem;
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
 }
-.row.g-4.justify-content-center .card:hover {
+
+.row.g-4 .card:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
+
 main.container.my-5 {
     background-color: #ffffff;
     border-radius: 0.75rem;
