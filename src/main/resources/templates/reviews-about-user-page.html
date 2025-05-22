@@ -77,13 +77,13 @@
                 <div class="d-flex justify-content-between mb-2">
                     <div>
                         <strong th:text="${rev.fullName}">Имя Фамилия</strong>
-                        <small class="text-muted">
-                            (<span th:text="${rev.username}">username</span>) —
+
+                        <strong th:text="${rev.username}">username</strong> —
+                        <small>
                             <span th:text="${rev.rating}">0</span>/5,
-                            <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}">
-                                    01.01.2025
-                                </span>
+                            <span th:text="${#temporals.format(rev.created,'dd.MM.yyyy')}"> 01.01.2025</span>
                         </small>
+
                     </div>
                     <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
                           method="post"

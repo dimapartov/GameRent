@@ -180,8 +180,16 @@ main.container.my-5 {
 }
 
 .offer-form {
-    background-color: #ffffff;      /* белый фон */
-    border-radius: 0.75rem;         /* скруглённые углы */
-    padding: 1.5rem;                /* внутренние отступы */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* лёгкая тень */
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-section {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
 }
