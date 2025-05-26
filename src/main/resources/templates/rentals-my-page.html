@@ -125,7 +125,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${pendingRentals.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${r.days}"></td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
@@ -199,7 +202,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${activeRentals.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
@@ -275,7 +281,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${returnedRentals.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
@@ -344,7 +353,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${pendingReturnRentals.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
@@ -413,7 +425,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${canceledByRenter.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
@@ -462,7 +477,6 @@
                 </nav>
             </div>
         </div>
-
         <!-- 6. Отклонённые владельцем -->
         <div class="tab-pane fade"
              th:classappend="${currentTab=='canceledByOwner'} ? ' show active' : ''">
@@ -482,7 +496,10 @@
                         </thead>
                         <tbody>
                         <tr th:each="r : ${canceledByOwner.content}">
-                            <td th:text="${r.offerName}"></td>
+                            <td>
+                                <a th:href="@{/offer/{id}(id=${r.offerId})}"
+                                   th:text="${r.offerName}"></a>
+                            </td>
                             <td th:text="${#temporals.format(r.startDate,'dd.MM.yyyy')}"></td>
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>

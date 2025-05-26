@@ -196,6 +196,7 @@ public class RentalServiceImpl implements RentalService {
             RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
             rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
             rentalViewModel.setDays(rental.getDays());
+            rentalViewModel.setOfferId(rental.getOffer().getId());
             return rentalViewModel;
         });
     }
@@ -210,6 +211,7 @@ public class RentalServiceImpl implements RentalService {
         return rentals.map(rental -> {
             RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
             rentalViewModel.setOwnerContact(rental.getOffer().getOwner().getEmail());
+            rentalViewModel.setOfferId(rental.getOffer().getId());
             if (rental.getStatus() == RentalStatus.PENDING_FOR_CONFIRM) {
                 rentalViewModel.setDays(rental.getDays());
             }
@@ -228,6 +230,7 @@ public class RentalServiceImpl implements RentalService {
             RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
             rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
             rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            rentalViewModel.setOfferId(rental.getOffer().getId());
             return rentalViewModel;
         });
     }
@@ -243,6 +246,7 @@ public class RentalServiceImpl implements RentalService {
             RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
             rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
             rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            rentalViewModel.setOfferId(rental.getOffer().getId());
             return rentalViewModel;
         });
     }
@@ -252,17 +256,13 @@ public class RentalServiceImpl implements RentalService {
         String rentalOwnerUsername = SecurityContextHolder
                 .getContext().getAuthentication().getName();
         Pageable pageSettings = PageRequest.of(pageNumber, pageSize);
-        Page<Rental> rentals = rentalRepository
-                .findByOfferOwnerUsernameAndStatus(
-                        rentalOwnerUsername,
-                        RentalStatus.RETURNED,
-                        pageSettings
-                );
+        Page<Rental> rentals = rentalRepository.findByOfferOwnerUsernameAndStatus(rentalOwnerUsername, RentalStatus.RETURNED, pageSettings);
         return rentals.map(rental -> {
-            RentalViewModel vm = modelMapper.map(rental, RentalViewModel.class);
-            vm.setRenterUsername(rental.getRenter().getUsername());
-            vm.setOwnerContact(rental.getRenter().getEmail());
-            return vm;
+            RentalViewModel rentalViewModel = modelMapper.map(rental, RentalViewModel.class);
+            rentalViewModel.setRenterUsername(rental.getRenter().getUsername());
+            rentalViewModel.setOwnerContact(rental.getRenter().getEmail());
+            rentalViewModel.setOfferId(rental.getOffer().getId());
+            return rentalViewModel;
         });
     }
 

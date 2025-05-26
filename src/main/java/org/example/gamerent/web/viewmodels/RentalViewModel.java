@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 public class RentalViewModel {
 
+    private Long offerId;
     private Long rentalId;
     private String offerName;
     private String renterUsername;
@@ -18,7 +19,15 @@ public class RentalViewModel {
     public RentalViewModel() {
     }
 
-    public RentalViewModel(Long rentalId, String offerName, String renterUsername, Integer days, LocalDateTime startDate, LocalDateTime endDate, String status, String ownerContact) {
+    public RentalViewModel(Long rentalId,
+                           String offerName,
+                           String renterUsername,
+                           Integer days,
+                           LocalDateTime startDate,
+                           LocalDateTime endDate,
+                           String status,
+                           String ownerContact,
+                           Long offerId) {
         this.rentalId = rentalId;
         this.offerName = offerName;
         this.renterUsername = renterUsername;
@@ -27,6 +36,7 @@ public class RentalViewModel {
         this.endDate = endDate;
         this.status = status;
         this.ownerContact = ownerContact;
+        this.offerId = offerId;
     }
 
 
@@ -92,6 +102,14 @@ public class RentalViewModel {
 
     public void setOwnerContact(String ownerContact) {
         this.ownerContact = ownerContact;
+    }
+
+    public Long getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(Long offerId) {
+        this.offerId = offerId;
     }
 
 }
