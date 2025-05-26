@@ -8,7 +8,7 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container my-5">
-    <h1 class="mb-4">Кабинет владельца</h1>
+    <h1 class="mb-4">Управление заявками</h1>
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link"
@@ -160,7 +160,7 @@
                         <tr th:each="r : ${activeRentals.content}">
                             <td th:text="${r.offerName}">Game</td>
                             <td th:text="${r.renterUsername}">user</td>
-                            <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} — ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
+                            <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} - ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
                                 01.01.2025 — 05.01.2025
                             </td>
                             <td>
@@ -299,7 +299,7 @@
                         <tr th:each="r : ${completedRentals.content}">
                             <td th:text="${r.offerName}">Game</td>
                             <td th:text="${r.renterUsername}">user</td>
-                            <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} — ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
+                            <td th:text="|${#temporals.format(r.startDate,'dd.MM.yyyy')} - ${#temporals.format(r.endDate,'dd.MM.yyyy')}|">
                                 01.01.2025 — 05.01.2025
                             </td>
                             <td>

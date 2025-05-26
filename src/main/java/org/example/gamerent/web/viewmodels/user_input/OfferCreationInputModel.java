@@ -1,6 +1,8 @@
 package org.example.gamerent.web.viewmodels.user_input;
 
 import jakarta.validation.constraints.*;
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.util.validation.offer_image_file.ImageFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,12 @@ public class OfferCreationInputModel {
     @Min(value = 1, message = "Количество дней аренды должно быть больше или равно 1")
     private Integer maxRentalDays;
 
+    @NotNull(message = "Выберите жанр игры")
+    private OfferGenre genre;
+
+    @NotNull(message = "Выберите сложность игры")
+    private OfferDifficulty difficulty;
+
     @AssertTrue(message = "Минимальное количество дней аренды не может быть больше или равно максимальному")
     public boolean isValidRentalDaysRange() {
         if (minRentalDays == null || maxRentalDays == null) {
@@ -45,7 +53,15 @@ public class OfferCreationInputModel {
     public OfferCreationInputModel() {
     }
 
-    public OfferCreationInputModel(MultipartFile offerPhoto, String description, BigDecimal price, String brand, String gameName, Integer minRentalDays, Integer maxRentalDays) {
+    public OfferCreationInputModel(MultipartFile offerPhoto,
+                                   String description,
+                                   BigDecimal price,
+                                   String brand,
+                                   String gameName,
+                                   Integer minRentalDays,
+                                   Integer maxRentalDays,
+                                   OfferGenre genre,
+                                   OfferDifficulty difficulty) {
         this.offerPhoto = offerPhoto;
         this.description = description;
         this.price = price;
@@ -53,6 +69,8 @@ public class OfferCreationInputModel {
         this.gameName = gameName;
         this.minRentalDays = minRentalDays;
         this.maxRentalDays = maxRentalDays;
+        this.genre = genre;
+        this.difficulty = difficulty;
     }
 
 
@@ -110,6 +128,22 @@ public class OfferCreationInputModel {
 
     public void setMaxRentalDays(Integer maxRentalDays) {
         this.maxRentalDays = maxRentalDays;
+    }
+
+    public OfferGenre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(OfferGenre genre) {
+        this.genre = genre;
+    }
+
+    public OfferDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(OfferDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

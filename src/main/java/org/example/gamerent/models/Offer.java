@@ -2,6 +2,8 @@ package org.example.gamerent.models;
 
 import jakarta.persistence.*;
 import org.example.gamerent.models.base.IdCreatedModified;
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.models.consts.OfferStatus;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -28,6 +30,8 @@ public class Offer extends IdCreatedModified {
     private OfferStatus status;
     private String photo;
     private Set<Rental> rentals;
+    private OfferGenre genre;
+    private OfferDifficulty difficulty;
 
 
     protected Offer() {
@@ -93,6 +97,19 @@ public class Offer extends IdCreatedModified {
         return rentals;
     }
 
+    @GenericField
+    @Enumerated(EnumType.STRING)
+    @Column(name = "genre", nullable = false)
+    public OfferGenre getGenre() {
+        return genre;
+    }
+
+    @GenericField
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty", nullable = false)
+    public OfferDifficulty getDifficulty() {
+        return difficulty;
+    }
 
     public void setOwner(User owner) {
         this.owner = owner;
@@ -132,6 +149,14 @@ public class Offer extends IdCreatedModified {
 
     public void setRentals(Set<Rental> rentals) {
         this.rentals = rentals;
+    }
+
+    public void setGenre(OfferGenre genre) {
+        this.genre = genre;
+    }
+
+    public void setDifficulty(OfferDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

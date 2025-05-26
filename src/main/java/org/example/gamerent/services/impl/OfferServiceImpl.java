@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import org.example.gamerent.models.Brand;
 import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.User;
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.models.consts.OfferStatus;
 import org.example.gamerent.repos.BrandRepository;
 import org.example.gamerent.repos.OfferRepository;
@@ -37,7 +39,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 
 @Service
@@ -59,11 +60,7 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Autowired
-    public OfferServiceImpl(OfferRepository offerRepository,
-                            RentalRepository rentalRepository,
-                            UserRepository userRepository,
-                            ModelMapper modelMapper,
-                            BrandRepository brandRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, RentalRepository rentalRepository, UserRepository userRepository, ModelMapper modelMapper, BrandRepository brandRepository) {
         this.offerRepository = offerRepository;
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
@@ -87,6 +84,8 @@ public class OfferServiceImpl implements OfferService {
         offerModel.setStatus(OfferStatus.AVAILABLE);
         User offerOwnerModel = userRepository.findUserByUsername(offerOwnerUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offerModel.setOwner(offerOwnerModel);
+        offerModel.setGenre(newOfferInputModel.getGenre());
+        offerModel.setDifficulty(newOfferInputModel.getDifficulty());
         offerRepository.save(offerModel);
     }
 
@@ -118,68 +117,64 @@ public class OfferServiceImpl implements OfferService {
         String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User offerOwnerModel = userRepository.findUserByUsername(currentUserUsername).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         offerModel.setOwner(offerOwnerModel);
+        offerModel.setGenre(newOfferInputModel.getGenre());
+        offerModel.setDifficulty(newOfferInputModel.getDifficulty());
         offerModel = offerRepository.save(offerModel);
         return offerModel.getId();
     }
 
     @Override
-    public Page<OfferDemoViewModel> getAllOffersFiltered(
-            BigDecimal priceFrom,
-            BigDecimal priceTo,
-            String brandName,
-            Boolean myOffers,
-            int pageNumber,
-            int pageSize,
-            String sortBy,
-            String searchTerm
-    ) {
+    public Page<OfferDemoViewModel> getAllOffersFiltered(BigDecimal priceFrom, BigDecimal priceTo, String brandName, Boolean myOffers, int pageNumber, int pageSize, String sortBy, String searchTerm, List<OfferGenre> genres, List<OfferDifficulty> difficulties) {
+        List<OfferGenre> normGenres = (genres != null && genres.isEmpty()) ? null : genres;
+        List<OfferDifficulty> normDifficulties = (difficulties != null && difficulties.isEmpty()) ? null : difficulties;
         Sort springSort = buildSpringSort(sortBy);
         Pageable pageSettings = PageRequest.of(pageNumber, pageSize, springSort);
-
         if (searchTerm != null && !searchTerm.isBlank()) {
             SearchSession searchSession = Search.session(entityManager);
-            SearchResult<Offer> searchResult = searchSession.search(Offer.class)
-                    .where(f -> {
-                        var b = f.bool();
-                        b.must(f.match().fields("gameName", "brand.name").matching(searchTerm));
-                        if (priceFrom != null) b.must(f.range().field("price").atLeast(priceFrom));
-                        if (priceTo != null) b.must(f.range().field("price").atMost(priceTo));
-                        if (brandName != null && !brandName.isBlank()) {
-                            b.must(f.match().field("brand.name").matching(brandName));
+            SearchResult<Offer> searchResult = searchSession.search(Offer.class).where(f -> {
+                var b = f.bool();
+                b.must(f.match().fields("gameName", "brand.name").matching(searchTerm));
+                if (priceFrom != null) b.must(f.range().field("price").atLeast(priceFrom));
+                if (priceTo != null) b.must(f.range().field("price").atMost(priceTo));
+                if (brandName != null && !brandName.isBlank()) {
+                    b.must(f.match().field("brand.name").matching(brandName));
+                }
+                if (Boolean.TRUE.equals(myOffers)) {
+                    String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+                    b.must(f.match().field("owner.username").matching(currentUserUsername));
+                }
+                if (normGenres != null) {
+                    b.must(f.bool(builder -> {
+                        for (OfferGenre g : normGenres) {
+                            builder.should(f.match().field("genre").matching(g));
                         }
-                        if (Boolean.TRUE.equals(myOffers)) {
-                            String currentUserUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-                            b.must(f.match().field("owner.username").matching(currentUserUsername));
+                    }));
+                }
+                if (normDifficulties != null) {
+                    b.must(f.bool(builder -> {
+                        for (OfferDifficulty d : normDifficulties) {
+                            builder.should(f.match().field("difficulty").matching(d));
                         }
-                        return b;
-                    })
-                    .sort(f -> buildSearchSort(f, sortBy))
-                    .fetch((int) pageSettings.getOffset(), pageSettings.getPageSize());
-            List<OfferDemoViewModel> offerViewModels = searchResult.hits().stream()
-                    .map(offer -> {
-                        OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-                        offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-                        return offerDemoViewModel;
-                    })
-                    .toList();
-            return new PageImpl<>(offerViewModels, pageSettings, searchResult.total().hitCount());
+                    }));
+                }
+                return b;
+            }).sort(f -> buildSearchSort(f, sortBy)).fetch((int) pageSettings.getOffset(), pageSettings.getPageSize());
+            List<OfferDemoViewModel> offerDemoViewModels = searchResult.hits().stream().map(offer -> {
+                OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+                offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+                return offerDemoViewModel;
+            }).toList();
+            return new PageImpl<>(offerDemoViewModels, pageSettings, searchResult.total().hitCount());
         } else {
-            Page<Offer> offersPage = offerRepository.findFilteredOffers(
-                    priceFrom,
-                    priceTo,
-                    brandName,
-                    Boolean.TRUE.equals(myOffers),
-                    SecurityContextHolder.getContext().getAuthentication().getName(),
-                    pageSettings
-            );
-            return offersPage
-                    .map(offer -> {
-                        OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
-                        offerDemoViewModel.setOwner(offer.getOwner().getUsername());
-                        return offerDemoViewModel;
-                    });
+            Page<Offer> offersPage = offerRepository.findFilteredOffers(priceFrom, priceTo, brandName, Boolean.TRUE.equals(myOffers), SecurityContextHolder.getContext().getAuthentication().getName(), pageSettings, normGenres, normDifficulties);
+            return offersPage.map(offer -> {
+                OfferDemoViewModel offerDemoViewModel = modelMapper.map(offer, OfferDemoViewModel.class);
+                offerDemoViewModel.setOwner(offer.getOwner().getUsername());
+                return offerDemoViewModel;
+            });
         }
     }
+
 
     @Override
     public OfferUpdateInputModel getOfferUpdateInputModel(Long offerId) {

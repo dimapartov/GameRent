@@ -105,6 +105,42 @@
                          th:errors="*{maxRentalDays}">
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <label for="genre" class="form-label">Жанр</label>
+                    <select id="genre"
+                            th:field="*{genre}"
+                            class="form-select"
+                            required
+                            th:classappend="${#fields.hasErrors('genre')}? 'is-invalid'">
+                        <option value="" disabled>Выберите жанр</option>
+                        <option th:each="g : ${allGenres}"
+                                th:value="${g.name()}"
+                                th:text="${g.displayName}">
+                        </option>
+                    </select>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('genre')}"
+                         th:errors="*{genre}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="difficulty" class="form-label">Сложность</label>
+                    <select id="difficulty"
+                            th:field="*{difficulty}"
+                            class="form-select"
+                            required
+                            th:classappend="${#fields.hasErrors('difficulty')}? 'is-invalid'">
+                        <option value="" disabled>Выберите сложность</option>
+                        <option th:each="d : ${allDifficulties}"
+                                th:value="${d.name()}"
+                                th:text="${d.displayName}">
+                        </option>
+                    </select>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('difficulty')}"
+                         th:errors="*{difficulty}">
+                    </div>
+                </div>
                 <div class="col-12">
                     <label for="offerPhoto" class="form-label">Фото</label>
                     <input class="form-control"

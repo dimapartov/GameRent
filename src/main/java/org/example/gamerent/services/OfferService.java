@@ -1,13 +1,15 @@
 package org.example.gamerent.services;
 
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.web.viewmodels.OfferDemoViewModel;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public interface OfferService {
@@ -26,7 +28,9 @@ public interface OfferService {
             int pageNumber,
             int pageSize,
             String sortBy,
-            String searchTerm
+            String searchTerm,
+            List<OfferGenre> genres,
+            List<OfferDifficulty> difficulties
     );
 
     OfferViewModel getOfferById(Long offerId);

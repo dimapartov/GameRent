@@ -6,6 +6,8 @@ import org.example.gamerent.models.Offer;
 import org.example.gamerent.models.Rental;
 import org.example.gamerent.models.Review;
 import org.example.gamerent.models.User;
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.models.consts.RentalStatus;
 import org.example.gamerent.repos.OfferRepository;
 import org.example.gamerent.repos.RentalRepository;
@@ -143,6 +145,12 @@ public class DataInit implements CommandLineRunner {
         int minDays = random.nextInt(3) + 1;
         model.setMinRentalDays(minDays);
         model.setMaxRentalDays(minDays + random.nextInt(5) + 1);
+        OfferGenre[] genres = OfferGenre.values();
+        OfferGenre randomGenre = genres[random.nextInt(genres.length)];
+        model.setGenre(randomGenre);
+        OfferDifficulty[] difficulties = OfferDifficulty.values();
+        OfferDifficulty randomDifficulty = difficulties[random.nextInt(difficulties.length)];
+        model.setDifficulty(randomDifficulty);
         return model;
     }
 

@@ -1,5 +1,7 @@
 package org.example.gamerent.web.viewmodels;
 
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.models.consts.OfferStatus;
 
 import java.math.BigDecimal;
@@ -20,6 +22,8 @@ public class OfferViewModel {
     private String ownerLastName;
     private String ownerEmail;
     private String ownerUsername;
+    private OfferGenre genre;
+    private OfferDifficulty difficulty;
 
 
     public OfferViewModel() {
@@ -37,7 +41,9 @@ public class OfferViewModel {
                           String ownerFirstName,
                           String ownerLastName,
                           String ownerEmail,
-                          String ownerUsername) {
+                          String ownerUsername,
+                          OfferGenre genre,
+                          OfferDifficulty difficulty) {
         this.id = id;
         this.brandName = brandName;
         this.gameName = gameName;
@@ -51,6 +57,8 @@ public class OfferViewModel {
         this.ownerLastName = ownerLastName;
         this.ownerEmail = ownerEmail;
         this.ownerUsername = ownerUsername;
+        this.genre = genre;
+        this.difficulty = difficulty;
     }
 
 
@@ -156,6 +164,22 @@ public class OfferViewModel {
 
     public void setOwnerUsername(String ownerUsername) {
         this.ownerUsername = ownerUsername;
+    }
+
+    public OfferGenre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(OfferGenre genre) {
+        this.genre = genre;
+    }
+
+    public OfferDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(OfferDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

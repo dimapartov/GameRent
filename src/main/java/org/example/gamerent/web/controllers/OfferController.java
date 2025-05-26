@@ -1,6 +1,8 @@
 package org.example.gamerent.web.controllers;
 
 import jakarta.validation.Valid;
+import org.example.gamerent.models.consts.OfferDifficulty;
+import org.example.gamerent.models.consts.OfferGenre;
 import org.example.gamerent.services.BrandService;
 import org.example.gamerent.services.OfferService;
 import org.example.gamerent.services.dto.OfferFiltersDTO;
@@ -51,6 +53,8 @@ public class OfferController {
     @GetMapping("/create")
     public String getOfferCreationPage(Model model) {
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
+        model.addAttribute("allGenres", OfferGenre.values());
+        model.addAttribute("allDifficulties", OfferDifficulty.values());
         return "offer-creation-page";
     }
 
@@ -80,8 +84,12 @@ public class OfferController {
                 pageNumber,
                 pageSize,
                 filters.getSortBy(),
-                filters.getSearchTerm());
-
+                filters.getSearchTerm(),
+                filters.getGenres(),
+                filters.getDifficulties()
+        );
+        model.addAttribute("allGenres", OfferGenre.values());
+        model.addAttribute("allDifficulties", OfferDifficulty.values());
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
         return "offers-all-filtered-page";
