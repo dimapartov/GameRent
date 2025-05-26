@@ -34,7 +34,7 @@ public class Offer extends IdCreatedModified {
     private OfferDifficulty difficulty;
 
 
-    protected Offer() {
+    public Offer() {
     }
 
 

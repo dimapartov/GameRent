@@ -17,7 +17,7 @@ public class Brand extends IdCreatedModified {
     private Set<Offer> offers;
 
 
-    protected Brand() {
+    public Brand() {
     }
 
 

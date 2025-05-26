@@ -14,7 +14,7 @@ public class Review extends IdCreatedModified {
     private User reviewee; // Пользователь, на которого оставили отзыв
 
 
-    protected Review() {
+    public Review() {
     }
 
 

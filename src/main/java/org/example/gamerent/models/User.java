@@ -23,7 +23,7 @@ public class User extends IdCreatedModified {
     private Set<Review> reviewsReceived; // Отзывы, полученные пользователем
 
 
-    protected User() {
+    public User() {
     }
 
 

@@ -19,7 +19,7 @@ public class Rental extends IdCreatedModified {
     private Integer days;
 
 
-    protected Rental() {
+    public Rental() {
     }
 
 
