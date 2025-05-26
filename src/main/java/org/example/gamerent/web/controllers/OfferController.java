@@ -11,6 +11,8 @@ import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferCreationInputModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/offer")
 public class OfferController {
+
+    private static final Logger log = LoggerFactory.getLogger(OfferController.class);
 
     @Value("${offers.page.size}")
     private int pageSize;
@@ -55,6 +59,7 @@ public class OfferController {
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
         model.addAttribute("allGenres", OfferGenre.values());
         model.addAttribute("allDifficulties", OfferDifficulty.values());
+        log.info("Request to GET /offer/create page");
         return "offer-creation-page";
     }
 
@@ -68,6 +73,7 @@ public class OfferController {
             return "redirect:/offer/create";
         }
         Long newId = offerService.createOffer(newOfferInputModel);
+        log.info("Request to POST /offer/create");
         return "redirect:/offer/" + newId;
     }
 
@@ -92,6 +98,7 @@ public class OfferController {
         model.addAttribute("allDifficulties", OfferDifficulty.values());
         model.addAttribute("offersPage", offersPage);
         model.addAttribute("allBrands", brandService.getAllBrandsDTOs());
+        log.info("Request to GET /offer/all page");
         return "offers-all-filtered-page";
     }
 
@@ -111,6 +118,7 @@ public class OfferController {
                 model.addAttribute("offerUpdateInputModel", new OfferUpdateInputModel());
             }
         }
+        log.info("Request to GET /offer/{} page", id);
         return "offer-details-page";
     }
 
@@ -126,12 +134,14 @@ public class OfferController {
         }
         offerService.updateOffer(id, offerUpdateInputModel);
         redirectAttributes.addFlashAttribute("success", "Оффер успешно обновлён");
+        log.info("Request to POST /offer/{}/edit", id);
         return "redirect:/offer/" + id;
     }
 
     @PostMapping("/{id}/delete")
     public String deleteOffer(@PathVariable Long id) {
         offerService.deleteOfferById(id);
+        log.info("Request to POST /offer/{}/delete", id);
         return "redirect:/offer/all";
     }
 

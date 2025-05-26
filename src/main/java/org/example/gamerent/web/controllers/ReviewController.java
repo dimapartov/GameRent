@@ -5,6 +5,8 @@ import org.example.gamerent.services.ReviewService;
 import org.example.gamerent.services.dto.ReviewFiltersDTO;
 import org.example.gamerent.web.viewmodels.ReviewViewModel;
 import org.example.gamerent.web.viewmodels.user_input.ReviewInputModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/reviews")
 public class ReviewController {
+
+    private static final Logger log = LoggerFactory.getLogger(ReviewController.class);
 
     @Value("${reviews.page.size}")
     private int pageSize;
@@ -41,6 +45,7 @@ public class ReviewController {
         String currentUser = auth.getName();
         Page<ReviewViewModel> byPage = reviewService.getReviewsByUser(currentUser, sortBy, page, pageSize);
         model.addAttribute("byPage", byPage);
+        log.info("Request to GET reviews/my page");
         return "reviews-my-page";
     }
 
@@ -60,6 +65,7 @@ public class ReviewController {
             model.addAttribute("newReview", newReview);
         }
         model.addAttribute("revieweeUsername", revieweeUsername);
+        log.info("Request to GET reviews/about/{}", revieweeUsername);
         return "reviews-about-user-page";
     }
 
@@ -80,6 +86,7 @@ public class ReviewController {
             return "reviews-about-user-page";
         }
         reviewService.createReview(input);
+        log.info("Request to POST reviews/about/{}", revieweeUsername);
         return "redirect:/reviews/about/" + revieweeUsername + "?page=" + page + "&sortBy=" + sortBy;
     }
 
@@ -93,7 +100,7 @@ public class ReviewController {
         if (revieweeUsername != null && !revieweeUsername.isBlank()) {
             return "redirect:/reviews/about/" + revieweeUsername + "?page=" + page + "&sortBy=" + sortBy;
         }
-
+        log.info("Request to POST reviews/about/{}/delete", revieweeUsername);
         return "redirect:/reviews/my?page=" + page + "&sortBy=" + sortBy;
     }
 

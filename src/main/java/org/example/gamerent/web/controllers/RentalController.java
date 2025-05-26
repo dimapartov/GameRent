@@ -7,6 +7,8 @@ import org.example.gamerent.services.RentalService;
 import org.example.gamerent.web.viewmodels.OfferViewModel;
 import org.example.gamerent.web.viewmodels.user_input.OfferUpdateInputModel;
 import org.example.gamerent.web.viewmodels.user_input.RentalRequestInputModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/rental")
 public class RentalController {
+
+    private static final Logger log = LoggerFactory.getLogger(RentalController.class);
 
     @Value("${rentals.page.size}")
     private int pageSize;
@@ -55,6 +59,7 @@ public class RentalController {
         model.addAttribute("canceledByRenter", rentalService.getMyRentalsByStatus(RentalStatus.CANCELED_BY_RENTER, canceledByRenterPage, pageSize));
         model.addAttribute("canceledByOwner", rentalService.getMyRentalsByStatus(RentalStatus.CANCELED_BY_OWNER, canceledByOwnerPage, pageSize));
         model.addAttribute("currentTab", tab);
+        log.info("Request to GET rental/my page");
         return "rentals-my-page";
     }
 
@@ -75,6 +80,7 @@ public class RentalController {
         }
         rentalService.createRentalRequest(rentalInput);
         redirectAttributes.addFlashAttribute("success", "Заявка отправлена");
+        log.info("Request to POST /rental/create");
         return "redirect:/offer/" + rentalInput.getOfferId();
     }
 
@@ -84,6 +90,7 @@ public class RentalController {
                                       RedirectAttributes redirectAttributes) {
         rentalService.cancelRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Заявка отменена");
+        log.info("Request to POST /rental/{}/cancel", id);
         return "redirect:/rental/my?tab=" + tab;
     }
 
@@ -93,6 +100,7 @@ public class RentalController {
                                        RedirectAttributes redirectAttributes) {
         rentalService.initiateRentalReturn(id);
         redirectAttributes.addFlashAttribute("success", "Запрос на возврат отправлен");
+        log.info("Request to POST /rental/{}/return", id);
         return "redirect:/rental/my?tab=" + tab;
     }
 
@@ -109,6 +117,7 @@ public class RentalController {
         model.addAttribute("pendingReturns", rentalService.getPendingReturnsForOwner(returnPage, pageSize));
         model.addAttribute("completedRentals", rentalService.getCompletedRentalsForOwner(completedPage, pageSize));
         model.addAttribute("currentTab", tab);
+        log.info("Request to GET owner/dashboard page");
         return "rentals-owner-dashboard-page";
     }
 
@@ -117,6 +126,7 @@ public class RentalController {
                                        RedirectAttributes redirectAttributes) {
         rentalService.confirmRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Аренда подтверждена");
+        log.info("Request to POST /rental/{}/confirm", id);
         return "redirect:/rental/owner/dashboard";
     }
 
@@ -125,6 +135,7 @@ public class RentalController {
                                       RedirectAttributes redirectAttributes) {
         rentalService.rejectRentalRequest(id);
         redirectAttributes.addFlashAttribute("success", "Заявка отклонена владельцем");
+        log.info("Request to POST /rental/{}/reject", id);
         return "redirect:/rental/owner/dashboard";
     }
 
@@ -134,6 +145,7 @@ public class RentalController {
         rentalService.confirmRentalReturn(id);
         redirectAttributes.addAttribute("tab", "returns");
         redirectAttributes.addFlashAttribute("success", "Возврат подтверждён");
+        log.info("Request to POST /rental/{}/confirm-return", id);
         return "redirect:/rental/owner/dashboard";
     }
 
