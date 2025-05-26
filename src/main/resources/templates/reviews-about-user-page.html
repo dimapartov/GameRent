@@ -22,7 +22,8 @@
             <form th:action="@{/reviews/about/{username}(username=${revieweeUsername})}"
                   th:object="${newReview}"
                   method="post"
-                  class="row g-3">
+                  class="row g-3"
+                  sec:csrf="true">
                 <input type="hidden" th:field="*{revieweeUsername}"/>
                 <div class="col-md-2">
                     <label for="rating" class="form-label">Оценка</label>
@@ -88,6 +89,7 @@
                     <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
                           method="post"
                           sec:authorize="isAuthenticated()"
+                          sec:csrf="true"
                           th:if="${revieweeUsername != #authentication.name
                                       and rev.username == #authentication.name}"
                           class="d-inline">

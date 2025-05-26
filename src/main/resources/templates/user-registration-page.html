@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="~{fragments/head :: head}">
     <title>Регистрация</title>
 </head>
@@ -11,6 +11,7 @@
         <form th:action="@{/user/register}"
               th:object="${newUser}"
               method="post"
+              sec:csrf="true"
               class="needs-validation"
               novalidate>
             <div class="mb-3">

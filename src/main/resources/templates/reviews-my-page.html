@@ -40,7 +40,8 @@
                     </div>
                     <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
                           method="post"
-                          class="d-inline">
+                          class="d-inline"
+                          sec:csrf="true">
                         <input type="hidden" name="page" th:value="${byPage.number}"/>
                         <input type="hidden" name="sortBy" th:value="${filters.sortBy}"/>
                         <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>

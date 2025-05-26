@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="~{fragments/head :: head}">
     <title>Вход</title>
 </head>
@@ -11,7 +11,7 @@
         <div th:if="${badCredentials}" class="alert alert-danger" role="alert">
             Неверное имя пользователя или пароль!
         </div>
-        <form th:action="@{/user/login}" method="post" class="needs-validation" novalidate>
+        <form th:action="@{/user/login}" method="post" sec:csrf="true" class="needs-validation" novalidate>
             <div class="mb-3">
                 <label for="username" class="form-label">Имя пользователя</label>
                 <input type="text" id="username" name="username" class="form-control" required>

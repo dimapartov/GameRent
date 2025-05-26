@@ -98,11 +98,11 @@
                             </td>
                             <td class="d-flex flex-nowrap">
                                 <form th:action="@{/rental/owner/{id}/confirm(id=${r.rentalId})}"
-                                      method="post" class="me-2">
+                                      method="post" class="me-2" sec:csrf="true">
                                     <button class="btn btn-sm btn-success">Подтвердить</button>
                                 </form>
                                 <form th:action="@{/rental/owner/{id}/reject(id=${r.rentalId})}"
-                                      method="post">
+                                      method="post" sec:csrf="true">
                                     <button class="btn btn-sm btn-danger">Отклонить</button>
                                 </form>
                             </td>
@@ -253,7 +253,7 @@
                             </td>
                             <td>
                                 <form th:action="@{/rental/owner/{id}/confirm-return(id=${r.rentalId})}"
-                                      method="post">
+                                      method="post" sec:csrf="true">
                                     <button class="btn btn-sm btn-primary">Подтвердить возврат</button>
                                 </form>
                             </td>

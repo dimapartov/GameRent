@@ -40,7 +40,7 @@
                     <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}"
                          class="mb-3">
                         <button id="editBtn" class="btn btn-outline-secondary me-2">Редактировать</button>
-                        <form th:action="@{'/offer/' + ${offer.id} + '/delete'}" method="post" class="d-inline">
+                        <form th:action="@{'/offer/' + ${offer.id} + '/delete'}" method="post" class="d-inline" sec:csrf="true">
                             <button class="btn btn-outline-danger">Удалить</button>
                         </form>
                     </div>
@@ -53,7 +53,7 @@
             <div th:if="${offer.status == T(org.example.gamerent.models.consts.OfferStatus).AVAILABLE}">
                 <div sec:authorize="isAuthenticated()" th:if="${offer.ownerUsername != #authentication.name}"
                      class="mb-3">
-                    <form th:action="@{/rental/create}" th:object="${rentalInput}" method="post">
+                    <form th:action="@{/rental/create}" th:object="${rentalInput}" method="post" sec:csrf="true">
                         <input type="hidden" th:field="*{offerId}"/>
                         <div class="mb-2">
                             <label class="form-label">Дней аренды</label>
@@ -95,7 +95,7 @@
            'display:none;position:fixed;top:20%;left:30%;width:40%;background:#fff;padding:1.5rem;box-shadow:0 0 10px rgba(0,0,0,0.5);z-index:1000;'">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form th:action="@{'/offer/' + ${offer.id} + '/edit'}" method="post" class="p-4">
+            <form th:action="@{'/offer/' + ${offer.id} + '/edit'}" method="post" class="p-4" sec:csrf="true">
                 <div class="mb-3">
                     <label class="form-label">Описание</label>
                     <textarea th:field="*{description}" rows="3" class="form-control"></textarea>

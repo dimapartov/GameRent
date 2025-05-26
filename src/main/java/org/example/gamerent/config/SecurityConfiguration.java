@@ -19,6 +19,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
+import static org.springframework.security.web.access.IpAddressAuthorizationManager.hasIpAddress;
+
+
 @Configuration
 public class SecurityConfiguration {
 
@@ -35,7 +38,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityContextRepository securityContextRepository) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/user/register", "/user/login", "/user/login-error", "/actuator/*").permitAll()
+                        .requestMatchers("/", "/user/register", "/user/login", "/user/login-error").permitAll()
+                        .requestMatchers("/actuator/**").access(hasIpAddress("127.0.0.1"))
                         .anyRequest().authenticated())
                 .formLogin(formLogin -> formLogin
                         .loginPage("/user/login")

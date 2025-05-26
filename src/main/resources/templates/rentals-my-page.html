@@ -134,7 +134,7 @@
                             <td th:text="${#temporals.format(r.endDate,'dd.MM.yyyy')}"></td>
                             <td>
                                 <form th:action="@{/rental/{id}/cancel(id=${r.rentalId})}"
-                                      method="post" class="d-inline">
+                                      method="post" class="d-inline" sec:csrf="true">
                                     <input type="hidden" name="tab" th:value="${currentTab}"/>
                                     <button class="btn btn-sm btn-warning">Отменить</button>
                                 </form>
@@ -214,7 +214,7 @@
                             </td>
                             <td>
                                 <form th:action="@{/rental/{id}/return(id=${r.rentalId})}"
-                                      method="post" class="d-inline">
+                                      method="post" class="d-inline" sec:csrf="true">
                                     <input type="hidden" name="tab" th:value="${currentTab}"/>
                                     <button class="btn btn-sm btn-primary">Вернуть</button>
                                 </form>
